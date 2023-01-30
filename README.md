@@ -1,2 +1,2 @@
-# PIMDanalysis2
-New PIMD analysis program
+# -PIMDanalysis-
+Program to analysis the results of PIMD simulations

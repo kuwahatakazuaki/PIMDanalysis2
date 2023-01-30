@@ -1,0 +1,191 @@
+# Choose "job type"
+#   1 : Bond length                 (atom1-atom2)
+#   2 : Angle histgram              (atom1-atom2-atom3)
+#   3 : Dihedral angle              (atom1-atom2-atom3-atom4)
+#   4 : Bond diff                   (atom1-atom2  -  atom3-atom4)
+#   5 : Bond add                    (atom1-atom2  +  atom3-atom4)
+#   9 : 1D histgram from External
+#  11 : Multi bond for all
+#  12 : Multi bond sort
+#  21 : 2D histogram_bond            (atom1-atom2 and atom3-atom4)
+#  22 : 2D histogram_angle           (atom1-atom2 and atom3-atom4-atom5)
+#  29 : 2D histogram from External   (Arbitrary number line)
+#  31 : binary mask           (coor.bin if (bin1) )
+#  32 : binary add            (bin1 + bin2)
+#  33 : binary diff           (bin1 - bin2)
+#  41 : Dummy atom (X) for bond      (atom1-atomX)
+#  42 : Dummy atom (X) for angle     (atom1-atom2-atomX)
+#  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)
+#  51 : Beads expansion      (all atoms)
+#  52 : Beads expansion      (export binary of atom1)
+#  53 : Beads expansion      (atom1 projected to atom2-atom3)
+#  61 : charge_analysis      (all atoms)
+#  62 : charge_analysis      (atom1)
+#  63 : dipole_analysis
+#  64 : hfcc_analysis        (atom1)
+#  71 : Rotation          (movie)
+#  72 : Rotation          (cube file)
+#  81 : radial distribution  (element1)
+#  82 : radial distribution  (element1 to element2)
+#  89 : OHO distribution
+#  91 : projection           (atom1-atom2  T  atom3-atom4)
+# 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
+# 191 : PbHPO4  (O-O distribution)
+# 192 : PbHPO4  (dleta OH distribution)
+#!!  29 : 2D histogram from External   (Old, use the 28 mode)
+#!!  31 : 1D histogram for Centroid
+#!!  32 : 2D histogram for Centroid
+#!!  33 : Angle histgram for Centroid
+
+# job type
+$Lfirst       # Set T(rue) or F(alse)
+F
+$Nfile
+1
+$Job type
+91
+$graph_step
+10
+$save_beads
+T
+$name_binary1
+bin1.bin
+$name_binary2
+bin2.bin
+# end job type
+
+# input file 1
+$DirResult
+../Data1
+#$FileName
+# coor.bin
+$Natom
+10
+$Nbeads
+16
+$Ncut
+5000
+$Nstep
+105000
+$atom1
+1
+$atom2
+4
+$atom3
+3
+$atom4
+4
+$atom5
+2
+# end file 1
+
+
+# histogram parameters
+$Xrange_min
+0
+$Xrange_max
+0
+$Yrange_min
+0
+$Yrange_max
+0
+$Nhist
+200
+$hist_margin
+0.01d0
+$Lfolding
+F
+# end histogram parameters
+
+# binary calculation
+$bin_min
+-100
+$bin_max
+100
+# end binary calculation
+
+
+
+# multi bond
+$Nbond
+3
+$atom1, atom2
+1, 2
+1, 3
+1, 4
+# end multi bond
+
+# dummy atom
+$type of dummy   # 1: middle point, 2: difference
+1
+$dummy_atom1
+7
+$dummy_atom2
+8
+# end dummy atom
+
+# periodic
+$Lbox   # Length of Box (A)
+8.0
+8.0
+8.0
+$Ielement1   #  For RDF
+1
+$Felement1
+16
+$Ielement2
+17
+$Felement2
+24
+# end periodic
+
+# PbHPO4
+$Lattice
+ 4.8142385483         0.0000000000         0.0000000000
+ 0.0000000000         6.8708567619         0.0000000000
+-2.0384064352         0.0000000000        17.6854359383
+$Nunit
+3
+# end PbHPO4
+
+## Rotation
+#$Nhyd                # the number of hydrogen or muon
+#5
+#$Ndiv
+#30
+#$Hatom number (or Muon)
+#4
+#7
+#8
+#9
+#10
+#$atom for cube file
+#4
+#$coord               # label weight xyz
+#C   12.0000  -0.00008800   -1.18788800    0.10505600
+#N   14.0031  -1.11599600   -0.34324700   -0.07010500
+#N   14.0031   1.11595100   -0.34340500   -0.07006700
+#H    1.0078  -0.00014100   -2.14147700   -0.41421000
+#C   12.0000  -0.66718800    0.97164100    0.00424300
+#C   12.0000   0.66732600    0.97155200    0.00417400
+#H    1.0078   1.34815300    1.80190700   -0.02089100
+#H    1.0078  -1.34790300    1.80208800   -0.02076800
+#H    1.0078  -1.97925800   -0.59376100    0.37807800
+#H    1.0078   1.97916300   -0.59402300    0.37815700
+#$end coord
+## end Rotation
+
+## umbrella sampling
+#$temperature
+#300
+#$type   # 1:atom1-atom2 2:atom1-atom2-atom3
+#0
+#$atom1
+#1
+#$atom2
+#2
+#$force constant
+#1d-2
+## end umbrella sampling
+
+
