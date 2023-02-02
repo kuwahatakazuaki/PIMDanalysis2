@@ -2,7 +2,7 @@ program = run.exe
 # +++ gfortran +++
 fc = gfortran
 fcopt =  -O2 -pipe -lblas -llapack
-dirfile = /Users/kuwahatakazuaki/Program/bin/PIMDanalysis2
+dirfile = /Users/kuwahatakazuaki/Program/bin/PIMDanalysis
 #fcopt =  -Wall -O3 -fbacktrace -fbounds-check -lblas -llapack 
 #fcopt = -Wall -O3
 # +++ End gfortran +++
@@ -52,7 +52,6 @@ mod_periodic.mod    \
 $(program): $(objs)
 	@echo
 	$(fc) $(fcopt) $(objs) -o $@
-	cp $@ Run/
 	@echo -e '\e[34m Noraml termination!!!\e[m\n'
 
 %.o : %.f90

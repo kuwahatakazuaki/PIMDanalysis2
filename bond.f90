@@ -8,12 +8,11 @@ subroutine calc_bond
   use utility,          only: calc_deviation, calc_cumulative, reblock_step
   implicit none
   integer :: i, k, Ifile, Uout
-  character(len=128) :: name_hist
-!  character(len=128) :: name_temp
+  character(len=128) :: name_hist, name_temp
   real(8) :: data_max, data_min, data_ave, data_dev, data_err
 
-  write(name_hist,'(a,I0,"-",a,I0)')    trim(label(atom1)),atom1,trim(label(atom2)),atom2
-  write(name_hist,'("hist_",a,",out")') trim(name_hist)
+  write(name_temp,'(a,I0,"-",a,I0)')    trim(label(atom1)),atom1,trim(label(atom2)),atom2
+  write(name_hist,'("hist_",a,".out")') trim(name_temp)
 
   select case(jobtype)
     case(1)

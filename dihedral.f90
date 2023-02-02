@@ -5,7 +5,13 @@ subroutine calc_dihedral
   implicit none
   integer :: i, k, Uout ! r(xyz,i=atom,j=beads,k=step)
   character(len=:), allocatable :: out_name
+  character(len=128) :: name_hist, name_temp
   real(8) :: data_max, data_min, data_ave, data_dev
+
+
+  write(name_temp,'(a,I0,"-",a,I0,"_"a,I0,"-",a,I0)') &
+                  trim(label(atom1)),atom1,trim(label(atom2)),atom2,trim(label(atom3)),atom3,trim(label(atom4)),atom4
+  write(name_hist,'("hist_",a,".out")') trim(name_temp)
   out_name = 'step_dihed.out'
 
   call calc_dihedral_sub(atom1,atom2,atom3,atom4)
@@ -43,7 +49,7 @@ subroutine calc_dihedral
   print '("    Average angle = ", F13.6)', data_ave
   print '("    Deviation     = ", F13.6)', data_dev
   print '("    Data is saved in ",a,/)', '"'//trim(out_name)//'"'
-  call calc_1Dhist()
+  call calc_1Dhist(out_hist=trim(name_hist))
   call reblock_step()
 !  call calc_cumulative(out_cumulative)
 end subroutine calc_dihedral

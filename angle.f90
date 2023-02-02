@@ -7,12 +7,12 @@ subroutine calc_angle
   implicit none
   integer :: i, k, Uout ! i=atom, j=beads, k=step
   character(len=:), allocatable :: out_name
-  character(len=128) :: name_hist
+  character(len=128) :: name_hist, name_temp
   real(8) :: data_max, data_min, data_ave, data_dev, data_err
   out_name = 'step_angle.out'
 
-  write(name_hist,'(a,I0,"-",a,I0,"-",a,I0)') trim(label(atom1)),atom1,trim(label(atom2)),atom2,trim(label(atom3)),atom3
-  write(name_hist,'("hist_",a,",out")') trim(name_hist)
+  write(name_temp,'(a,I0,"-",a,I0,"-",a,I0)') trim(label(atom1)),atom1,trim(label(atom2)),atom2,trim(label(atom3)),atom3
+  write(name_hist,'("hist_",a,".out")') trim(name_temp)
 
   call calc_angle_sub(atom1,atom2,atom3)
   data_max = maxval(data_beads)
