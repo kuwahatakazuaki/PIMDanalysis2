@@ -39,7 +39,7 @@ subroutine calc_bond
     close(Uout)
   end if
 
-  open(Uout, file='step_bond.out', status='replace')
+  open(newunit=Uout, file='step_bond.out', status='replace')
     write(Uout,'(a,F13.6)') " # Maximum bond  = ", data_max
     write(Uout,'(a,F13.6)') " # Minimum bond  = ", data_min
     write(Uout,'(a,F13.6)') " # Average bond  = ", data_ave
