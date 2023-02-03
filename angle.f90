@@ -30,7 +30,7 @@ subroutine calc_angle
     close(Uout)
   end if
 
-  open(Uout,file=out_name,status='replace')
+  open(newunit=Uout,file=out_name,status='replace')
     write(Uout, '("# Maximum angle = ", F13.6)') data_max
     write(Uout, '("# Minimum angle = ", F13.6)') data_min
     write(Uout, '("# Average angle = ", F13.6)') data_ave

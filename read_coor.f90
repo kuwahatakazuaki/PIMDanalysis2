@@ -5,6 +5,8 @@ subroutine read_coor !(Ifile,step)
   implicit none
   integer :: i, j, k, check
 
+  print '(a)', " ***** START reading coordinate *****"
+
   select case(Lfirst)
     case(.True.)
       call read_coor_format()
@@ -33,8 +35,7 @@ contains
       read(Uin) Natom, Nbeads, Ncut, Nstep, TNstep
 
       allocate(r(3,Natom,Nbeads,TNstep))
-      if ( allocated(label) ) then
-      else
+      if ( allocated(label) .eqv. .False.) then
         allocate(label(Natom))
       end if
 
@@ -49,6 +50,13 @@ contains
       end do
     close(Uin)
     ! --- Reading binary file ---
+
+    print '("   Binary file reading ")'
+    print '("     FileName = ",a)',  trim(FileName(1))
+    print '("     TNstep  = ",I0)', TNstep
+    print '("     Nbeads  = ",I0)', Nbeads
+    print *, ""
+
 
     return
     911 print *, "ERROR!!: Reading line exceed the coor lines"; stop

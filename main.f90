@@ -23,11 +23,11 @@ if (Lfirst .eqv. .True.) then
   allocate(r(3,Natom,Nbeads,TNstep))
   allocate(label(Natom))
 end if
-allocate(data_step(TNstep), source=0.0d0)
-allocate(data_beads(Nbeads,TNstep), source=0.0d0)
 
 ! +++ Reading coordinate +++
 call read_coor
+allocate(data_step(TNstep), source=0.0d0)
+allocate(data_beads(Nbeads,TNstep), source=0.0d0)
 
 ! Choose "job type"
 !   1 : Bond length                 (atom1-atom2)
@@ -41,9 +41,10 @@ call read_coor
 !  21 : 2D histogram_bond            (atom1-atom2 and atom3-atom4)
 !  22 : 2D histogram_angle           (atom1-atom2 and atom3-atom4-atom5)
 !  29 : 2D histogram from External   (Arbitrary number line)
-!  31 : binary mask           (coor.bin if (bin1) )
-!  32 : binary add            (bin1 + bin2)
-!  33 : binary diff           (bin1 - bin2)
+!  31 : binary mask average    (coor.xyz if (bin1) )
+!  32 : binary mask each beads (coor.xyz if (bin1) )
+!  33 : binary add             (bin1 + bin2)
+!  34 : binary diff            (bin1 - bin2)
 !  41 : Dummy atom (X) for bond      (atom1-atomX)
 !  42 : Dummy atom (X) for angle     (atom1-atom2-atomX)
 !  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)
@@ -56,11 +57,8 @@ call read_coor
 !  64 : hfcc_analysis        (atom1)
 !  71 : Rotation          (movie)
 !  72 : Rotation          (cube file)
-!  73 : Rotation          (cube file from external)
-!  81 : radial distribution with Lbox    (element1)
-!  82 : radial distribution with Lbox    (element1 to element2)
-!  83 : radial distribution with Lattice (element1)
-!  84 : radial distribution with Lattice (element1 to element2)
+!  81 : radial distribution with  (element1)
+!  82 : radial distribution with  (element1 to element2)
 !  89 : OHO distribution
 !  91 : projection           (atom1-atom2  T  atom3-atom4)
 ! 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)

@@ -2,7 +2,7 @@
 ! The weight of hydrogen atoms are change to zero 
 subroutine rotation
   use input_parameter,  only: label, TNstep, save_beads, Nbeads, Natom, &
-      FNameBinary1, graph_step, Nstep, weight, r_ref, jobtype, label, Ndiv, &
+      FNameBinary1, graph_step, weight, r_ref, jobtype, label, Ndiv, &
       muon => atom_cube, Nhyd, hyd, r
 !  use calc_parameter,   only: r
   use utility,          only: calc_deviation, calc_cumulative, get_rot_mat, lowerchr

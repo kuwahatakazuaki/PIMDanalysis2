@@ -31,7 +31,7 @@ subroutine calc_dihedral
   end if
 
 
-  open(Uout,file=out_name,status='replace')
+  open(newunit=Uout,file=out_name,status='replace')
 !    write(Uout, '("# Angel Histgram of ",a)') trim(angle_name)
     write(Uout, '("# Maximum angle = ", F13.6)') data_max
     write(Uout, '("# Minimum angle = ", F13.6)') data_min

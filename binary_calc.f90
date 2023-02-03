@@ -8,7 +8,6 @@ subroutine binary_calc
   implicit none
   integer :: Uin, Uout, ios, i, j, k
   real(8), allocatable :: binary1(:,:), binary2(:,:)
-!  logical :: L2file = .True.
 
   allocate(binary1(Nbeads,TNstep),binary2(Nbeads,TNstep))
 
@@ -26,11 +25,50 @@ subroutine binary_calc
 
   select case(jobtype)
     case(31)
-      call binary_mask
+      call binary_mask_ave
+    case(32)
+      call binary_mask_each
   end select
 
 contains
-  subroutine binary_mask
+
+  subroutine binary_mask_each
+    real(8), allocatable :: rnew(:,:,:)
+    character(len=:), allocatable :: ftemp
+    integer :: Imask, Nmask
+
+    allocate(rnew(3,Natom,Nbeads*TNstep))
+    ftemp = 'coor_mask.bin'
+
+    Nmask = 0
+    do k = 1, TNstep
+      do j = 1, Nbeads
+      if ( bin_min < binary1(j,k) .and. binary1(j,k) < bin_max ) then
+        Nmask = Nmask + 1
+        rnew(:,:,Nmask) = r(:,:,j,k)
+      end if
+      end do
+    end do
+
+    print '(" ***** START compression *****")'
+    open(newunit=Uout,file=ftemp, form='unformatted', access='stream', status='replace')
+      write(Uout) Natom, 1, 0, Nmask, Nmask
+      write(Uout) label(:)
+      do Imask = 1, Nmask
+        do i = 1, Natom
+          write(Uout) rnew(:,i,Imask)
+        end do
+      end do
+    close(Uout)
+
+    print *, 'Nmask is ', Nmask
+
+    print '(a,a,a)', '    Binary data is saved as "',ftemp,'"'
+    print '(" ***** END compression *****")'
+    print *, ""
+  end subroutine binary_mask_each
+
+  subroutine binary_mask_ave
     real(8) :: ave
     real(8), allocatable :: rnew(:,:,:,:)
     character(len=:), allocatable :: ftemp
@@ -50,7 +88,7 @@ contains
 
     print '(" ***** START compression *****")'
     open(newunit=Uout,file=ftemp, form='unformatted', access='stream', status='replace')
-      write(Uout) Natom, Nbeads, 1, Nmask, Nmask
+      write(Uout) Natom, Nbeads, 0, Nmask, Nmask
       write(Uout) label(:)
       do Imask = 1, Nmask
         do j = 1, Nbeads
@@ -64,10 +102,9 @@ contains
     print *, 'Nmask is ', Nmask
 
     print '(a,a,a)', '    Binary data is saved as "',ftemp,'"'
-!    print '(a)', '    in "'//trim(DirResult(1))//'" directory '
     print '(" ***** END compression *****")'
     print *, ""
-  end subroutine binary_mask
+  end subroutine binary_mask_ave
 
 end subroutine binary_calc
 
