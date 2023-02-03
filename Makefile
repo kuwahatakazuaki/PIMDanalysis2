@@ -51,7 +51,7 @@ mod_periodic.mod    \
 
 $(program): $(objs)
 	@echo
-	$(fc) $(fcopt) $(objs) -o $@
+	$(fc) $(objs) -o $@ $(fcopt)
 	@echo -e '\e[34m Noraml termination!!!\e[m\n'
 
 %.o : %.f90

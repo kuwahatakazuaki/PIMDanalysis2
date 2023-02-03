@@ -23,42 +23,42 @@ contains
         call RDF1
       case(82)
         call RDF2
-      case(83)
-        call oho_distribution
       case(89)
-        call rms_oho
+        call oho_distribution
+      !case(89)
+      !  call rms_oho
       case default
         stop 'ERROR!!! wrong "Job type" option'
     end select
   end subroutine periodic
 
-  subroutine rms_oho
-    integer :: i, j, k, xyz
-    integer :: Nh, No, Uout
-    real(8) :: r3(3), d3
-    real(8), allocatable :: rms(:,:)
-    Nh = Felement1 - Ielement1 + 1
-    No = Felement2 - Ielement2 + 1
-
-    allocate(rms(Nh,TNstep))
-
-    do k = 1, TNstep
-      do i = 1, Nh
-        do xyz = 1, 3
-          r3(xyz) = sum( r(xyz,i,:,k)-r(xyz,i,:,1) ) / dble(Nbeads)
-        end do
-        d3 = dsqrt( sum(r3(:)*r3(:)) )
-        rms(i,k) = d3
-      end do
-    end do
-
-    open(newunit=Uout,file='rms.out')
-      do k = 1, TNstep
-        write(Uout,9999) rms(:,k)
-      end do
-    close(Uout)
-    9999 format(32F10.5)
-  end subroutine rms_oho
+!  subroutine rms_oho
+!    integer :: i, j, k, xyz
+!    integer :: Nh, No, Uout
+!    real(8) :: r3(3), d3
+!    real(8), allocatable :: rms(:,:)
+!    Nh = Felement1 - Ielement1 + 1
+!    No = Felement2 - Ielement2 + 1
+!
+!    allocate(rms(Nh,TNstep))
+!
+!    do k = 1, TNstep
+!      do i = 1, Nh
+!        do xyz = 1, 3
+!          r3(xyz) = sum( r(xyz,i,:,k)-r(xyz,i,:,1) ) / dble(Nbeads)
+!        end do
+!        d3 = dsqrt( sum(r3(:)*r3(:)) )
+!        rms(i,k) = d3
+!      end do
+!    end do
+!
+!    open(newunit=Uout,file='rms.out')
+!      do k = 1, TNstep
+!        write(Uout,9999) rms(:,k)
+!      end do
+!    close(Uout)
+!    9999 format(32F10.5)
+!  end subroutine rms_oho
 
   subroutine oho_distribution
     integer :: i, j, k, Ioho, Uout

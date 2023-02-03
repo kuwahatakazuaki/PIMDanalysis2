@@ -57,8 +57,10 @@ call read_coor
 !  71 : Rotation          (movie)
 !  72 : Rotation          (cube file)
 !  73 : Rotation          (cube file from external)
-!  81 : radial distribution  (element1)
-!  82 : radial distribution  (element1 to element2)
+!  81 : radial distribution with Lbox    (element1)
+!  82 : radial distribution with Lbox    (element1 to element2)
+!  83 : radial distribution with Lattice (element1)
+!  84 : radial distribution with Lattice (element1 to element2)
 !  89 : OHO distribution
 !  91 : projection           (atom1-atom2  T  atom3-atom4)
 ! 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
