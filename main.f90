@@ -3,33 +3,7 @@
 ! program structure
 ! all of the data are stored in the 'data_beads', and this is analyzed according to the 'jobtype' option
 
-program analysis
-use input_parameter, &
-    only: Natom, Nbeads, TNstep, label, jobtype, r, data_step, data_beads, Lfirst
-!use calc_centoroid
-!use calc_histogram1D
-use calc_histogram2D
-use mod_other_quantities
-use mod_special_case
-use mod_periodic
-implicit none
-
-
-! +++ Reading the input file +++
-call read_input
-
-! r(:,i,j,k) = r(xyz,atom,beads,step)
-if (Lfirst .eqv. .True.) then
-  allocate(r(3,Natom,Nbeads,TNstep))
-  allocate(label(Natom))
-end if
-
-! +++ Reading coordinate +++
-call read_coor
-allocate(data_step(TNstep), source=0.0d0)
-allocate(data_beads(Nbeads,TNstep), source=0.0d0)
-
-! Choose "job type"
+! Choose "job type" as follows options:
 !   1 : Bond length                 (atom1-atom2)
 !   2 : Angle histgram              (atom1-atom2-atom3)
 !   3 : Dihedral angle              (atom1-atom2-atom3-atom4)
@@ -68,6 +42,32 @@ allocate(data_beads(Nbeads,TNstep), source=0.0d0)
 !!!  31 : 1D histogram for Centroid
 !!!  32 : 2D histogram for Centroid
 !!!  33 : Angle histgram for Centroid
+
+program analysis
+use input_parameter, &
+    only: Natom, Nbeads, TNstep, label, jobtype, r, data_step, data_beads, Lfirst
+!use calc_centoroid
+!use calc_histogram1D
+use calc_histogram2D
+use mod_other_quantities
+use mod_special_case
+use mod_periodic
+implicit none
+
+
+! +++ Reading the input file +++
+call read_input
+
+! r(:,i,j,k) = r(xyz,atom,beads,step)
+if (Lfirst .eqv. .True.) then
+  allocate(r(3,Natom,Nbeads,TNstep))
+  allocate(label(Natom))
+end if
+
+! +++ Reading coordinate +++
+call read_coor
+allocate(data_step(TNstep), source=0.0d0)
+allocate(data_beads(Nbeads,TNstep), source=0.0d0)
 
 select case(jobtype)
   case(1)

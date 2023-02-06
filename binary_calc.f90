@@ -3,7 +3,6 @@ subroutine binary_calc
       only: jobtype, Natom, Nbeads, TNstep, label, &
             atom1, atom2, bin_min, bin_max, &
             r, data_beads, data_step, save_beads, FNameBinary1, FNameBinary2
-!  use calc_histogram1D, only: calc_1Dhist
 !  use utility,          only: calc_deviation, calc_cumulative, reblock_step
   implicit none
   integer :: Uin, Uout, ios, i, j, k

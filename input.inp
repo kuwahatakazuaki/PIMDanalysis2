@@ -1,4 +1,4 @@
-# Choose "job type"
+# Choose "job type" as follows options
 #   1 : Bond length                 (atom1-atom2)
 #   2 : Angle histgram              (atom1-atom2-atom3)
 #   3 : Dihedral angle              (atom1-atom2-atom3-atom4)
@@ -10,9 +10,10 @@
 #  21 : 2D histogram_bond            (atom1-atom2 and atom3-atom4)
 #  22 : 2D histogram_angle           (atom1-atom2 and atom3-atom4-atom5)
 #  29 : 2D histogram from External   (Arbitrary number line)
-#  31 : binary mask           (coor.bin if (bin1) )
-#  32 : binary add            (bin1 + bin2)
-#  33 : binary diff           (bin1 - bin2)
+#  31 : binary mask average    (coor.xyz if (bin1) )
+#  32 : binary mask each beads (coor.xyz if (bin1) )
+#  32 : binary add             (bin1 + bin2)
+#  33 : binary diff            (bin1 - bin2)
 #  41 : Dummy atom (X) for bond      (atom1-atomX)
 #  42 : Dummy atom (X) for angle     (atom1-atom2-atomX)
 #  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)
