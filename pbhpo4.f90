@@ -55,7 +55,6 @@ contains
 
     call print_unit_step
 
-!    out_hist="dletaOH.out"
     call calc_1Dhist(out_hist="dletaOH.out")
   end subroutine deltaOH
 

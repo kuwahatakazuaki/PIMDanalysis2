@@ -126,10 +126,14 @@ $dummy_atom2
 # end dummy atom
 
 # periodic
-$Lbox   # Length of Box (A)
-8.0
-8.0
-8.0
+#$Lbox   # Length of Box (A)
+#8.0
+#8.0
+#8.0
+$Lattice
+ 7.5340385437         0.0000000000         0.0000000000
+-3.7670192719         6.5246687719         0.0000000000
+ 0.0000000000         0.0000000000         7.3154616356
 $Ielement1   #  For RDF
 1
 $Felement1

@@ -66,7 +66,6 @@ end subroutine calc_bond
 
 subroutine calc_bond_sub(atom1,atom2)
   use input_parameter, only: r, data_beads, data_step, TNstep, Nbeads
-  use utility, only: norm
   implicit none
   integer :: j, k
   integer, intent(in) :: atom1, atom2 ! data_beads(j=beads,k=step)

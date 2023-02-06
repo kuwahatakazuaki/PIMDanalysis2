@@ -21,7 +21,6 @@
 9998	pbhpo4.f90	/^    9998  format(i0,6F11.6)$/;"	l	subroutine:print_unit_step	file:
 9998	rotation.f90	/^  9998  format(I5,4F12.6)$/;"	l	subroutine:save_cube	file:
 9999	pbhpo4.f90	/^    9999  format(6F12.7)$/;"	l	subroutine:print_unit_step	file:
-9999	periodic.f90	/^    9999 format(32F10.5)$/;"	l	subroutine:rms_oho	file:
 9999	periodic.f90	/^  9999 format(F10.5)$/;"	l	subroutine:oho_distribution	file:
 9999	rotation.f90	/^    9999 format(a,4F11.7)$/;"	l	subroutine:save_movie	file:
 9999	rotation.f90	/^  9999  format(I5,4F12.6)$/;"	l	subroutine:save_cube	file:
@@ -31,7 +30,7 @@ AUtoK	parameters.f90	/^  real(8), parameter :: AUtoK /;"	v	module:input_paramete
 AngtoAU	parameters.f90	/^  real(8), parameter :: AngtoAU /;"	v	module:input_parameter
 Dhist	hist1D.f90	/^  real(8) :: Dhist,/;"	v	module:calc_histogram1D
 Dhist	hist2D.f90	/^  real(8) :: hist2D_min(2), hist2D_max(2), Dhist(/;"	v	module:calc_histogram2D
-Dhist	periodic.f90	/^  real(8) :: Dhist$/;"	v	module:mod_periodic
+Dhist	periodic.f90	/^  real(8) :: Dhist,/;"	v	module:mod_periodic
 DirResult	parameters.f90	/^  character(len=128), allocatable :: FileName(:), DirResult(/;"	v	module:input_parameter
 FNameBinary1	parameters.f90	/^  character(len=:), allocatable :: FNameBinary1,/;"	v	module:input_parameter
 FNameBinary2	parameters.f90	/^  character(len=:), allocatable :: FNameBinary1, FNameBinary2$/;"	v	module:input_parameter
@@ -87,7 +86,8 @@ beta	hist1D.f90	/^  real(8) :: Dhist, beta$/;"	v	module:calc_histogram1D
 bin_max	parameters.f90	/^  real(8) :: bin_min, bin_max$/;"	v	module:input_parameter
 bin_min	parameters.f90	/^  real(8) :: bin_min,/;"	v	module:input_parameter
 binary_calc	binary_calc.f90	/^subroutine binary_calc$/;"	s
-binary_mask	binary_calc.f90	/^  subroutine binary_mask$/;"	s	subroutine:binary_calc
+binary_mask_ave	binary_calc.f90	/^  subroutine binary_mask_ave$/;"	s	subroutine:binary_calc
+binary_mask_each	binary_calc.f90	/^  subroutine binary_mask_each$/;"	s	subroutine:binary_calc
 bond_dev2D	hist2D.f90	/^  real(8) :: hist2D_ave(2), bond_dev2D(/;"	v	module:calc_histogram2D
 calc_1Dhist	hist1D.f90	/^  subroutine calc_1Dhist(/;"	s	module:calc_histogram1D
 calc_1Dhist_sub	hist1D.f90	/^  subroutine calc_1Dhist_sub$/;"	s
@@ -127,11 +127,14 @@ err_line_exceed	other_quantities.f90	/^subroutine err_line_exceed(/;"	s	module:m
 external_1Dhist	hist1D.f90	/^  subroutine external_1Dhist$/;"	s
 external_2Dhits_arbitrary	hist2D.f90	/^  subroutine external_2Dhits_arbitrary$/;"	s	module:calc_histogram2D
 get_inv_mat	utility.f90	/^  subroutine get_inv_mat(/;"	s	module:utility
+get_min_edge	periodic.f90	/^  function get_min_edge(/;"	f	module:mod_periodic
 get_qua_theta	utility.f90	/^  function get_qua_theta(/;"	f	module:utility
 get_rot_mat	utility.f90	/^  function get_rot_mat(/;"	f	module:utility
+get_volume	utility.f90	/^  function get_volume(/;"	f	module:utility
 graph_step	parameters.f90	/^  integer :: graph_step /;"	v	module:input_parameter
 hfcc	other_quantities.f90	/^  real(8), allocatable :: charge(:,:,:), dipole(:,:,:), hfcc(/;"	v	module:mod_other_quantities
 hfcc_analysis	other_quantities.f90	/^  subroutine hfcc_analysis$/;"	s	module:mod_other_quantities
+hist	periodic.f90	/^  real(8), allocatable :: s(:,:,:,:), hist(/;"	v	module:mod_periodic
 hist2D_ave	hist2D.f90	/^  real(8) :: hist2D_ave(/;"	v	module:calc_histogram2D
 hist2D_beads	hist2D.f90	/^  real(8), allocatable :: hist2D_beads(/;"	v	module:calc_histogram2D
 hist2D_max	hist2D.f90	/^  real(8) :: hist2D_min(2), hist2D_max(/;"	v	module:calc_histogram2D
@@ -146,7 +149,7 @@ hist_max2	parameters.f90	/^  real(8) :: hist_min1=0.0d0, hist_max1=0.0d0, hist_m
 hist_min	hist2D.f90	/^  real(8) :: hist_min(/;"	v	module:calc_histogram2D
 hist_min1	parameters.f90	/^  real(8) :: hist_min1=/;"	v	module:input_parameter
 hist_min2	parameters.f90	/^  real(8) :: hist_min1=0.0d0, hist_max1=0.0d0, hist_min2=/;"	v	module:input_parameter
-histogram	hist1D.f90	/^  real(8), public, allocatable :: histogram(/;"	v	module:calc_histogram1D
+histogram	hist1D.f90	/^  real(8), allocatable :: histogram(/;"	v	module:calc_histogram1D
 hyd	parameters.f90	/^  integer, allocatable :: hyd(/;"	v	module:input_parameter
 i	cent.f90	/^  in/;"	v	module:calc_centoroid
 i	hist2D.f90	/^  in/;"	v	module:calc_histogram2D
@@ -166,6 +169,7 @@ l	hist1D.f90	/^  integer :: j, k, l,/;"	v	module:calc_histogram1D
 l	hist2D.f90	/^  integer :: i, j, k, l,/;"	v	module:calc_histogram2D
 label	parameters.f90	/^  character(len=2), allocatable :: label(/;"	v	module:input_parameter
 label_oho	parameters.f90	/^  integer, allocatable :: hyd(:), label_oho(/;"	v	module:input_parameter
+lat_inv	periodic.f90	/^  real(8) :: Dhist, lat_inv(/;"	v	module:mod_periodic
 lattice	parameters.f90	/^  real(8) :: lattice(/;"	v	module:input_parameter
 lowerchr	utility.f90	/^  function lowerchr(/;"	f	module:utility
 make_matA	rotation.f90	/^  function make_matA(/;"	f	subroutine:rotation
@@ -197,8 +201,8 @@ read_coor_binary	read_coor.f90	/^  subroutine read_coor_binary(/;"	s	subroutine:
 read_coor_format	read_coor.f90	/^  subroutine read_coor_format(/;"	s	subroutine:read_coor
 read_input	read_inp.f90	/^subroutine read_input$/;"	s
 reblock_step	utility.f90	/^  subroutine reblock_step(/;"	s	module:utility
-rms_oho	periodic.f90	/^  subroutine rms_oho$/;"	s	module:mod_periodic
 rotation	rotation.f90	/^subroutine rotation$/;"	s
+s	periodic.f90	/^  real(8), allocatable :: s(/;"	v	module:mod_periodic
 save_beads	parameters.f90	/^  logical :: save_beads /;"	v	module:input_parameter
 save_cube	rotation.f90	/^  subroutine save_cube$/;"	s	subroutine:rotation
 save_movie	rotation.f90	/^  subroutine save_movie$/;"	s	subroutine:rotation

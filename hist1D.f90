@@ -7,7 +7,7 @@ module calc_histogram1D
   private
   integer :: j, k, l, Uout
   real(8) :: Dhist, beta
-  real(8), public, allocatable :: histogram(:,:) ! 1:Xaxis, 2:Yaxis
+  real(8), allocatable :: histogram(:,:) ! 1:Xaxis, 2:Yaxis
   public :: calc_1Dhist
 
 contains
@@ -112,7 +112,6 @@ contains
     close(Uout)
     deallocate(histogram)
     print '(a,a,/)', "    Hist data is saved in ", '"'//trim(out_name)//'"'
-!    print '(a,a,/)', '    Hist data is saved in "hist1D.out"'
     print '(a,/)', " ***** END calculation 1D histgram *****"
   end subroutine calc_1Dhist
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

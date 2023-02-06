@@ -190,6 +190,10 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
           do j = 1, 3
             read(Uin,*) Lbox(j)
           end do
+        elseif (index(line,"$Lattice") == 1 ) then
+          do j = 1, 3
+            read(Uin,*) lattice(j,:)
+          end do
         elseif (index(line,"$Ielement1")        == 1 ) then; read(Uin,*) Ielement1
         elseif (index(line,"$Felement1")        == 1 ) then; read(Uin,*) Felement1
         elseif (index(line,"$Ielement2")        == 1 ) then; read(Uin,*) Ielement2

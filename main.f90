@@ -31,8 +31,10 @@
 !  64 : hfcc_analysis        (atom1)
 !  71 : Rotation          (movie)
 !  72 : Rotation          (cube file)
-!  81 : radial distribution with  (element1)
-!  82 : radial distribution with  (element1 to element2)
+!  81 : radial distribution with Lbox (element1)
+!  82 : radial distribution with Lbox (element1 to element2)
+!  83 : radial distribution with Lbox (element1)
+!  84 : radial distribution with Lbox (element1 to element2)
 !  89 : OHO distribution
 !  91 : projection           (atom1-atom2  T  atom3-atom4)
 ! 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
