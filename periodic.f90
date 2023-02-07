@@ -16,6 +16,11 @@ module mod_periodic
 contains
 
   subroutine periodic
+    integer :: i
+    print *, "***** START periodic condition *****"
+    do i = 1, 3
+      print '(a,3F13.6)', '    lattice = ', lattice(i,:)
+    end do
 
     select case(jobtype)
       case(81)
@@ -29,6 +34,7 @@ contains
       case default
         stop 'ERROR!!! wrong "Job type" option'
     end select
+    print *, "***** END periodic condition *****"
   end subroutine periodic
 
   function get_min_edge(vec) result(mini)
@@ -52,6 +58,7 @@ contains
     allocate(hist(Nhist,2))
     hist(:,:) = 0.0d0
 
+
     write(out_hist, '(a,I0,a,I0,a)') "rdf1_", Ielement1, "-", Felement1, ".out"
 
     minedge = get_min_edge(lattice(:,:))
@@ -59,6 +66,10 @@ contains
     Nelement = Felement1 - Ielement1 + 1
     rho = dble(Nelement*(Nelement-1)/2) / (get_volume(lattice(:,:)))
     hist(:,:) = 0.0d0
+
+    print '(a,I0,"-"I0)', '    Radial distribution of ',Ielement1,Felement1
+    print '(a,I0)',       '    Nelement =  ', Nelement
+    print '(a,F13.6)',    '    minedge  =  ', minedge
 
     do Ihist = 1, Nhist
       hist(Ihist,1) = Dhist * dble(Ihist)  ! not dble(Ihist-1)
@@ -133,9 +144,14 @@ contains
 
     minedge = get_min_edge(lattice(:,:))
     Dhist = minedge / dble(Nhist)
-    Nelement = (Felement1 - Ielement1 + 1) + (Felement2 - Ielement2 + 1)
+    Nelement = (Felement1 - Ielement1 + 1) * (Felement2 - Ielement2 + 1)
     rho = dble(Nelement) / get_volume(lattice(:,:))
     hist(:,:) = 0.0d0
+
+    print '(a,I0,"-",I0," to ",I0,"-",I0)', '    Radial distribution of ',Ielement1,Felement1,Ielement2,Felement2
+    print '(a,I10)',      '    Nelement =  ', Nelement
+    print '(a,F10.6)',    '    minedge  =  ', minedge
+
 
     do Ihist = 1, Nhist
       hist(Ihist,1) = Dhist * dble(Ihist)  ! not dble(Ihist-1)
@@ -283,65 +299,6 @@ contains
 
 end module mod_periodic
 
-!! ++++++++++++++++++++++
-!! +++++ Start RDF1 +++++
-!! ++++++++++++++++++++++
-!  subroutine RDF1
-!    integer :: Nelement
-!    integer :: i, j, k, l, Ihist
-!    real(8) :: r12(3), minedge, d12, rho
-!    character(len=:), allocatable :: out_hist
-!    allocate(hist(Nhist,2))
-!    hist(:,:) = 0.0d0
-!
-!    if ( trim(out_hist) == "0" ) then
-!      write(out_hist, '(a,I0,a,I0,a)') "rdf1_", Ielement1, "-", Felement1, ".out"
-!    end if
-!
-!    minedge = minval(Lbox(:))
-!    Nelement = Felement1 - Ielement1 + 1
-!    rho = dble(Nelement*(Nelement-1)/2) / (Lbox(1)*Lbox(2)*Lbox(3))
-!    Dhist = minedge / dble(Nhist)
-!    hist(:,:) = 0.0d0
-!
-!    do Ihist = 1, Nhist
-!      hist(Ihist,1) = Dhist * dble(Ihist)  ! not dble(Ihist-1)
-!    end do
-!
-!    do i = 1, TNstep
-!      do j = 1, Nbeads
-!        do k = Ielement1, Felement1
-!          do l = k+1, Felement1
-!            r12(:) = r(:,k,j,i) - r(:,l,j,i)
-!            r12(:) = r12(:) - Lbox(:) * nint(r12(:)/Lbox(:))
-!            d12 = dsqrt( sum( r12(:)*r12(:) ) )
-!            do Ihist = 1, Nhist
-!              if ( d12 <= hist(Ihist,1) ) then
-!                hist(Ihist,2) = hist(Ihist,2) + 1.0d0
-!                goto 100
-!              end if
-!            end do
-!            100 continue
-!          end do
-!        end do
-!      end do
-!    end do
-!    hist(:,1) = hist(:,1) - 0.5d0 * Dhist
-!    hist(:,2) = hist(:,2) / (4*pi*rho*Dhist*TNstep*Nbeads)
-!    do Ihist = 1, Nhist
-!      hist(Ihist,2) = hist(Ihist,2) / (hist(Ihist,1)*hist(Ihist,1))
-!    end do
-!
-!    open(Uout, file=trim(out_hist), status='replace')
-!      do Ihist = 1, Nhist
-!        write(Uout,'(F13.6, E13.4)') hist(Ihist,:)
-!      end do
-!    close(Uout)
-!
-!  end subroutine RDF1
-!! ++++++++++++++++++++
-!! +++++ End RDF1 +++++
-!! ++++++++++++++++++++
 
 !  subroutine rms_oho
 !    integer :: i, j, k, xyz

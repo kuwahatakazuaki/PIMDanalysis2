@@ -55,7 +55,6 @@ contains
     print '("     FileName = ",a)',  trim(FileName(1))
     print '("     TNstep  = ",I0)', TNstep
     print '("     Nbeads  = ",I0)', Nbeads
-    print *, ""
 
 
     return

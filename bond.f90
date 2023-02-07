@@ -52,7 +52,7 @@ subroutine calc_bond
     end do
   close(Uout)
 
-  print *, "*****START calculating bond length*****"
+  print *, "***** START calculating bond length *****"
   print '("    Maximum bond =", F13.6)', data_max
   print '("    Minimum bond =", F13.6)', data_min
   print '("    Average bond =", F13.6)', data_ave
