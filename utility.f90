@@ -1,7 +1,10 @@
 module utility
   use input_parameter,  only: data_beads, data_step, TNstep, graph_step
   implicit none
+  private
   real(8) :: pi = atan(1.0d0)*4.0d0
+  public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, &
+            rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product
 contains
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

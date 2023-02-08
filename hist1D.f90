@@ -36,7 +36,7 @@ contains
     end if
     allocate(histogram(Nhist,2))
 
-    print '(" ***** START calculation 1D histgram ******")'
+    print '("  *** START calculation 1D histgram ****")'
 
     data_max = maxval(data_beads)
     data_min = minval(data_beads)
@@ -111,8 +111,8 @@ contains
 
     close(Uout)
     deallocate(histogram)
-    print '(a,a,/)', "    Hist data is saved in ", '"'//trim(out_name)//'"'
-    print '(a,/)', " ***** END calculation 1D histgram *****"
+    print '(a,a)', "    Hist data is saved in ", '"'//trim(out_name)//'"'
+    print '(a,/)', "  *** END calculation 1D histgram ***"
   end subroutine calc_1Dhist
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

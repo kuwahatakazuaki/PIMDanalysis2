@@ -12,6 +12,7 @@
 !   9 : 1D histgram from External
 !  11 : Multi bond for all
 !  12 : Multi bond sort
+!  13 : Multi bond sum
 !  21 : 2D histogram_bond            (atom1-atom2 and atom3-atom4)
 !  22 : 2D histogram_angle           (atom1-atom2 and atom3-atom4-atom5)
 !  29 : 2D histogram from External   (Arbitrary number line)
@@ -80,8 +81,8 @@ select case(jobtype)
     call calc_dihedral
   case(4:5)
     call calc_bond
-!  case(11:12)
-!    call multi_bond
+  case(11:14)
+    call multi_bond
 !  case(21:22)
 !    call calc_2Dhist
   case(29)

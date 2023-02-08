@@ -29,10 +29,10 @@ pbhpo4.o           \
 periodic.o         \
 dummy_atom.o       \
 binary_calc.o       \
+multi_bond.o       \
 main.o             \
 #beads_expansion.o  \
 #cent.o             \
-#multi_bond.o       \
 #projection.o         \
 
 module =              \

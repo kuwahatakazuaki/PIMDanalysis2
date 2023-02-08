@@ -9,7 +9,7 @@ module input_parameter
   integer, allocatable :: Nstep(:), Ncut(:) !, atom1(:), atom2(:), atom3(:), atom4(:), atom5(:)
   real(8) :: hist_min1=0.0d0, hist_max1=0.0d0, hist_min2=0.0d0, hist_max2=0.0d0, hist_margin !, hist_max
   character(len=128), allocatable :: FileName(:), DirResult(:)
-  integer, save, allocatable :: atom_multi(:,:)
+  integer, allocatable :: Imulti(:,:)
   logical :: Lfirst  = .False.
   logical :: Lfolding = .False.
   logical :: save_beads = .False.

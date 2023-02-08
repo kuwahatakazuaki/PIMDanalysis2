@@ -127,10 +127,10 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
           print *, 'ERROR!!: There is no "# end "'
           stop
         elseif (index(line,"$Nbond") == 1 ) then; read(Uin,*) Nbond
-          allocate(atom_multi(2,Nbond))
+          allocate(Imulti(2,Nbond))
           read(Uin,'()')
           do i = 1, Nbond
-            read(Uin,*) atom_multi(:,i)
+            read(Uin,*) Imulti(:,i)
           end do
         else if (index(line,"# end"   ) == 1) then; exit
         end if
