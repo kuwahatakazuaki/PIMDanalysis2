@@ -55,7 +55,7 @@ $name_binary2
 bin2.bin
 # end job type
 
-# input file 1
+# input file
 $DirResult
 ../Data1
 #$FileName

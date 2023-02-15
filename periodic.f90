@@ -3,7 +3,7 @@ module mod_periodic
       only: jobtype, Natom, Nbeads, TNstep, label, save_beads, &
             hist_max1, hist_max2, hist_min1, hist_min2, Nhist, lattice, &
             Ielement1, Ielement2, Felement1, Felement2, Noho, Lbox, label_oho, &
-            r
+            r, data_beads, data_step, graph_step
   use calc_histogram1D, only: calc_1Dhist
   use utility
   implicit none

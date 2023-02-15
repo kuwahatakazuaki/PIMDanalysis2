@@ -211,6 +211,7 @@ mod_special_case	special_case.f90	/^module mod_special_case$/;"	m
 multi_bond	multi_bond.f90	/^subroutine multi_bond$/;"	s
 multi_bond_all	multi_bond.f90	/^subroutine multi_bond_all$/;"	s	subroutine:multi_bond
 multi_bond_sort	multi_bond.f90	/^subroutine multi_bond_sort$/;"	s	subroutine:multi_bond
+multi_bond_sum	multi_bond.f90	/^subroutine multi_bond_sum$/;"	s	subroutine:multi_bond
 norm	utility.f90	/^  real(8) function norm(/;"	f	module:utility
 oho_distribution	periodic.f90	/^  subroutine oho_distribution$/;"	s	module:mod_periodic
 oo_bond	pbhpo4.f90	/^  subroutine oo_bond$/;"	s	subroutine:pbhpo4

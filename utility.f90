@@ -3,8 +3,9 @@ module utility
   implicit none
   private
   real(8) :: pi = atan(1.0d0)*4.0d0
-  public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, &
-            rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product
+  public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
+            rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product, &
+            atom2num
 contains
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -242,6 +243,50 @@ contains
       end if
     end do
   end function lowerchr
+
+  function atom2num(cha) result(num)
+    character(*) :: cha
+    integer :: num
+    cha = lowerchr(cha)
+    num = 0
+    if     ( trim(cha) == 'h' ) then
+      num = 1
+    elseif ( trim(cha) == 'li' ) then
+      num = 3
+    elseif ( trim(cha) == 'b' ) then
+      num = 5
+    elseif ( trim(cha) == 'c' ) then
+      num = 6
+    elseif ( trim(cha) == 'n' ) then
+      num = 7
+    elseif ( trim(cha) == 'o' ) then
+      num = 8
+    elseif ( trim(cha) == 'f' ) then
+      num = 9
+    else
+      stop 'ERROR!! "atom2num" cannot chage '
+    end if
+  end function
+
+  character(len=2) function itoc(i)
+    integer :: i
+    select case(i)
+      case(1)
+        itoc = 'H'
+      case(3)
+        itoc = 'Li'
+      case(5)
+        itoc = 'B'
+      case(6)
+        itoc = 'C'
+      case(7)
+        itoc = 'N'
+      case(8)
+        itoc = 'O'
+      case(9)
+        itoc = 'F'
+    end select
+  end function itoc
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ Start outer_product ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

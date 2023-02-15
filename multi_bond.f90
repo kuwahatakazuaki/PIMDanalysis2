@@ -8,7 +8,13 @@ subroutine multi_bond
   integer :: i, j, k, Uout
   character(len=128) out_bond, name_hist
 
-  print '(a,/)', " ***** START Multibond calculation ******"
+  print '(a,/)',  " ***** START Multibond calculation ******"
+  print '(a,I4)', '     Nbond     = ', Nbond
+  print '(a)',    '     Imulti is'
+  do i = 1, Nbond
+    print '(a,2I4)', '     ', Imulti(:,i)
+  end do
+
   select case(jobtype)
     case(11)
       call multi_bond_all
@@ -55,26 +61,22 @@ subroutine multi_bond_sum
     data_step_multi(:,i) = data_step(:)
   end do
 
-  !data_beads(:,:) = 0.0d0
-  !do i = 1, Nbond
-  !  data_beads(:,:) = data_beads(:,:) + data_multi(:,:,i)
-  !end do
-  !data_beads(:,:) = data_beads(:,:) / dble(Nbond)
-  data_beads(:,:) = sum(data_multi(:,:,:),dim=3) / dble(Nbond)
+  !data_beads(:,:) = sum(data_multi(:,:,:),dim=3) / dble(Nbond)
 
   OldStep = TNstep
   NewStep = TNstep * Nbond
   deallocate(data_beads)
   allocate(data_beads(Nbeads,NewStep))
   do i = 1, Nbond
-    data_beads(:,1+TNstep*(i-1):1+TNstep*i) = data_multi(:,:,i)
+    data_beads(:,1+TNstep*(i-1):TNstep*i) = data_multi(:,:,i)
+    !data_beads(:,1+TNstep*(i-1):1+TNstep*i) = data_multi(:,:,i)
   end do
 
   data_max = maxval(data_beads)
   data_min = minval(data_beads)
   data_ave = sum(data_beads)/size(data_beads)
   call calc_deviation(data_dev)
-  call calc_1Dhist(out_hist=trim(name_hist)) ! you need "data_beads"
+  call calc_1Dhist(out_hist=trim(name_hist))
 
   open(newunit=Uout, file=out_bond, status='replace')
     write(Uout,*) "# ", trim(out_bond)
@@ -89,18 +91,6 @@ subroutine multi_bond_sum
     end do
   close(Uout)
 
-  !do i = 1, Nbond
-  !  data_beads(:,:) = 0.0d0
-  !  data_step(:) = 0.0d0
-  !  Iatom1 = Imulti(1,i)
-  !  Iatom2 = Imulti(2,i)
-
-  !  write(name_hist, '("hist_",a,I0,"-",a,I0".out")') &
-  !    trim(label(Iatom1)),Iatom1,trim(label(Iatom2)),Iatom2
-  !  write(out_bond, '("bond_",a,I0,"-",a,I0".out")') &
-  !    trim(label(Iatom1)),Iatom1,trim(label(Iatom2)),Iatom2
-  !  call calc_bond_sub(Iatom1,Iatom2)
-  !end do
 end subroutine multi_bond_sum
 ! +++ End jobtype == 13 +++
 
@@ -117,10 +107,9 @@ subroutine multi_bond_all
 
     write(name_hist, '("hist_",a,I0,"-",a,I0".out")') &
       trim(label(Iatom1)),Iatom1,trim(label(Iatom2)),Iatom2
-    write(out_bond, '("bond_",a,I0,"-",a,I0".out")') &
+    write(out_bond, '("step_",a,I0,"-",a,I0".out")') &
       trim(label(Iatom1)),Iatom1,trim(label(Iatom2)),Iatom2
 
-    !out_bond='multi.out'
     call calc_bond_sub(Iatom1,Iatom2)
 
     data_max = maxval(data_beads)

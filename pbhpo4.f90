@@ -1,10 +1,9 @@
 
 subroutine pbhpo4
   use input_parameter, &
-        only: jobtype, Natom, Nbeads, TNstep, Nunit, &
+        only: jobtype, Natom, Nbeads, TNstep, Nunit, graph_step, &
               save_beads, FNameBinary1, lattice, &
-              r
-!  use calc_parameter
+              r, data_beads, data_step
   use calc_histogram1D
   use utility
   implicit none
@@ -138,6 +137,5 @@ contains
   end subroutine print_unit_step
 
 end subroutine pbhpo4
-
 
 

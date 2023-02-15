@@ -73,8 +73,8 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
         elseif (index(line,"$FileName")  == 1) then; read(Uin,'(a)') FileName(Ifile)
         elseif (index(line,"$Natom" )    == 1) then; read(Uin,*) Natom
         elseif (index(line,"$Nbeads")    == 1) then; read(Uin,*) Nbeads
-        elseif (index(line,"$Ncut")      == 1) then; read(Uin,*) Ncut
-        elseif (index(line,"$Nstep" )    == 1) then; read(Uin,*) Nstep
+        elseif (index(line,"$Ncut")      == 1) then; read(Uin,*) Ncut(Ifile)
+        elseif (index(line,"$Nstep" )    == 1) then; read(Uin,*) Nstep(Ifile)
         elseif (index(line,"$atom1" )    == 1) then; read(Uin,*) atom1
         elseif (index(line,"$atom2" )    == 1) then; read(Uin,*) atom2
         elseif (index(line,"$atom3" )    == 1) then; read(Uin,*) atom3
@@ -83,6 +83,8 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
         elseif (index(line,"# end file") == 1) then; exit
         end if
       end do
+      !print *, 'Ifile is ', Ifile
+      !print *, line
 ! --- End input file ---
 
 ! --- Start histogram ---

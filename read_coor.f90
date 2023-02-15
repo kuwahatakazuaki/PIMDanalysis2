@@ -1,4 +1,4 @@
-subroutine read_coor !(Ifile,step)
+subroutine read_coor
   use input_parameter, &
       only : Natom, Nbeads, Ncut, Nstep, Nfile, DirResult, FileName, label, Lfirst, &
              r, TNstep, data_step, data_beads
@@ -21,6 +21,7 @@ contains
 
   subroutine read_coor_binary()
     integer :: Uin, ios
+   ! print '(a)', "  *** Binary reading ***"
 
     if ( trim(FileName(1)) == "0" ) then
       FileName(1)=trim(DirResult(1))//'/coor.bin'
@@ -63,6 +64,7 @@ contains
 
   subroutine read_coor_format()
     integer :: Uin, ios, Istep, Ifile
+    !print '(a)', "  *** Format reading ***"
 
     Istep = 0
     do Ifile = 1, Nfile
@@ -131,6 +133,7 @@ contains
       ! --- Reading formated file ---
     end do
 
+    print '("   Formatted file reading ")'
     call compression
 
     return
@@ -141,7 +144,7 @@ contains
     character(len=:),allocatable :: ftemp
     integer :: Uout
 
-    print '(" ***** START compression *****")'
+    print '("  *** START compression ***")'
     ftemp=trim(DirResult(1))//'/coor.bin'
     open(newunit=Uout,file=ftemp, form='unformatted', access='stream', status='replace')
       write(Uout) Natom, Nbeads, Ncut, Nstep, TNstep
@@ -157,7 +160,7 @@ contains
 
     print '(a)', '    Binary data is saved in "coor.bin"'
     print '(a)', '    in "'//trim(DirResult(1))//'" directory '
-    print '(" ***** END compression *****")'
+    print '("  *** END compression ***")'
     print *, ""
   end subroutine compression
 

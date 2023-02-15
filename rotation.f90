@@ -4,8 +4,7 @@ subroutine rotation
   use input_parameter,  only: label, TNstep, save_beads, Nbeads, Natom, &
       FNameBinary1, graph_step, weight, r_ref, jobtype, label, Ndiv, &
       muon => atom_cube, Nhyd, hyd, r
-!  use calc_parameter,   only: r
-  use utility,          only: calc_deviation, calc_cumulative, get_rot_mat, lowerchr
+  use utility,          only: calc_deviation, calc_cumulative, get_rot_mat, atom2num
   implicit none
   real(8), parameter :: pi = 4.0d0*atan(1.0d0)
   integer, parameter :: N = 4
@@ -20,7 +19,7 @@ subroutine rotation
   allocate(rnew(3,Natom,Nbeads,TNstep))
   allocate(eigenArray(TNstep))
 
-  print '(a)',  " *****START Removing rotation freedom*****"
+  print '(a)',  " ***** START Removing rotation freedom *****"
   do j = 1, Nhyd
     weight(hyd(j)) = 0.0d0
   end do
@@ -80,7 +79,7 @@ subroutine rotation
     case(72)
       call save_cube
   end select
-  print '(a)',  " *****END Removing rotation freedom*****"
+  print '(a)',  " ***** END Removing rotation freedom *****"
 
   9999 format(E12.5)
 contains
@@ -192,49 +191,6 @@ contains
     mat(4,:) = [y(3),  -x(2),  x(1),  0.d0]
   end function make_matA
 
-  function atom2num(cha) result(num)
-    character(*) :: cha
-    integer :: num
-    cha = lowerchr(cha)
-    num = 0
-    if     ( trim(cha) == 'h' ) then
-      num = 1
-    elseif ( trim(cha) == 'li' ) then
-      num = 3
-    elseif ( trim(cha) == 'b' ) then
-      num = 5
-    elseif ( trim(cha) == 'c' ) then
-      num = 6
-    elseif ( trim(cha) == 'n' ) then
-      num = 7
-    elseif ( trim(cha) == 'o' ) then
-      num = 8
-    elseif ( trim(cha) == 'f' ) then
-      num = 9
-    else
-      stop 'ERROR!! "atom2num" cannot chage '
-    end if
-  end function
-
-  character(len=2) function itoc(i)
-    integer :: i
-    select case(i)
-      case(1)
-        itoc = 'H'
-      case(3)
-        itoc = 'Li'
-      case(5)
-        itoc = 'B'
-      case(6)
-        itoc = 'C'
-      case(7)
-        itoc = 'N'
-      case(8)
-        itoc = 'O'
-      case(9)
-        itoc = 'F'
-    end select
-  end function itoc
 
 end subroutine rotation
 
