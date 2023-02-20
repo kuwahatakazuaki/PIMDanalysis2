@@ -14,9 +14,9 @@ block
   integer :: leng
   if ( command_argument_count() == 0) then
     print '(a)',   "   There is no argument"
-    print '(a,/)', '   Reading from "input.dat"'
+    print '(a,/)', '   Reading from "input.inp"'
     allocate(character(9) :: input_file)
-    write(input_file,'(a)') "input.dat"
+    write(input_file,'(a)') "input.inp"
   else
     call get_command_argument(1, length=leng)
       allocate(character(leng) :: input_file)
@@ -45,6 +45,13 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
         elseif (index(line,"$Lfirst" )        == 1) then; read(Uin,*,err=901) Lfirst
         elseif (index(line, "$Nfile")         == 1) then; read(Uin,*) Nfile
         elseif (index(line, "$Job type")      == 1) then; read(Uin,*) jobtype
+        elseif (index(line,"$Natom" )    == 1) then; read(Uin,*) Natom
+        elseif (index(line,"$Nbeads")    == 1) then; read(Uin,*) Nbeads
+        elseif (index(line,"$atom1" )    == 1) then; read(Uin,*) atom1
+        elseif (index(line,"$atom2" )    == 1) then; read(Uin,*) atom2
+        elseif (index(line,"$atom3" )    == 1) then; read(Uin,*) atom3
+        elseif (index(line,"$atom4" )    == 1) then; read(Uin,*) atom4
+        elseif (index(line,"$atom5" )    == 1) then; read(Uin,*) atom5
         elseif (index(line, "$graph_step")    == 1) then; read(Uin,*) graph_step
         elseif (index(line, "$save_beads")    == 1) then; read(Uin,*) save_beads
         elseif (index(line, "$name_binary1")  == 1) then; read(Uin,*) FNtemp1
@@ -71,20 +78,20 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
           stop
         elseif (index(line,"$DirResult") == 1) then; read(Uin,'(a)') DirResult(Ifile)
         elseif (index(line,"$FileName")  == 1) then; read(Uin,'(a)') FileName(Ifile)
-        elseif (index(line,"$Natom" )    == 1) then; read(Uin,*) Natom
-        elseif (index(line,"$Nbeads")    == 1) then; read(Uin,*) Nbeads
         elseif (index(line,"$Ncut")      == 1) then; read(Uin,*) Ncut(Ifile)
         elseif (index(line,"$Nstep" )    == 1) then; read(Uin,*) Nstep(Ifile)
-        elseif (index(line,"$atom1" )    == 1) then; read(Uin,*) atom1
-        elseif (index(line,"$atom2" )    == 1) then; read(Uin,*) atom2
-        elseif (index(line,"$atom3" )    == 1) then; read(Uin,*) atom3
-        elseif (index(line,"$atom4" )    == 1) then; read(Uin,*) atom4
-        elseif (index(line,"$atom5" )    == 1) then; read(Uin,*) atom5
-        elseif (index(line,"# end file") == 1) then; exit
+! I will move these parameters to 'jobtype'
+          elseif (index(line,"$Natom" )    == 1) then; read(Uin,*) Natom
+          elseif (index(line,"$Nbeads")    == 1) then; read(Uin,*) Nbeads
+          elseif (index(line,"$atom1" )    == 1) then; read(Uin,*) atom1
+          elseif (index(line,"$atom2" )    == 1) then; read(Uin,*) atom2
+          elseif (index(line,"$atom3" )    == 1) then; read(Uin,*) atom3
+          elseif (index(line,"$atom4" )    == 1) then; read(Uin,*) atom4
+          elseif (index(line,"$atom5" )    == 1) then; read(Uin,*) atom5
+! I will move these parameters to 'jobtype'
+          elseif (index(line,"# end file") == 1) then; exit
         end if
       end do
-      !print *, 'Ifile is ', Ifile
-      !print *, line
 ! --- End input file ---
 
 ! --- Start histogram ---
@@ -258,6 +265,11 @@ close(Uin)
   print '("   Natom   = ",I0)', Natom
   print '("   Nbeads  = ",I0)', Nbeads
   print '("   LFirst  = ",L)',  Lfirst
+  print '("   atom",I0,"  = ", I0)', 1, atom1
+  print '("   atom",I0,"  = ", I0)', 2, atom2
+  print '("   atom",I0,"  = ", I0)', 3, atom3
+  print '("   atom",I0,"  = ", I0)', 4, atom4
+  print '("   atom",I0,"  = ", I0)', 5, atom5
 
   do Ifile = 1, Nfile
     print '(a,I0,a)',    " *** Input from the file # ",Ifile," ***"
@@ -266,11 +278,6 @@ close(Uin)
     print '(a,I0)', "   Ncut     = ", Ncut(Ifile)
     print '(a,I0)', "   Nstep    = ", Nstep(Ifile)
   end do
-  print '("   atom",I0,"  = ", I0)', 1, atom1
-  print '("   atom",I0,"  = ", I0)', 2, atom2
-  print '("   atom",I0,"  = ", I0)', 3, atom3
-  print '("   atom",I0,"  = ", I0)', 4, atom4
-  print '("   atom",I0,"  = ", I0)', 5, atom5
   print *, ""
 
   TNstep = 0

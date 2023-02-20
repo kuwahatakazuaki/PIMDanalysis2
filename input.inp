@@ -45,29 +45,10 @@ $Nfile
 1
 $Job type
 91
-$graph_step
-10
-$save_beads
-T
-$name_binary1
-bin1.bin
-$name_binary2
-bin2.bin
-# end job type
-
-# input file
-$DirResult
-../Data1
-#$FileName
-# coor.bin
 $Natom
 10
 $Nbeads
 16
-$Ncut
-5000
-$Nstep
-105000
 $atom1
 1
 $atom2
@@ -78,6 +59,25 @@ $atom4
 4
 $atom5
 2
+$graph_step
+10
+$save_beads
+T
+$name_binary1
+bin1.bin
+$name_binary2
+bin2.bin
+# end job type
+
+# input file 1
+$DirResult
+../Data1
+#$FileName
+# coor.bin
+$Ncut
+5000
+$Nstep
+105000
 # end file 1
 
 

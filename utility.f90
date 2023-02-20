@@ -196,12 +196,12 @@ contains
   end function rand3
 
   subroutine random_seed_ini
-    integer :: i, seedsize
+    integer :: seedsize
     integer, allocatable :: seed(:)
 
     call random_seed(size=seedsize)
     allocate(seed(seedsize))
-    seed(:) = 123
+    seed(:) = 123456
     call random_seed(put=seed)
   end subroutine random_seed_ini
 

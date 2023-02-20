@@ -8,7 +8,7 @@ subroutine multi_bond
   integer :: i, j, k, Uout
   character(len=128) out_bond, name_hist
 
-  print '(a,/)',  " ***** START Multibond calculation ******"
+  print '(a)',  " ***** START Multibond calculation ******"
   print '(a,I4)', '     Nbond     = ', Nbond
   print '(a)',    '     Imulti is'
   do i = 1, Nbond
