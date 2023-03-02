@@ -100,14 +100,6 @@ contains
               hist(Ihist,2) = hist(Ihist,2) + 1.0d0
             end if
 
-            !do Ihist = 1, Nhist
-            !  if ( d12 <= hist(Ihist,1) ) then
-            !    hist(Ihist,2) = hist(Ihist,2) + 1.0d0
-            !    goto 100
-            !  end if
-            !end do
-            !100 continue
-
           end do
         end do
       end do
@@ -119,6 +111,9 @@ contains
     end do
 
     open(newunit=Uout, file=trim(out_hist), status='replace')
+      write(Uout,'(" # Maximum hist =", F13.6)') maxval(hist(:,2))
+      write(Uout,'(" # Max loc step =", I8)')    maxloc(hist(:,2))
+      write(Uout,'(" # Max location =", F13.6)') hist(maxloc(hist(:,2)),1)
       do Ihist = 1, Nhist
         write(Uout,'(F13.6, E13.4)') hist(Ihist,:)
       end do
@@ -182,14 +177,6 @@ contains
               hist(Ihist,2) = hist(Ihist,2) + 1.0d0
             end if
 
-            !do Ihist = 1, Nhist
-            !  if ( d12 <= hist(Ihist,1) ) then
-            !    hist(Ihist,2) = hist(Ihist,2) + 1.0d0
-            !    goto 100
-            !  end if
-            !end do
-            !100 continue
-
           end do
         end do
       end do
@@ -201,6 +188,9 @@ contains
     end do
 
     open(newunit=Uout, file=trim(out_hist), status='replace')
+      write(Uout,'(" # Maximum hist =", F13.6)') maxval(hist(:,2))
+      write(Uout,'(" # Max loc step =", I8)')    maxloc(hist(:,2))
+      write(Uout,'(" # Max location =", F13.6)') hist(maxloc(hist(:,2)),1)
       do Ihist = 1, Nhist
         write(Uout,'(F13.6, E13.4)') hist(Ihist,:)
       end do

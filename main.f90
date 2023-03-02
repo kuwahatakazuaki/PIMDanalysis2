@@ -18,8 +18,9 @@
 !  29 : 2D histogram from External   (Arbitrary number line)
 !  31 : binary mask average    (coor.xyz if (bin1) )
 !  32 : binary mask each beads (coor.xyz if (bin1) )
-!  33 : binary add             (bin1 + bin2)
-!  34 : binary diff            (bin1 - bin2)
+!  33 : binary append
+!  34 : binary add             (bin1 + bin2)
+!  35 : binary diff            (bin1 - bin2)
 !  41 : Dummy atom (X) for bond      (atom1-atomX)
 !  42 : Dummy atom (X) for angle     (atom1-atom2-atomX)
 !  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)

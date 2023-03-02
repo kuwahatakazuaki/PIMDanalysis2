@@ -10,26 +10,55 @@ subroutine binary_calc
 
   allocate(binary1(Nbeads,TNstep),binary2(Nbeads,TNstep))
 
-  open(newunit=Uin, file=FNameBinary1, form='unformatted', access='stream', status='old', iostat=ios)
-    if ( ios /= 0 ) then
-      print '(a,a)', 'ERROR!!: There is no input file of ', FNameBinary1; stop
-    end if
-
-    do k = 1, TNstep
-      do j = 1, Nbeads
-        read(Uin) binary1(j,k)
-      end do
-    end do
-  close(Uin)
 
   select case(jobtype)
     case(31)
+      call read_binary1
       call binary_mask_ave
     case(32)
+      call read_binary1
       call binary_mask_each
+    case(33)
+      call read_binary2
+      call binary_append
   end select
 
 contains
+
+  subroutine binary_append
+    deallocate(data_beads)
+    allocate(data_beads(Nbeads,2*TNstep))
+    data_beads(:,1:TNstep) = binary1(:,1:TNstep)
+  end subroutine binary_append
+
+  subroutine read_binary1
+    open(newunit=Uin, file=FNameBinary1, form='unformatted', access='stream', status='old', iostat=ios)
+      if ( ios /= 0 ) then
+        print '(a,a)', 'ERROR!!: There is no input file of ', FNameBinary1; stop
+      end if
+
+      do k = 1, TNstep
+        do j = 1, Nbeads
+          read(Uin) binary1(j,k)
+        end do
+      end do
+    close(Uin)
+  end subroutine read_binary1
+
+  subroutine read_binary2
+    call read_binary1
+    open(newunit=Uin, file=FNameBinary2, form='unformatted', access='stream', status='old', iostat=ios)
+      if ( ios /= 0 ) then
+        print '(a,a)', 'ERROR!!: There is no input file of ', FNameBinary2; stop
+      end if
+
+      do k = 1, TNstep
+        do j = 1, Nbeads
+          read(Uin) binary1(j,k)
+        end do
+      end do
+    close(Uin)
+  end subroutine read_binary2
 
   subroutine binary_mask_each
     real(8), allocatable :: rnew(:,:,:)
