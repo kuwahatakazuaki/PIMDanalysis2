@@ -103,7 +103,7 @@ Usave	hist2D.f90	/^  integer :: Usave$/;"	v	module:calc_histogram2D
 analysis	main.f90	/^program analysis$/;"	p
 atom1	parameters.f90	/^  integer :: atom1,/;"	v	module:input_parameter
 atom2	parameters.f90	/^  integer :: atom1, atom2,/;"	v	module:input_parameter
-atom2num	rotation.f90	/^  function atom2num(/;"	f	subroutine:rotation
+atom2num	utility.f90	/^  function atom2num(/;"	f	module:utility
 atom3	parameters.f90	/^  integer :: atom1, atom2, atom3,/;"	v	module:input_parameter
 atom4	parameters.f90	/^  integer :: atom1, atom2, atom3, atom4,/;"	v	module:input_parameter
 atom5	parameters.f90	/^  integer :: atom1, atom2, atom3, atom4, atom5$/;"	v	module:input_parameter
@@ -117,6 +117,7 @@ beads_projection	beads_expansion.f90	/^  subroutine beads_projection$/;"	s	subro
 beta	hist1D.f90	/^  real(8) :: Dhist, beta$/;"	v	module:calc_histogram1D
 bin_max	parameters.f90	/^  real(8) :: bin_min, bin_max$/;"	v	module:input_parameter
 bin_min	parameters.f90	/^  real(8) :: bin_min,/;"	v	module:input_parameter
+binary_append	binary_calc.f90	/^  subroutine binary_append$/;"	s	subroutine:binary_calc
 binary_calc	binary_calc.f90	/^subroutine binary_calc$/;"	s
 binary_mask_ave	binary_calc.f90	/^  subroutine binary_mask_ave$/;"	s	subroutine:binary_calc
 binary_mask_each	binary_calc.f90	/^  subroutine binary_mask_each$/;"	s	subroutine:binary_calc
@@ -188,7 +189,7 @@ i	hist2D.f90	/^  integer :: i, j, k, l, Ifile, step! i=atom, j=beads, k=step, l=
 ierr	other_quantities.f90	/^  integer :: Uinp, Uout, ierr$/;"	v	module:mod_other_quantities
 ierr	special_case.f90	/^  integer :: Uinp, Uout, ierr$/;"	v	module:mod_special_case
 input_parameter	parameters.f90	/^module input_parameter$/;"	m
-itoc	rotation.f90	/^  character(len=2) function itoc(/;"	f	subroutine:rotation
+itoc	utility.f90	/^  character(len=2) function itoc(/;"	f	module:utility
 j	cent.f90	/^  integer, private :: i, j, k, l, Ifile, step ! i=atom, j=/;"	v	module:calc_centoroid
 j	hist1D.f90	/^  integer :: j,/;"	v	module:calc_histogram1D
 j	hist2D.f90	/^  integer :: i, j, k, l, Ifile, step! i=atom, j=/;"	v	module:calc_histogram2D
@@ -229,7 +230,9 @@ r_cent	cent.f90	/^  real(8), public, allocatable :: r_cent(:,:,:) ! r_cent(/;"	v
 r_ref	parameters.f90	/^  real(8), allocatable :: r_ref(:,:), weight(:)  ! r_ref(/;"	v	module:input_parameter
 rand3	utility.f90	/^  function rand3(/;"	f	module:utility
 random_seed_ini	utility.f90	/^  subroutine random_seed_ini$/;"	s	module:utility
-read_coor	read_coor.f90	/^subroutine read_coor /;"	s
+read_binary1	binary_calc.f90	/^  subroutine read_binary1$/;"	s	subroutine:binary_calc
+read_binary2	binary_calc.f90	/^  subroutine read_binary2$/;"	s	subroutine:binary_calc
+read_coor	read_coor.f90	/^subroutine read_coor$/;"	s
 read_coor_binary	read_coor.f90	/^  subroutine read_coor_binary(/;"	s	subroutine:read_coor
 read_coor_format	read_coor.f90	/^  subroutine read_coor_format(/;"	s	subroutine:read_coor
 read_input	read_inp.f90	/^subroutine read_input$/;"	s

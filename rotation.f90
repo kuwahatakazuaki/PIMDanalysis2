@@ -131,6 +131,7 @@ contains
           grid(cx,cy,cz) = grid(cx,cy,cz) + 1.0d0
       end do
     end do
+
     grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
     open(newunit=Uout,file='hyd.cube',status='replace')
       write(Uout,*) "commnet"

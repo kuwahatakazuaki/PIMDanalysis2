@@ -253,6 +253,8 @@ contains
       num = 1
     elseif ( trim(cha) == 'li' ) then
       num = 3
+    elseif ( trim(cha) == 'be' ) then
+      num = 4
     elseif ( trim(cha) == 'b' ) then
       num = 5
     elseif ( trim(cha) == 'c' ) then
@@ -263,7 +265,16 @@ contains
       num = 8
     elseif ( trim(cha) == 'f' ) then
       num = 9
+    elseif ( trim(cha) == 'si' ) then
+      num = 14
+    elseif ( trim(cha) == 'p' ) then
+      num = 15
+    elseif ( trim(cha) == 's' ) then
+      num = 16
+    elseif ( trim(cha) == 'cl' ) then
+      num = 17
     else
+      print *, cha, 'is not exist in atom2num'
       stop 'ERROR!! "atom2num" cannot chage '
     end if
   end function
