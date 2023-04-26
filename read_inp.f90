@@ -170,6 +170,7 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
           stop
         elseif (index(line,"$Nhyd")  == 1 ) then
           read(Uin,*) Nhyd
+! HERE is bug in setting the "label"
           allocate(hyd(Nhyd), r_ref(3,Natom), weight(Natom), label(Natom))
         elseif (index(line,"$Ndiv")   == 1 ) then; read(Uin,*) Ndiv
         elseif (index(line,"$Hatom")  == 1)  then
