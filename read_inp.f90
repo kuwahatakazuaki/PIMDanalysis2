@@ -216,7 +216,8 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
             do j = 1, Noho
               read(Uin,*) label_oho(:,j)
             end do
-        elseif (index(trim(line) ,"# end periodic") == 1)  then; exit
+        elseif (index(trim(line) ,"# end periodic") == 1)  then
+          exit
         end if
       end do
 ! --- End periodic ---
