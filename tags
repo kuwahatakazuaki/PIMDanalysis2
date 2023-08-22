@@ -19,6 +19,7 @@
 9998	pbhpo4.f90	/^    9998  format(i0,6F11.6)$/;"	l	subroutine:print_unit_step	file:
 9998	rotation.f90	/^  9998  format(I5,4F12.6)$/;"	l	subroutine:save_cube	file:
 9999	pbhpo4.f90	/^    9999  format(6F12.7)$/;"	l	subroutine:print_unit_step	file:
+9999	periodic.f90	/^  9999 format(48F8.4)$/;"	l	subroutine:RMSDatoms	file:
 9999	periodic.f90	/^  9999 format(F10.5)$/;"	l	subroutine:oho_distribution	file:
 9999	rotation.f90	/^    9999 format(a,4F11.7)$/;"	l	subroutine:save_movie	file:
 9999	rotation.f90	/^  9999  format(I5,4F12.6)$/;"	l	subroutine:save_cube	file:
@@ -58,6 +59,7 @@ Nunit	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, 
 PathFile	other_quantities.f90	/^  character(:), allocatable :: PathFile$/;"	v	module:mod_other_quantities
 RDF1	periodic.f90	/^  subroutine RDF1$/;"	s	module:mod_periodic
 RDF2	periodic.f90	/^  subroutine RDF2$/;"	s	module:mod_periodic
+RMSDatoms	periodic.f90	/^  subroutine RMSDatoms$/;"	s	module:mod_periodic
 TNstep	parameters.f90	/^  integer :: Natom, Nbeads, TNstep,/;"	v	module:input_parameter
 Uinp	other_quantities.f90	/^  integer :: Uinp,/;"	v	module:mod_other_quantities
 Uinp	special_case.f90	/^  integer :: Uinp,/;"	v	module:mod_special_case
@@ -121,13 +123,10 @@ data_step	parameters.f90	/^  real(8), save, allocatable :: data_step(/;"	v	modul
 deltaOH	pbhpo4.f90	/^  subroutine deltaOH$/;"	s	subroutine:pbhpo4
 dipole	other_quantities.f90	/^  real(8), allocatable :: charge(:,:,:), dipole(/;"	v	module:mod_other_quantities
 dipole_analysis	other_quantities.f90	/^  subroutine dipole_analysis$/;"	s	module:mod_other_quantities
-dirfile	Makefile	/^dirfile = \/Users\/kuwahatakazuaki\/Program\/bin\/PIMDanalysis$/;"	m
 dummy_atom	dummy_atom.f90	/^subroutine dummy_atom$/;"	s
 err_line_exceed	other_quantities.f90	/^subroutine err_line_exceed(/;"	s	module:mod_other_quantities
 external_1Dhist	hist1D.f90	/^  subroutine external_1Dhist$/;"	s
 external_2Dhits_arbitrary	hist2D.f90	/^  subroutine external_2Dhits_arbitrary$/;"	s	module:calc_histogram2D
-fc	Makefile	/^fc = gfortran$/;"	m
-fcopt	Makefile	/^fcopt =  -O2 -pipe -lblas -llapack$/;"	m
 get_inv_mat	utility.f90	/^  subroutine get_inv_mat(/;"	s	module:utility
 get_min_edge	periodic.f90	/^  function get_min_edge(/;"	f	module:mod_periodic
 get_qua_theta	utility.f90	/^  function get_qua_theta(/;"	f	module:utility
@@ -178,13 +177,11 @@ make_matA	rotation.f90	/^  function make_matA(/;"	f	subroutine:rotation
 mod_other_quantities	other_quantities.f90	/^module mod_other_quantities$/;"	m
 mod_periodic	periodic.f90	/^module mod_periodic$/;"	m
 mod_special_case	special_case.f90	/^module mod_special_case$/;"	m
-module	Makefile	/^module =              \\$/;"	m
 multi_bond	multi_bond.f90	/^subroutine multi_bond$/;"	s
 multi_bond_all	multi_bond.f90	/^subroutine multi_bond_all$/;"	s	subroutine:multi_bond
 multi_bond_sort	multi_bond.f90	/^subroutine multi_bond_sort$/;"	s	subroutine:multi_bond
 multi_bond_sum	multi_bond.f90	/^subroutine multi_bond_sum$/;"	s	subroutine:multi_bond
 norm	utility.f90	/^  real(8) function norm(/;"	f	module:utility
-objs	Makefile	/^objs = \\$/;"	m
 oho_distribution	periodic.f90	/^  subroutine oho_distribution$/;"	s	module:mod_periodic
 oo_bond	pbhpo4.f90	/^  subroutine oo_bond$/;"	s	subroutine:pbhpo4
 other_quantities	other_quantities.f90	/^  subroutine  other_quantities$/;"	s	module:mod_other_quantities
@@ -195,7 +192,6 @@ pbhpo4	pbhpo4.f90	/^subroutine pbhpo4$/;"	s
 periodic	periodic.f90	/^  subroutine periodic$/;"	s	module:mod_periodic
 pi	utility.f90	/^  real(8) :: pi /;"	v	module:utility
 print_unit_step	pbhpo4.f90	/^  subroutine print_unit_step$/;"	s	subroutine:pbhpo4
-program	Makefile	/^program = run.exe$/;"	m
 projection	projection.f90	/^subroutine projection$/;"	s
 r	parameters.f90	/^  re/;"	v	module:input_parameter
 r_cent	cent.f90	/^  real(8), public, allocatable :: r_cent(/;"	v	module:calc_centoroid

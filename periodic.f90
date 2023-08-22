@@ -3,7 +3,7 @@ module mod_periodic
       only: jobtype, Natom, Nbeads, TNstep, label, save_beads, &
             hist_max1, hist_max2, hist_min1, hist_min2, Nhist, lattice, &
             Ielement1, Ielement2, Felement1, Felement2, Noho, Lbox, label_oho, &
-            r, data_beads, data_step, graph_step
+            r, data_beads, data_step, graph_step, atom1, atom2
   use calc_histogram1D, only: calc_1Dhist
   use utility
   implicit none
@@ -27,6 +27,8 @@ contains
         call RDF1
       case(82)
         call RDF2
+      case(85)
+        call RMSDatoms
       case(89)
         call oho_distribution
       !case(89)
@@ -37,15 +39,41 @@ contains
     print *, "***** END periodic condition *****"
   end subroutine periodic
 
-  function get_min_edge(vec) result(mini)
-    real(8) :: vec(3,3), mini
-    real(8) :: edge(3)
-    integer :: i
-    do i = 1, 3
-      edge(i) = dsqrt(dot_product(vec(i,:), vec(i,:)))
+! ++++++++++++++++++++++
+! +++++ Start RMSD +++++
+! ++++++++++++++++++++++
+  subroutine RMSDatoms
+    real(8), allocatable :: rc(:,:,:), rmsd(:,:)
+    real(8) :: dis2, rij(3)
+    integer :: i, j, k, Uout
+    allocate(rc(3,Natom,TNstep), source=0.0d0)
+    allocate(rmsd(Natom,TNstep))
+    do j = 1, Nbeads
+      rc(:,:,:) = rc(:,:,:) + r(:,:,j,:)
     end do
-    mini = minval(edge)
-  end function get_min_edge
+    rc(:,:,:) = rc(:,:,:) / dble(Nbeads)
+
+    do k = 1, TNstep
+      do i = 1, Natom
+        rij(:) = rc(:,i,k) - rc(:,i,1)
+        rmsd(i,k) = dot_product(rij(:),rij(:))
+      end do
+    end do
+    rmsd(:,:) = dsqrt(rmsd(:,:))
+
+    open(newunit=Uout,file='rmsd.out')
+      do k = 1, TNstep
+        if (mod(k,graph_step) == 0) then
+          write(Uout,9999) rmsd(atom1:atom2,k)
+        end if
+      end do
+    close(Uout)
+  9999 format(48F8.4)
+  end subroutine RMSDatoms
+! ++++++++++++++++++++
+! +++++ End RMSD +++++
+! ++++++++++++++++++++
+
 
 ! ++++++++++++++++++++++
 ! +++++ Start RDF1 +++++
@@ -286,6 +314,16 @@ contains
 ! ++++++++++++++++++++++++++++++++
 ! +++++ End oho_distribution +++++
 ! ++++++++++++++++++++++++++++++++
+
+  function get_min_edge(vec) result(mini)
+    real(8) :: vec(3,3), mini
+    real(8) :: edge(3)
+    integer :: i
+    do i = 1, 3
+      edge(i) = dsqrt(dot_product(vec(i,:), vec(i,:)))
+    end do
+    mini = minval(edge)
+  end function get_min_edge
 
 end module mod_periodic
 

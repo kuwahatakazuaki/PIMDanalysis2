@@ -37,14 +37,13 @@
 !  82 : radial distribution with Lbox (element1 to element2)
 !  83 : radial distribution with Lbox (element1)
 !  84 : radial distribution with Lbox (element1 to element2)
+!  85 : RMSD (Root mean square deviation)
 !  89 : OHO distribution
 !  91 : projection           (atom1-atom2  T  atom3-atom4)
 ! 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
 ! 191 : PbHPO4  (O-O distribution)
 ! 192 : PbHPO4  (dleta OH distribution)
 !!!  29 : 2D histogram from External   (Old, use the 28 mode)
-!!!  31 : 1D histogram for Centroid
-!!!  32 : 2D histogram for Centroid
 !!!  33 : Angle histgram for Centroid
 
 program analysis
