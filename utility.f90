@@ -1,12 +1,127 @@
 module utility
-  use input_parameter,  only: data_beads, data_step, TNstep, graph_step
+  use input_parameter,  only: data_beads, data_step, TNstep, graph_step, Ndiv, label
   implicit none
   private
   real(8) :: pi = atan(1.0d0)*4.0d0
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
             rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product, &
-            atom2num
+            atom2num, save_cube
 contains
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ Start save_cube ++++++++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  subroutine save_cube(rcub,Iatoms)
+    integer, intent(in) :: Iatoms(:)
+    real(8), intent(inout) :: rcub(:,:,:,:) ! rcub(3,Natom,Nbeads,TNstep)
+    real(8), parameter :: Ledge = 10.0d0
+    real(8), parameter :: Bohr2Angs = 0.529177249
+    real(8), parameter :: Angs2Bohr = 1.8897259886
+    real(8), parameter :: margine = 1d-1
+    real(8) :: grid(Ndiv,Ndiv,Ndiv)
+    real(8) :: Lmin(3), Lmax(3)
+    real(8) :: dL(3), base_vec(3,3)
+    integer, allocatable :: coun(:,:,:,:)
+    integer :: Uout,i,j,k
+    integer :: uboun(4), Natom, Nbeads, TNstep, Ncube
+
+    uboun(:) = ubound(rcub)
+    Natom  = uboun(2)
+    Nbeads = uboun(3)
+    TNstep = uboun(4)
+    Ncube  = size(Iatoms)
+
+    rcub(:,:,:,:) = rcub(:,:,:,:) * Angs2Bohr
+
+    block
+      real(8), allocatable :: temp1(:), temp2(:)
+      allocate(temp1(Ncube), temp2(Ncube))
+      do i = 1, 3
+        do j = 1, Ncube
+          temp1(j) = minval(rcub(i,Iatoms(j),:,:))
+          temp2(j) = maxval(rcub(i,Iatoms(j),:,:))
+        end do
+        Lmin(i) = minval(temp1(:)) - margine
+        Lmax(i) = maxval(temp2(:)) + margine
+      end do
+    end block
+
+    dL(:) = (Lmax(:) - Lmin(:)) / dble(Ndiv)
+
+    print '(a)',        '  *** Constructing the cube file ***'
+    print '(a,I4)',     '     Ndiv      = ', Ndiv
+    print '(a,1pe11.3)','     margine   = ', margine
+    print '(a,*(I4))',  '     cube atom = ', Iatoms(:)
+    print '(a,3F10.5)', '     dL        = ', dL(:)
+    print '(a,3F10.5)', '     Lmin      = ', Lmin(:)
+    base_vec(:,:) = 0.0d0
+    do i = 1, 3
+      base_vec(i,i) = dL(i)
+    end do
+
+    allocate(coun(3,Ncube,Nbeads,TNstep))
+    do i = 1, Ncube
+      do k = 1, TNstep
+        do j = 1, Nbeads
+          coun(:,i,j,k) = int( ( rcub(:,Iatoms(i),j,k)-Lmin(:) ) / dL(:) ) + 1
+        end do
+      end do
+    end do
+
+    block
+      integer :: cx,cy,cz
+      grid(:,:,:) = 0.0d0
+      do i = 1, Ncube
+        do k = 1, TNstep
+          do j = 1, Nbeads
+              cx = coun(1,i,j,k)
+              cy = coun(2,i,j,k)
+              cz = coun(3,i,j,k)
+              grid(cx,cy,cz) = grid(cx,cy,cz) + 1.0d0
+          end do
+        end do
+      end do
+    end block
+
+    grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
+    open(newunit=Uout,file='cube.cube',status='replace')
+      write(Uout,*) "commnet"
+      write(Uout,*) "commnet"
+      write(Uout,9999) Natom-Ncube, Lmin(:)
+      do i = 1, 3
+        write(Uout,9999) Ndiv, base_vec(i,:)
+      end do
+      j = 1
+      do i = 1, Natom
+        if ( i == Iatoms(j) ) then
+          j = j + 1
+          cycle
+        end if
+        write(Uout,9999) atom2num(trim(label(i))), dble(i), &
+                         [sum(rcub(1,i,:,:)),sum(rcub(2,i,:,:)),sum(rcub(3,i,:,:))]/dble(TNstep*Nbeads)
+      end do
+
+      do i = 1, Ndiv
+        do j = 1, Ndiv
+          do k = 1, Ndiv
+            write(Uout,'(E13.5)',advance='no') grid(i,j,k)
+            if ( mod(k,6) == 0 ) write(Uout,*)
+          end do
+          write(Uout,*)
+        end do
+      end do
+    close(Uout)
+    print '(a)', '  *** Cube file is saved in "cube.cube" ***'
+
+  9998  format(I5,4F12.6)
+  9999  format(I5,4F12.6)
+
+  end subroutine save_cube
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ End save_cube ++++++++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ Start Reblocking  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

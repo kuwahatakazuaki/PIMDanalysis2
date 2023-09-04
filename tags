@@ -18,12 +18,14 @@
 911	read_coor.f90	/^    911 print *, "ERROR!!: Reading line exceed the coor lines"; stop$/;"	l	subroutine:read_coor_format	file:
 9998	pbhpo4.f90	/^    9998  format(i0,6F11.6)$/;"	l	subroutine:print_unit_step	file:
 9998	rotation.f90	/^  9998  format(I5,4F12.6)$/;"	l	subroutine:save_cube	file:
+9998	utility.f90	/^  9998  format(I5,4F12.6)$/;"	l	file:
 9999	pbhpo4.f90	/^    9999  format(6F12.7)$/;"	l	subroutine:print_unit_step	file:
 9999	periodic.f90	/^  9999 format(48F8.4)$/;"	l	subroutine:RMSDatoms	file:
 9999	periodic.f90	/^  9999 format(F10.5)$/;"	l	subroutine:oho_distribution	file:
 9999	rotation.f90	/^    9999 format(a,4F11.7)$/;"	l	subroutine:save_movie	file:
 9999	rotation.f90	/^  9999  format(I5,4F12.6)$/;"	l	subroutine:save_cube	file:
 9999	rotation.f90	/^  9999 format(E12.5)$/;"	l	subroutine:rotation	file:
+9999	utility.f90	/^  9999  format(I5,4F12.6)$/;"	l	file:
 AUtoAng	parameters.f90	/^  real(8), parameter :: AUtoAng /;"	v	module:input_parameter
 AUtoK	parameters.f90	/^  real(8), parameter :: AUtoK /;"	v	module:input_parameter
 AngtoAU	parameters.f90	/^  real(8), parameter :: AngtoAU /;"	v	module:input_parameter
@@ -55,12 +57,14 @@ Nhist	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist,/;"	v	module:in
 Nhyd	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, Nunit, Nhyd,/;"	v	module:input_parameter
 Noho	parameters.f90	/^  integer :: atom_cube, Noho$/;"	v	module:input_parameter
 Nstep	parameters.f90	/^  integer, allocatable :: Nstep(/;"	v	module:input_parameter
+Ntetra	parameters.f90	/^  integer, allocatable :: hyd(:), label_oho(:,:), Ntetra(/;"	v	module:input_parameter
 Nunit	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, Nunit,/;"	v	module:input_parameter
 PathFile	other_quantities.f90	/^  character(:), allocatable :: PathFile$/;"	v	module:mod_other_quantities
 RDF1	periodic.f90	/^  subroutine RDF1$/;"	s	module:mod_periodic
 RDF2	periodic.f90	/^  subroutine RDF2$/;"	s	module:mod_periodic
 RMSDatoms	periodic.f90	/^  subroutine RMSDatoms$/;"	s	module:mod_periodic
 TNstep	parameters.f90	/^  integer :: Natom, Nbeads, TNstep,/;"	v	module:input_parameter
+Tetrahedron	periodic.f90	/^  subroutine Tetrahedron$/;"	s	module:mod_periodic
 Uinp	other_quantities.f90	/^  integer :: Uinp,/;"	v	module:mod_other_quantities
 Uinp	special_case.f90	/^  integer :: Uinp,/;"	v	module:mod_special_case
 Uout	hist1D.f90	/^  integer :: j, k, l, Uout$/;"	v	module:calc_histogram1D
@@ -71,7 +75,7 @@ Usave	hist2D.f90	/^  integer :: Usave$/;"	v	module:calc_histogram2D
 analysis	main.f90	/^program analysis$/;"	p
 atom1	parameters.f90	/^  integer :: atom1,/;"	v	module:input_parameter
 atom2	parameters.f90	/^  integer :: atom1, atom2,/;"	v	module:input_parameter
-atom2num	utility.f90	/^  function atom2num(/;"	f	module:utility
+atom2num	utility.f90	/^  function atom2num(/;"	f
 atom3	parameters.f90	/^  integer :: atom1, atom2, atom3,/;"	v	module:input_parameter
 atom4	parameters.f90	/^  integer :: atom1, atom2, atom3, atom4,/;"	v	module:input_parameter
 atom5	parameters.f90	/^  integer :: atom1, atom2, atom3, atom4, atom5$/;"	v	module:input_parameter
@@ -102,9 +106,9 @@ calc_cent	cent.f90	/^subroutine calc_cent$/;"	s	module:calc_centoroid
 calc_cent_1Dhist	cent.f90	/^subroutine calc_cent_1Dhist$/;"	s	module:calc_centoroid
 calc_cent_1Dhist_sub	cent.f90	/^subroutine calc_cent_1Dhist_sub(/;"	s	module:calc_centoroid
 calc_centoroid	cent.f90	/^module calc_centoroid$/;"	m
-calc_cumulative	utility.f90	/^  subroutine calc_cumulative(/;"	s	module:utility
-calc_cumulative_old	utility.f90	/^  subroutine calc_cumulative_old(/;"	s	module:utility
-calc_deviation	utility.f90	/^  subroutine calc_deviation(/;"	s	module:utility
+calc_cumulative	utility.f90	/^  subroutine calc_cumulative(/;"	s
+calc_cumulative_old	utility.f90	/^  subroutine calc_cumulative_old(/;"	s
+calc_deviation	utility.f90	/^  subroutine calc_deviation(/;"	s
 calc_dihedral	dihedral.f90	/^subroutine calc_dihedral$/;"	s
 calc_dihedral_sub	dihedral.f90	/^subroutine calc_dihedral_sub(/;"	s
 calc_histogram1D	hist1D.f90	/^module calc_histogram1D$/;"	m
@@ -127,11 +131,11 @@ dummy_atom	dummy_atom.f90	/^subroutine dummy_atom$/;"	s
 err_line_exceed	other_quantities.f90	/^subroutine err_line_exceed(/;"	s	module:mod_other_quantities
 external_1Dhist	hist1D.f90	/^  subroutine external_1Dhist$/;"	s
 external_2Dhits_arbitrary	hist2D.f90	/^  subroutine external_2Dhits_arbitrary$/;"	s	module:calc_histogram2D
-get_inv_mat	utility.f90	/^  subroutine get_inv_mat(/;"	s	module:utility
+get_inv_mat	utility.f90	/^  subroutine get_inv_mat(/;"	s
 get_min_edge	periodic.f90	/^  function get_min_edge(/;"	f	module:mod_periodic
-get_qua_theta	utility.f90	/^  function get_qua_theta(/;"	f	module:utility
-get_rot_mat	utility.f90	/^  function get_rot_mat(/;"	f	module:utility
-get_volume	utility.f90	/^  function get_volume(/;"	f	module:utility
+get_qua_theta	utility.f90	/^  function get_qua_theta(/;"	f
+get_rot_mat	utility.f90	/^  function get_rot_mat(/;"	f
+get_volume	utility.f90	/^  function get_volume(/;"	f
 graph_step	parameters.f90	/^  integer :: graph_step /;"	v	module:input_parameter
 hfcc	other_quantities.f90	/^  real(8), allocatable :: charge(:,:,:), dipole(:,:,:), hfcc(/;"	v	module:mod_other_quantities
 hfcc_analysis	other_quantities.f90	/^  subroutine hfcc_analysis$/;"	s	module:mod_other_quantities
@@ -157,7 +161,7 @@ i	hist2D.f90	/^  in/;"	v	module:calc_histogram2D
 ierr	other_quantities.f90	/^  integer :: Uinp, Uout, ierr$/;"	v	module:mod_other_quantities
 ierr	special_case.f90	/^  integer :: Uinp, Uout, ierr$/;"	v	module:mod_special_case
 input_parameter	parameters.f90	/^module input_parameter$/;"	m
-itoc	utility.f90	/^  character(len=2) function itoc(/;"	f	module:utility
+itoc	utility.f90	/^  character(len=2) function itoc(/;"	f
 j	cent.f90	/^  integer, private :: i, j,/;"	v	module:calc_centoroid
 j	hist1D.f90	/^  integer :: j,/;"	v	module:calc_histogram1D
 j	hist2D.f90	/^  integer :: i, j,/;"	v	module:calc_histogram2D
@@ -172,7 +176,7 @@ label	parameters.f90	/^  character(len=2), allocatable :: label(/;"	v	module:inp
 label_oho	parameters.f90	/^  integer, allocatable :: hyd(:), label_oho(/;"	v	module:input_parameter
 lat_inv	periodic.f90	/^  real(8) :: Dhist, lat_inv(/;"	v	module:mod_periodic
 lattice	parameters.f90	/^  real(8) :: lattice(/;"	v	module:input_parameter
-lowerchr	utility.f90	/^  function lowerchr(/;"	f	module:utility
+lowerchr	utility.f90	/^  function lowerchr(/;"	f
 make_matA	rotation.f90	/^  function make_matA(/;"	f	subroutine:rotation
 mod_other_quantities	other_quantities.f90	/^module mod_other_quantities$/;"	m
 mod_periodic	periodic.f90	/^module mod_periodic$/;"	m
@@ -181,13 +185,13 @@ multi_bond	multi_bond.f90	/^subroutine multi_bond$/;"	s
 multi_bond_all	multi_bond.f90	/^subroutine multi_bond_all$/;"	s	subroutine:multi_bond
 multi_bond_sort	multi_bond.f90	/^subroutine multi_bond_sort$/;"	s	subroutine:multi_bond
 multi_bond_sum	multi_bond.f90	/^subroutine multi_bond_sum$/;"	s	subroutine:multi_bond
-norm	utility.f90	/^  real(8) function norm(/;"	f	module:utility
+norm	utility.f90	/^  real(8) function norm(/;"	f
 oho_distribution	periodic.f90	/^  subroutine oho_distribution$/;"	s	module:mod_periodic
 oo_bond	pbhpo4.f90	/^  subroutine oo_bond$/;"	s	subroutine:pbhpo4
 other_quantities	other_quantities.f90	/^  subroutine  other_quantities$/;"	s	module:mod_other_quantities
 out_name	hist2D.f90	/^  character(len=:), allocatable :: out_name$/;"	v	module:calc_histogram2D
 out_plane	special_case.f90	/^  subroutine out_plane$/;"	s	module:mod_special_case
-outer_product	utility.f90	/^  function outer_product(/;"	f	module:utility
+outer_product	utility.f90	/^  function outer_product(/;"	f
 pbhpo4	pbhpo4.f90	/^subroutine pbhpo4$/;"	s
 periodic	periodic.f90	/^  subroutine periodic$/;"	s	module:mod_periodic
 pi	utility.f90	/^  real(8) :: pi /;"	v	module:utility
@@ -196,19 +200,20 @@ projection	projection.f90	/^subroutine projection$/;"	s
 r	parameters.f90	/^  re/;"	v	module:input_parameter
 r_cent	cent.f90	/^  real(8), public, allocatable :: r_cent(/;"	v	module:calc_centoroid
 r_ref	parameters.f90	/^  real(8), allocatable :: r_ref(/;"	v	module:input_parameter
-rand3	utility.f90	/^  function rand3(/;"	f	module:utility
-random_seed_ini	utility.f90	/^  subroutine random_seed_ini$/;"	s	module:utility
+rand3	utility.f90	/^  function rand3(/;"	f
+random_seed_ini	utility.f90	/^  subroutine random_seed_ini$/;"	s
 read_binary1	binary_calc.f90	/^  subroutine read_binary1$/;"	s	subroutine:binary_calc
 read_binary2	binary_calc.f90	/^  subroutine read_binary2$/;"	s	subroutine:binary_calc
 read_coor	read_coor.f90	/^subroutine read_coor$/;"	s
 read_coor_binary	read_coor.f90	/^  subroutine read_coor_binary(/;"	s	subroutine:read_coor
 read_coor_format	read_coor.f90	/^  subroutine read_coor_format(/;"	s	subroutine:read_coor
 read_input	read_inp.f90	/^subroutine read_input$/;"	s
-reblock_step	utility.f90	/^  subroutine reblock_step(/;"	s	module:utility
+reblock_step	utility.f90	/^  subroutine reblock_step(/;"	s
 rotation	rotation.f90	/^subroutine rotation$/;"	s
 s	periodic.f90	/^  real(8), allocatable :: s(/;"	v	module:mod_periodic
 save_beads	parameters.f90	/^  logical :: save_beads /;"	v	module:input_parameter
 save_cube	rotation.f90	/^  subroutine save_cube$/;"	s	subroutine:rotation
+save_cube	utility.f90	/^  subroutine save_cube(/;"	s	module:utility
 save_movie	rotation.f90	/^  subroutine save_movie$/;"	s	subroutine:rotation
 special_case	special_case.f90	/^  subroutine special_case$/;"	s	module:mod_special_case
 step	cent.f90	/^  integer, private :: i, j, k, l, Ifile, step /;"	v	module:calc_centoroid

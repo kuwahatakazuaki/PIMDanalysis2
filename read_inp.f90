@@ -68,6 +68,19 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
       FileName="0"
 ! --- End job type ---
 
+! --- Start utility ---
+    else if (index(line,"# utility") == 1 ) then
+      do
+        read(Uin,'(a)',iostat=ios) line
+        if ( ios == IOSTAT_END ) then
+          print *, 'ERROR!!: There is no "# end "'
+          stop
+        elseif (index(line,"$Ndiv")       == 1 )  then; read(Uin,*) Ndiv
+        elseif (index(line,"# end")        == 1 )  then; exit
+        end if
+      end do
+! --- End utility ---
+
 ! --- Start input file ---
     else if (index(line,"# input file") == 1) then
       Ifile = Ifile + 1
@@ -172,7 +185,7 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
           read(Uin,*) Nhyd
 ! HERE is bug in setting the "label"
           allocate(hyd(Nhyd), r_ref(3,Natom), weight(Natom), label(Natom))
-        elseif (index(line,"$Ndiv")   == 1 ) then; read(Uin,*) Ndiv
+        !elseif (index(line,"$Ndiv")   == 1 ) then; read(Uin,*) Ndiv
         elseif (index(line,"$Hatom")  == 1)  then
           do i = 1, Nhyd
             read(Uin,*) hyd(i)
@@ -216,6 +229,25 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
             do j = 1, Noho
               read(Uin,*) label_oho(:,j)
             end do
+        elseif (index(line,"$index tetrahedron") == 1 ) then
+          Ntetra = 0
+          do
+            read(Uin,'(a)',iostat=ios) line
+            if ( ios == IOSTAT_END ) then
+              print *, 'ERROR!! we cannot find "$end index tetrahedron"'
+            elseif (index(line,"$end index") == 1) then
+              exit
+            end if
+            Ntetra = Ntetra + 1
+          end do
+          do j = 1, Ntetra+1
+            backspace(Uin)
+          end do
+
+          allocate(Itetra(Ntetra,5))
+          do j = 1, Ntetra
+            read(Uin,*) Itetra(j,:)
+          end do
         elseif (index(trim(line) ,"# end periodic") == 1)  then
           exit
         end if
@@ -240,7 +272,6 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
       end do
 ! --- End umbrella ---
 
-
 ! --- Start PbHPO4 ---
     else if (index(line,"# PbHPO4") == 1 ) then
       do
@@ -260,6 +291,7 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
     end if
   end do InputFile
 close(Uin)
+! --- End PbHPO4 ---
 
 ! --- Print input parameters ---
   print '(" *** Input parameters as follows ***")'

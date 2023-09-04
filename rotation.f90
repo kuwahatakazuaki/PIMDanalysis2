@@ -84,6 +84,7 @@ subroutine rotation
   9999 format(E12.5)
 contains
 
+  ! Please reffer the save_cube in utility, in the futhure 
   subroutine save_cube
     integer :: Uout
 !    integer, parameter :: Ndiv = 20
@@ -99,14 +100,14 @@ contains
 
     rnew(:,:,:,:) = rnew(:,:,:,:) * Angs2Bohr
     do i = 1, 3
-    Lmin(i) = minval(rnew(i,muon,:,:)) - margine
-    Lmax(i) = maxval(rnew(i,muon,:,:)) + margine
+      Lmin(i) = minval(rnew(i,muon,:,:)) - margine
+      Lmax(i) = maxval(rnew(i,muon,:,:)) + margine
     end do
     dL(:) = (Lmax(:) - Lmin(:)) / dble(Ndiv)
 
     print '(a)',        '   Constructing the cube file '
     print '(a,I4)',     '     Ndiv     = ', Ndiv
-    print '(a,I4)',     '     atom cube= ', muon
+    print '(a,I4)',     '     cube atom= ', muon
     print '(a,1pe11.3)','     margine  = ', margine
     print '(a,3F10.5)', '     dL       = ', dL(:)
     print '(a,3F10.5)', '     Lmin     = ', Lmin(:)

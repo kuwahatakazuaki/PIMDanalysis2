@@ -28,14 +28,14 @@
 #  72 : Rotation          (cube file)
 #  81 : radial distribution  (element1)
 #  82 : radial distribution  (element1 to element2)
+#  85 : RMSD (Root mean square deviation)
+#  88 : Tetrahedron (O-H4)
 #  89 : OHO distribution
 #  91 : projection           (atom1-atom2  T  atom3-atom4)
 # 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
 # 191 : PbHPO4  (O-O distribution)
 # 192 : PbHPO4  (dleta OH distribution)
 #!!  29 : 2D histogram from External   (Old, use the 28 mode)
-#!!  31 : 1D histogram for Centroid
-#!!  32 : 2D histogram for Centroid
 #!!  33 : Angle histgram for Centroid
 
 # job type
@@ -68,6 +68,11 @@ bin1.bin
 $name_binary2
 bin2.bin
 # end job type
+
+# utility
+$Ndiv
+20
+# end utility
 
 # input file 1
 $DirResult
@@ -142,16 +147,26 @@ $Ielement2
 17
 $Felement2
 24
+#$index tetrahedron  # loop by atom1
+# 33 20 30 15  1
+# 36 31 17 14  4
+# 38 23 25 12  6
+# 39 22 28  9  7
+# 37 24 26 11  5
+# 34 19 29 16  2
+# 35 32 18 13  3
+# 40 21 27 10  8
+#$end index tetrahedron  # loop by atom1
 # end periodic
 
-# PbHPO4
-$Lattice
- 4.8142385483         0.0000000000         0.0000000000
- 0.0000000000         6.8708567619         0.0000000000
--2.0384064352         0.0000000000        17.6854359383
-$Nunit
-3
-# end PbHPO4
+# # PbHPO4
+# $Lattice
+#  4.8142385483         0.0000000000         0.0000000000
+#  0.0000000000         6.8708567619         0.0000000000
+# -2.0384064352         0.0000000000        17.6854359383
+# $Nunit
+# 3
+# # end PbHPO4
 
 ## Rotation
 #$Nhyd                # the number of hydrogen or muon

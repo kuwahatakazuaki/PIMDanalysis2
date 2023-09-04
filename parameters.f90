@@ -18,8 +18,8 @@ module input_parameter
   real(8) :: umbrella_force, temperature, Lbox(3)
   integer :: Ielement1, Felement1, Ielement2, Felement2, Nunit, Nhyd, Ndiv = 30
   character(len=2), allocatable :: label(:)
-  integer, allocatable :: hyd(:), label_oho(:,:)
-  integer :: atom_cube, Noho
+  integer, allocatable :: hyd(:), label_oho(:,:), Itetra(:,:)
+  integer :: atom_cube, Noho, Ntetra
   real(8), allocatable :: r_ref(:,:), weight(:)  ! r_ref(xyz,Natom), weight(Natom)
   real(8) :: lattice(3,3)
   real(8) :: bin_min, bin_max

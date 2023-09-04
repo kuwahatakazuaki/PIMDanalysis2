@@ -35,9 +35,8 @@
 !  72 : Rotation          (cube file)
 !  81 : radial distribution with Lbox (element1)
 !  82 : radial distribution with Lbox (element1 to element2)
-!  83 : radial distribution with Lbox (element1)
-!  84 : radial distribution with Lbox (element1 to element2)
 !  85 : RMSD (Root mean square deviation)
+!  88 : Tetrahedron (O-H4)
 !  89 : OHO distribution
 !  91 : projection           (atom1-atom2  T  atom3-atom4)
 ! 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
@@ -89,16 +88,12 @@ select case(jobtype)
     call external_2Dhits_arbitrary
   case(31:33)
     call binary_calc
-!  case(31:39)
-!    call calc_cent
   case(41:49)
     call dummy_atom
 !  case(51:54)
 !    call beads_expansion
   case(61:64)
     call other_quantities
-!  case(71)
-!    call projection
   case(71:73)
     call rotation
   case(81:89)

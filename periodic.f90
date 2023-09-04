@@ -3,9 +3,9 @@ module mod_periodic
       only: jobtype, Natom, Nbeads, TNstep, label, save_beads, &
             hist_max1, hist_max2, hist_min1, hist_min2, Nhist, lattice, &
             Ielement1, Ielement2, Felement1, Felement2, Noho, Lbox, label_oho, &
-            r, data_beads, data_step, graph_step, atom1, atom2
+            r, data_beads, data_step, graph_step, atom1, atom2, Ntetra, Itetra
   use calc_histogram1D, only: calc_1Dhist
-  use utility
+  use utility, only: get_volume, pi, get_inv_mat, save_cube
   implicit none
   private
   integer :: Uout
@@ -29,6 +29,8 @@ contains
         call RDF2
       case(85)
         call RMSDatoms
+      case(88)
+        call Tetrahedron
       case(89)
         call oho_distribution
       !case(89)
@@ -38,6 +40,77 @@ contains
     end select
     print *, "***** END periodic condition *****"
   end subroutine periodic
+
+! +++++++++++++++++++++++++++++
+! +++++ Start Tetrahedron +++++
+! +++++++++++++++++++++++++++++
+  subroutine Tetrahedron
+    integer :: i, j, k, xyz, Utem
+    real(8), allocatable :: rt(:,:,:,:,:), st(:,:,:,:)
+    real(8), allocatable :: rcub(:,:,:,:)
+    real(8) :: rc(3), Lbox(3)
+    integer :: Iatoms(4) = [2,3,4,5]
+
+    do i = 1, 3
+      Lbox(i) = lattice(i,i)
+    end do
+
+    !call get_inv_mat(lattice,lat_inv,3)
+
+    allocate(rt(3,5,Ntetra,Nbeads,TNstep))
+    allocate(st(3,5,Ntetra,Nbeads))
+    do i = 1, Ntetra
+      do j = 1, 5
+        rt(:,j,i,:,:) = r(:,Itetra(i,j),:,:)
+      end do
+    end do
+
+    do k = 1, TNstep
+      do i = 1, Ntetra
+        do xyz = 1, 3
+          rc(xyz) = sum(rt(xyz,1,i,:,k)) / dble(Nbeads)
+          rt(xyz,:,i,:,k) = rt(xyz,:,i,:,k) - rc(xyz)
+        end do
+
+        do xyz = 1, 3
+          st(xyz,:,i,:) = rt(xyz,:,i,:,k) / Lbox(xyz)
+        end do
+        st(:,:,:,:) = st(:,:,:,:) - nint(st(:,:,:,:))
+        do xyz = 1, 3
+          rt(xyz,:,i,:,k) = st(xyz,:,i,:) * Lbox(xyz)
+        end do
+      end do
+    end do
+
+    allocate(rcub(3,5,Nbeads,TNstep*Ntetra))
+    do i = 1, Ntetra
+      rcub(:,:,:,TNstep*(i-1)+1:TNstep*i) = rt(:,:,i,:,:)
+    end do
+
+    call save_cube(rcub,Iatoms)
+!open(newunit=utem,file="temp.xyz")
+!write(utem,*) "80"
+!write(utem,*) "commnet"
+!do j = 1, nbeads
+!    write(utem,*) 'o',rt(:,1,1,j,1)
+!  do i = 2, 5
+!    write(utem,*) 'h',rt(:,i,1,j,1)
+!  end do
+!end do
+!
+!!do j = 1, Ntetra
+!!    write(Utem,*) 'O',rt(:,1,j,1,1)
+!!  do i = 2, 5
+!!    write(Utem,*) 'H',rt(:,i,j,1,1)
+!!  end do
+!!end do
+!close(Utem)
+  end subroutine Tetrahedron
+! ++++++++++++++++++++
+! +++++ End RMSD +++++
+! ++++++++++++++++++++
+
+
 
 ! ++++++++++++++++++++++
 ! +++++ Start RMSD +++++
