@@ -59,18 +59,30 @@ contains
 
     allocate(rt(3,5,Ntetra,Nbeads,TNstep))
     allocate(st(3,5,Ntetra,Nbeads))
+
+do k = 1, TNstep
+  do xyz = 1, 3
+    rc(xyz) = sum(r(xyz,:,:,k)) / dble(Natom*Nbeads)
+    r(xyz,:,:,k) = r(xyz,:,:,k) - rc(xyz)
+  end do
+end do
+
     do i = 1, Ntetra
       do j = 1, 5
         rt(:,j,i,:,:) = r(:,Itetra(i,j),:,:)
       end do
+do xyz = 1, 3
+  rc(xyz) = sum(r(xyz,Itetra(i,1),:,:)) / dble(Nbeads*TNstep)
+  rt(xyz,:,i,:,:) = rt(xyz,:,i,:,:) - rc(xyz)
+end do
     end do
 
     do k = 1, TNstep
       do i = 1, Ntetra
-        do xyz = 1, 3
-          rc(xyz) = sum(rt(xyz,1,i,:,k)) / dble(Nbeads)
-          rt(xyz,:,i,:,k) = rt(xyz,:,i,:,k) - rc(xyz)
-        end do
+        !do xyz = 1, 3
+        !  rc(xyz) = sum(rt(xyz,1,i,:,k)) / dble(Nbeads)
+        !  rt(xyz,:,i,:,k) = rt(xyz,:,i,:,k) - rc(xyz)
+        !end do
 
         do xyz = 1, 3
           st(xyz,:,i,:) = rt(xyz,:,i,:,k) / Lbox(xyz)

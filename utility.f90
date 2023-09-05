@@ -11,8 +11,9 @@ contains
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ Start save_cube ++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  subroutine save_cube(rcub,Iatoms)
+  subroutine save_cube(rcub,Iatoms,Fout)
     integer, intent(in) :: Iatoms(:)
+    character(len=*), optional :: Fout
     real(8), intent(inout) :: rcub(:,:,:,:) ! rcub(3,Natom,Nbeads,TNstep)
     real(8), parameter :: Ledge = 10.0d0
     real(8), parameter :: Bohr2Angs = 0.529177249
@@ -97,7 +98,8 @@ contains
           j = j + 1
           cycle
         end if
-        write(Uout,9999) atom2num(trim(label(i))), dble(i), &
+        write(Uout,9999) 8, dble(i), &  ! Only for Tetrahedra O-H4
+        !write(Uout,9999) atom2num(trim(label(i))), dble(i), &
                          [sum(rcub(1,i,:,:)),sum(rcub(2,i,:,:)),sum(rcub(3,i,:,:))]/dble(TNstep*Nbeads)
       end do
 
