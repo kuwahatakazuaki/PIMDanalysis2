@@ -77,7 +77,7 @@ subroutine rotation
     case(71)
       call save_movie
     case(72)
-      call save_cube
+      call save_cube_sub
   end select
   print '(a)',  " ***** END Removing rotation freedom *****"
 
@@ -85,7 +85,7 @@ subroutine rotation
 contains
 
   ! Please reffer the save_cube in utility, in the futhure 
-  subroutine save_cube
+  subroutine save_cube_sub
     integer :: Uout
 !    integer, parameter :: Ndiv = 20
     real(8), parameter :: Ledge = 10.0d0
@@ -164,7 +164,7 @@ contains
 
   9998  format(I5,4F12.6)
   9999  format(I5,4F12.6)
-  end subroutine save_cube
+  end subroutine save_cube_sub
 
   subroutine save_movie
     integer :: Uout

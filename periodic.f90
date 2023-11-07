@@ -3,9 +3,9 @@ module mod_periodic
       only: jobtype, Natom, Nbeads, TNstep, label, save_beads, &
             hist_max1, hist_max2, hist_min1, hist_min2, Nhist, lattice, &
             Ielement1, Ielement2, Felement1, Felement2, Noho, Lbox, label_oho, &
-            r, data_beads, data_step, graph_step, atom1, atom2, Ntetra, Itetra
+            r, data_beads, data_step, graph_step, atom1, atom2, Ntetra, Itetra, Ndiv
   use calc_histogram1D, only: calc_1Dhist
-  use utility, only: get_volume, pi, get_inv_mat, save_cube
+  use utility, only: get_volume, pi, get_inv_mat! , save_cube
   implicit none
   private
   integer :: Uout
@@ -60,21 +60,21 @@ contains
     allocate(rt(3,5,Ntetra,Nbeads,TNstep))
     allocate(st(3,5,Ntetra,Nbeads))
 
-do k = 1, TNstep
-  do xyz = 1, 3
-    rc(xyz) = sum(r(xyz,:,:,k)) / dble(Natom*Nbeads)
-    r(xyz,:,:,k) = r(xyz,:,:,k) - rc(xyz)
-  end do
-end do
+    do k = 1, TNstep
+      do xyz = 1, 3
+        rc(xyz) = sum(r(xyz,:,:,k)) / dble(Natom*Nbeads)
+        r(xyz,:,:,k) = r(xyz,:,:,k) - rc(xyz)
+      end do
+    end do
 
     do i = 1, Ntetra
       do j = 1, 5
         rt(:,j,i,:,:) = r(:,Itetra(i,j),:,:)
       end do
-do xyz = 1, 3
-  rc(xyz) = sum(r(xyz,Itetra(i,1),:,:)) / dble(Nbeads*TNstep)
-  rt(xyz,:,i,:,:) = rt(xyz,:,i,:,:) - rc(xyz)
-end do
+      do xyz = 1, 3
+        rc(xyz) = sum(r(xyz,Itetra(i,1),:,:)) / dble(Nbeads*TNstep)
+        rt(xyz,:,i,:,:) = rt(xyz,:,i,:,:) - rc(xyz)
+      end do
     end do
 
     do k = 1, TNstep
@@ -99,7 +99,7 @@ end do
       rcub(:,:,:,TNstep*(i-1)+1:TNstep*i) = rt(:,:,i,:,:)
     end do
 
-    call save_cube(rcub,Iatoms)
+    call save_cube_sub(rcub,Iatoms)
 !open(newunit=utem,file="temp.xyz")
 !write(utem,*) "80"
 !write(utem,*) "commnet"
@@ -121,6 +121,124 @@ end do
 ! ++++++++++++++++++++
 ! +++++ End RMSD +++++
 ! ++++++++++++++++++++
+
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ Start save_cube ++++++++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  subroutine save_cube_sub(rcub,Iatoms)
+    integer, intent(in) :: Iatoms(:)
+    ! character(len=*), optional :: Fout
+    real(8), intent(inout) :: rcub(:,:,:,:) ! rcub(3,Natom,Nbeads,TNstep)
+    real(8), parameter :: Ledge = 10.0d0
+    real(8), parameter :: Bohr2Angs = 0.529177249
+    real(8), parameter :: Angs2Bohr = 1.8897259886
+    real(8), parameter :: margine = 1d-1
+    real(8) :: grid(Ndiv,Ndiv,Ndiv)
+    real(8) :: Lmin(3), Lmax(3)
+    real(8) :: dL(3), base_vec(3,3)
+    integer, allocatable :: coun(:,:,:,:)
+    integer :: Uout,i,j,k
+    integer :: uboun(4), Natom, Nbeads, TNstep, Ncube
+
+    uboun(:) = ubound(rcub)
+    Natom  = uboun(2)
+    Nbeads = uboun(3)
+    TNstep = uboun(4)
+    Ncube  = size(Iatoms)
+
+    rcub(:,:,:,:) = rcub(:,:,:,:) * Angs2Bohr
+
+    block
+      real(8), allocatable :: temp1(:), temp2(:)
+      allocate(temp1(Ncube), temp2(Ncube))
+      do i = 1, 3
+        do j = 1, Ncube
+          temp1(j) = minval(rcub(i,Iatoms(j),:,:))
+          temp2(j) = maxval(rcub(i,Iatoms(j),:,:))
+        end do
+        Lmin(i) = minval(temp1(:)) - margine
+        Lmax(i) = maxval(temp2(:)) + margine
+      end do
+    end block
+
+    dL(:) = (Lmax(:) - Lmin(:)) / dble(Ndiv)
+
+    print '(a)',        '  *** Constructing the cube file ***'
+    print '(a,I4)',     '     Ndiv      = ', Ndiv
+    print '(a,1pe11.3)','     margine   = ', margine
+    print '(a,*(I4))',  '     cube atom = ', Iatoms(:)
+    print '(a,3F10.5)', '     dL        = ', dL(:)
+    print '(a,3F10.5)', '     Lmin      = ', Lmin(:)
+    base_vec(:,:) = 0.0d0
+    do i = 1, 3
+      base_vec(i,i) = dL(i)
+    end do
+
+    allocate(coun(3,5,Nbeads,TNstep))
+    ! allocate(coun(3,Ncube,Nbeads,TNstep))
+    do k = 1, TNstep
+      do j = 1, Nbeads
+        do i = 1, 5
+          coun(:,i,j,k) = int( ( rcub(:,i,j,k)-Lmin(:) ) / dL(:) ) + 1
+          !coun(:,i,j,k) = int( ( rcub(:,Iatoms(i),j,k)-Lmin(:) ) / dL(:) ) + 1
+        end do
+      end do
+    end do
+
+    block
+      integer :: c1,c2,c3
+      grid(:,:,:) = 0.0d0
+      do k = 1, TNstep
+        do j = 1, Nbeads
+          c1 = coun(1,1,j,k); c2 = coun(2,1,j,k); c3 = coun(3,1,j,k)
+          grid(c1,c2,c3) = grid(c1,c2,c3) + 1.0d0
+          do i = 2, 5
+            c1 = coun(1,i,j,k); c2 = coun(2,i,j,k); c3 = coun(3,i,j,k)
+            grid(c1,c2,c3) = grid(c1,c2,c3) - 1.0d0
+          end do
+        end do
+      end do
+    end block
+
+    grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
+    open(newunit=Uout,file='cube.cube',status='replace')
+      write(Uout,*) "commnet"
+      write(Uout,*) "commnet"
+      write(Uout,9999) Natom-Ncube, Lmin(:)
+      do i = 1, 3
+        write(Uout,9999) Ndiv, base_vec(i,:)
+      end do
+      j = 1
+      do i = 1, Natom
+        if ( i == Iatoms(j) ) then
+          j = j + 1
+          cycle
+        end if
+        write(Uout,9999) -1, dble(i), &  ! Only for Tetrahedra O-H4
+        !write(Uout,9999) atom2num(trim(label(i))), dble(i), &
+                         [sum(rcub(1,i,:,:)),sum(rcub(2,i,:,:)),sum(rcub(3,i,:,:))]/dble(TNstep*Nbeads)
+      end do
+
+      do i = 1, Ndiv
+        do j = 1, Ndiv
+          do k = 1, Ndiv
+            write(Uout,'(E13.5)',advance='no') grid(i,j,k)
+            if ( mod(k,6) == 0 ) write(Uout,*)
+          end do
+          write(Uout,*)
+        end do
+      end do
+    close(Uout)
+    print '(a)', '  *** Cube file is saved in "cube.cube" ***'
+
+  9998  format(I5,4F12.6)
+  9999  format(I5,4F12.6)
+
+  end subroutine save_cube_sub
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ End save_cube ++++++++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 
