@@ -38,12 +38,12 @@
 !  85 : RMSD (Root mean square deviation)
 !  88 : Tetrahedron (O-H4)
 !  89 : OHO distribution
-!  91 : projection           (atom1-atom2  T  atom3-atom4)
-! 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
+!  91 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
 ! 191 : PbHPO4  (O-O distribution)
 ! 192 : PbHPO4  (dleta OH distribution)
 !!!  29 : 2D histogram from External   (Old, use the 28 mode)
 !!!  33 : Angle histgram for Centroid
+!!!  91 : projection           (atom1-atom2  T  atom3-atom4)
 
 program analysis
 use input_parameter, &

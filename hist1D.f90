@@ -66,6 +66,11 @@ contains
         temp(i,2) = histogram(i,2) + histogram(Nhist-i+1,2)
       end do
       histogram(:,2) = temp(:,2) * 0.5d0
+
+      data_ave = 0.0d0
+      do i = Nhist/2, Nhist
+        data_ave = data_ave + histogram(i,1)*histogram(i,2)
+      end do
       end block
     end if
 
