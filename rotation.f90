@@ -168,7 +168,7 @@ contains
 
   subroutine save_movie
     integer :: Uout
-    open(newunit=Uout,file='vmd.xyz',status='replace')
+    open(newunit=Uout,file='movie.xyz',status='replace')
       do k = 1, TNstep
         if ( mod(k,10) == 0) then
           write(Uout,'(I10)') Natom*Nbeads

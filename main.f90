@@ -1,7 +1,7 @@
 ! Analysing PIMD data
-! last modified 2023/01/28
-! program structure
-! all of the data are stored in the 'data_beads', and this is analyzed according to the 'jobtype' option
+! last modified 2024/02/08
+! Program structure
+! All of the data are stored in the 'data_beads', and this is analyzed according to the 'jobtype' option
 
 ! Choose "job type" as follows options:
 !   1 : Bond length                 (atom1-atom2)
@@ -33,8 +33,8 @@
 !  64 : hfcc_analysis        (atom1)
 !  71 : Rotation          (movie)
 !  72 : Rotation          (cube file)
-!  81 : radial distribution with Lbox (element1)
-!  82 : radial distribution with Lbox (element1 to element2)
+!  81 : radial distribution (element1)
+!  82 : radial distribution (element1 to element2)
 !  85 : RMSD (Root mean square deviation)
 !  88 : Tetrahedron (O-H4)
 !  89 : OHO distribution
