@@ -33,10 +33,13 @@
 !  64 : hfcc_analysis        (atom1)
 !  71 : Rotation          (movie)
 !  72 : Rotation          (cube file)
-!  81 : radial distribution (element1)
-!  82 : radial distribution (element1 to element2)
+!  8* : === Periodic boundary condition ===
+!  81 : Radial distribution (element1)
+!  82 : Radial distribution (element1 to element2)
+!  83 : Bond length with periodic         (atom1-atom2)
+!  84 : Bond diff with periodic           (atom1-atom2  -  atom3-atom4)
 !  85 : RMSD (Root mean square deviation)
-!  88 : Tetrahedron (O-H4)
+!!!  88 : Tetrahedron (O-H4)
 !  89 : OHO distribution
 !  91 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
 ! 191 : PbHPO4  (O-O distribution)
