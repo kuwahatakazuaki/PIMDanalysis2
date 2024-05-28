@@ -11,17 +11,23 @@ subroutine calc_bond
   character(len=128) :: name_hist, name_temp
   real(8) :: data_max, data_min, data_ave, data_dev, data_err
 
-  write(name_temp,'(a,I0,"-",a,I0)')    trim(label(atom1)),atom1,trim(label(atom2)),atom2
-  write(name_hist,'("hist_",a,".out")') trim(name_temp)
 
   select case(jobtype)
     case(1)
+      write(name_temp,'(a,I0,"-",a,I0)')    trim(label(atom1)),atom1,trim(label(atom2)),atom2
       call calc_bond_sub(atom1,atom2)
     case(4)
+      write(name_temp,'(a,I0,"-",a,I0,"_",a,I0,"-",a,I0)')  &
+          trim(label(atom1)),atom1,trim(label(atom2)),atom2, &
+          trim(label(atom3)),atom3,trim(label(atom4)),atom4
       call calc_bond_diff(atom1,atom2,atom3,atom4)
     case(5)
+      write(name_temp,'(a,I0,"-",a,I0,"_",a,I0,"-",a,I0)')  &
+          trim(label(atom1)),atom1,trim(label(atom2)),atom2, &
+          trim(label(atom3)),atom3,trim(label(atom4)),atom4
       call calc_bond_add(atom1,atom2,atom3,atom4)
   end select
+  write(name_hist,'("hist_",a,".out")') trim(name_temp)
 
 
   data_max = maxval(data_beads)

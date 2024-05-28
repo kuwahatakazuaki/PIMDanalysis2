@@ -120,7 +120,7 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
         elseif (index(line,"$Yrange_min" ) == 1) then; read(Uin,*) hist_min2
         elseif (index(line,"$Yrange_max" ) == 1) then; read(Uin,*) hist_max2
         elseif (index(line,"$hist_margin") == 1) then; read(Uin,*) hist_margin
-        elseif (index(line,"$folding")     == 1) then; read(Uin,*) Lfolding
+        elseif (index(line,"$Lfolding")    == 1) then; read(Uin,*) Lfolding
 !        elseif (index(line,"$Output_name") == 1) then; read(Uin,*) out_hist
         elseif (index(line,"# end"       ) == 1) then; exit
         end if

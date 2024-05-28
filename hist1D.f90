@@ -148,7 +148,7 @@ contains
   subroutine external_1Dhist
     integer :: Nunit
 
-  block ! Check the number of line between Finput1 and Finput2
+  !block ! Check the number of line between Finput1 and Finput2
     integer :: Nline1, Nline2, Nline
     real(8) :: dummyD
     open(newunit=Nunit, file=FNameBinary1, form='unformatted', access='stream', status='old', err=901)
@@ -175,8 +175,7 @@ contains
       print *, "The number of lines are different between ", FNameBinary1, " and ", FNameBinary2
       stop "ERROR!!"
     end if
-  end block
-
+  !end block
 
     901 stop "ERROR!! Tere is no binary input1 file"
     902 stop "ERROR!! Tere is no binary input2 file"
