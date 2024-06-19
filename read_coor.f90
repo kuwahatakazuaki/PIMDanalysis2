@@ -158,8 +158,8 @@ contains
       end do
     close(Uout)
 
-    print '(a)', '    Binary data is saved in "coor.bin"'
-    print '(a)', '    in "'//trim(DirResult(1))//'" directory '
+    print '(a)', '    Binary data is saved as "coor.bin"'
+    print '(a)', '      in "'//trim(DirResult(1))//'" directory '
     print '("  *** END compression ***")'
     print *, ""
   end subroutine compression

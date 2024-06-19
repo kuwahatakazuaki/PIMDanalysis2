@@ -400,7 +400,6 @@ stop 'Not Update'
             if ( Ihist <= Nhist ) then
               hist(Ihist,2) = hist(Ihist,2) + 1.0d0
             end if
-
           end do
         end do
       end do

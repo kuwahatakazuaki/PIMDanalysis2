@@ -2,7 +2,7 @@ subroutine read_input
 use,intrinsic :: iso_fortran_env
 use input_parameter
 implicit none
-integer :: i, j, Uin, ios, Ifile
+integer :: i, j, Uin, ios, Ifile, sta
 character(:), allocatable :: input_file
 character(len=128) :: line
 character(len=128) :: FNtemp1 = "bin1.bin", FNtemp2 = "bin2.bin"
@@ -93,19 +93,30 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
         elseif (index(line,"$FileName")  == 1) then; read(Uin,'(a)') FileName(Ifile)
         elseif (index(line,"$Ncut")      == 1) then; read(Uin,*) Ncut(Ifile)
         elseif (index(line,"$Nstep" )    == 1) then; read(Uin,*) Nstep(Ifile)
-! I will move these parameters to 'jobtype'
-          elseif (index(line,"$Natom" )    == 1) then; read(Uin,*) Natom
-          elseif (index(line,"$Nbeads")    == 1) then; read(Uin,*) Nbeads
-          elseif (index(line,"$atom1" )    == 1) then; read(Uin,*) atom1
-          elseif (index(line,"$atom2" )    == 1) then; read(Uin,*) atom2
-          elseif (index(line,"$atom3" )    == 1) then; read(Uin,*) atom3
-          elseif (index(line,"$atom4" )    == 1) then; read(Uin,*) atom4
-          elseif (index(line,"$atom5" )    == 1) then; read(Uin,*) atom5
-! I will move these parameters to 'jobtype'
+!! I will move these parameters to 'jobtype'
+!          elseif (index(line,"$Natom" )    == 1) then; read(Uin,*) Natom
+!          elseif (index(line,"$Nbeads")    == 1) then; read(Uin,*) Nbeads
+!          elseif (index(line,"$atom1" )    == 1) then; read(Uin,*) atom1
+!          elseif (index(line,"$atom2" )    == 1) then; read(Uin,*) atom2
+!          elseif (index(line,"$atom3" )    == 1) then; read(Uin,*) atom3
+!          elseif (index(line,"$atom4" )    == 1) then; read(Uin,*) atom4
+!          elseif (index(line,"$atom5" )    == 1) then; read(Uin,*) atom5
+!! I will move these parameters to 'jobtype'
           elseif (index(line,"# end file") == 1) then; exit
         end if
       end do
 ! --- End input file ---
+
+! --- Check Lfirst ---
+      if ( Lfirst .eqv. .False. ) then
+        sta = access(DirResult(Ifile)//'coor.bin', ' ')
+        if ( sta /= 0 ) then
+          print *, 'There is no "coor.bin"'
+          print *, 'Change Lfirst from "False" to "True"'
+          Lfirst = .True.
+        end if
+      end if
+! --- End Check Lfirst ---
 
 ! --- Start histogram ---
     else if (index(line,"# histogram parameters") == 1 ) then

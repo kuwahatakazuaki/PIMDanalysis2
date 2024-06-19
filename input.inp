@@ -39,9 +39,9 @@
 #!!  33 : Angle histgram for Centroid
 
 # job type
-$Lfirst       # Set T(rue) or F(alse)
+$Lfirst         # The first calculation? -> T(rue) or F(alse)
 F
-$Nfile
+$Nfile          # The number of files
 1
 $Job type
 91
@@ -62,7 +62,7 @@ $atom5
 $graph_step
 10
 $save_beads
-T
+F
 $name_binary1
 bin1.bin
 $name_binary2
@@ -131,10 +131,6 @@ $dummy_atom2
 # end dummy atom
 
 # periodic
-#$Lbox   # Length of Box (A)
-#8.0
-#8.0
-#8.0
 $Lattice
  7.5340385437         0.0000000000         0.0000000000
 -3.7670192719         6.5246687719         0.0000000000
@@ -158,15 +154,6 @@ $Felement2
 # 40 21 27 10  8
 #$end index tetrahedron  # loop by atom1
 # end periodic
-
-# # PbHPO4
-# $Lattice
-#  4.8142385483         0.0000000000         0.0000000000
-#  0.0000000000         6.8708567619         0.0000000000
-# -2.0384064352         0.0000000000        17.6854359383
-# $Nunit
-# 3
-# # end PbHPO4
 
 ## Rotation
 #$Nhyd                # the number of hydrogen or muon

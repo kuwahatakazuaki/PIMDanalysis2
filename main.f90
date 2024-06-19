@@ -66,7 +66,6 @@ call read_input
 ! r(:,i,j,k) = r(xyz,atom,beads,step)
 if (Lfirst .eqv. .True.) then
   allocate(r(3,Natom,Nbeads,TNstep))
-  !allocate(label(Natom))
   if ( .not. allocated(label) ) allocate(label(Natom))
 end if
 
