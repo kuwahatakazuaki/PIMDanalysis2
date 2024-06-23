@@ -1,5 +1,5 @@
 ! Analysing PIMD data
-! last modified 2024/02/08
+! last modified 2024/06/25
 ! Program structure
 ! All of the data are stored in the 'data_beads', and this is analyzed according to the 'jobtype' option
 
@@ -39,7 +39,6 @@
 !  83 : Bond length with periodic         (atom1-atom2)
 !  84 : Bond diff with periodic           (atom1-atom2  -  atom3-atom4)
 !  85 : RMSD (Root mean square deviation)
-!!!  88 : Tetrahedron (O-H4)
 !  89 : OHO distribution
 !  91 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
 ! 191 : PbHPO4  (O-O distribution)

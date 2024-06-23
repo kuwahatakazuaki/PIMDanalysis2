@@ -17,10 +17,20 @@ module mod_periodic
 contains
 
   subroutine periodic
-    integer :: i
+    integer :: i, j, k
     print *, "***** START periodic condition *****"
     do i = 1, 3
       print '(a,3F13.6)', '    lattice = ', lattice(i,:)
+    end do
+
+    call get_inv_mat(lattice,lat_inv,3)
+    allocate(s(3,Natom,Nbeads,TNstep))
+    do k = 1, TNstep
+      do j = 1, Nbeads
+        do i = 1, Natom
+          s(:,i,j,k) = matmul(r(:,i,j,k), lat_inv(:,:))
+        end do
+      end do
     end do
 
     select case(jobtype)
@@ -34,17 +44,47 @@ contains
         call bond_diff_perio
       case(85)
         call RMSDatoms
-      !case(88)
-      !  call Tetrahedron
+      case(86)
+        call Minimum_bond
       case(89)
         call oho_distribution
-      !case(89)
-      !  call rms_oho
       case default
         stop 'ERROR!!! wrong "Job type" option'
     end select
     print *, "***** END periodic condition *****"
   end subroutine periodic
+
+  subroutine Minimum_bond
+    integer :: Istep, i, j, k
+    integer :: Uout, Iloc(3)
+    real(8) :: s12(3), r12(3), d12, dis2(Natom,Natom,Nbeads)
+    character(:), allocatable :: Fout
+
+    Fout='step_mini_bond.out'
+
+    open(Uout,file=Fout,status='replace')
+    write(Uout,*) "# step, bond, atom1, atom2, Beads"
+
+    dis2(:,:,:) = 1.0d+100
+    do Istep = 1, TNstep
+      do k = 1, Nbeads
+        do i = 1, Natom-1
+          do j = i+1, Natom
+            s12(:) = s(:,i,k,Istep) - s(:,j,k,Istep)
+            s12(:) = s12(:) - nint(s12(:))
+            r12(:) = matmul(s12(:),lattice(:,:))
+            dis2(i,j,k) = dot_product(r12(:),r12(:))
+          end do
+        end do
+      end do
+      Iloc = minloc(dis2)
+      !write(Uout,*) Istep, dsqrt(minval(dis2)), Iloc(1), label(Iloc(1)), Iloc(2), label(Iloc(2)), Iloc(3)
+      write(Uout,'(I5,F10.5,3X,A,I0," - ",A,I0,I4)') &
+          Istep, dsqrt(minval(dis2)), label(Iloc(1)),Iloc(1),  label(Iloc(2)),Iloc(2),  Iloc(3)
+      !write(Uout,'(I5,F10.5,3I4)') Istep, dsqrt(minval(dis2)), minloc(dis2)
+    end do
+    close(Uout)
+  end subroutine Minimum_bond
 
   subroutine bond_diff_perio
     integer :: Nelement
@@ -55,17 +95,6 @@ contains
 
     write(out_hist, '(a,I0,a,I0,a,I0,a,I0,a)') &
                "hist_", atom1, "_", atom2,"-",atom3,"_",atom4, ".out"
-
-    call get_inv_mat(lattice,lat_inv,3)
-
-    allocate(s(3,Natom,Nbeads,TNstep))
-    do k = 1, TNstep
-      do j = 1, Nbeads
-        do i = 1, Natom
-          s(:,i,j,k) = matmul(r(:,i,j,k), lat_inv(:,:))
-        end do
-      end do
-    end do
 
     do i = 1, TNstep
       do j = 1, Nbeads
@@ -93,17 +122,6 @@ stop 'Not Update'
     allocate(hist(Nhist,2), source=0.0d0)
 
     write(out_hist, '(a,I0,a,I0,a)') "hist_", atom1, "-", atom2, ".out"
-
-    call get_inv_mat(lattice,lat_inv,3)
-
-    allocate(s(3,Natom,Nbeads,TNstep))
-    do k = 1, TNstep
-      do j = 1, Nbeads
-        do i = 1, Natom
-          s(:,i,j,k) = matmul(r(:,i,j,k), lat_inv(:,:))
-        end do
-      end do
-    end do
 
     do i = 1, TNstep
       do j = 1, Nbeads
@@ -170,7 +188,6 @@ stop 'Not Update'
     end do
 
     allocate(coun(3,5,Nbeads,TNstep))
-    ! allocate(coun(3,Ncube,Nbeads,TNstep))
     do k = 1, TNstep
       do j = 1, Nbeads
         do i = 1, 5
@@ -281,7 +298,6 @@ stop 'Not Update'
     real(8) :: r12(3), s12(3), minedge, rho, d12
     character(len=128) :: out_hist
     allocate(hist(Nhist,2), source=0.0d0)
-    !hist(:,:) = 0.0d0
 
     write(out_hist, '(a,I0,a,I0,a)') "rdf1_", Ielement1, "-", Felement1, ".out"
 
@@ -289,7 +305,6 @@ stop 'Not Update'
     Dhist = minedge / dble(Nhist)
     Nelement = Felement1 - Ielement1 + 1
     rho = dble(Nelement*(Nelement-1)/2) / (get_volume(lattice(:,:)))
-    !hist(:,:) = 0.0d0
 
     print '(a,I0,"-"I0)', '    Radial distribution of ',Ielement1,Felement1
     print '(a,I0)',       '    Nelement =  ', Nelement
@@ -297,17 +312,6 @@ stop 'Not Update'
 
     do Ihist = 1, Nhist
       hist(Ihist,1) = Dhist * dble(Ihist)  ! not dble(Ihist-1)
-    end do
-
-    call get_inv_mat(lattice,lat_inv,3)
-
-    allocate(s(3,Natom,Nbeads,TNstep))
-    do k = 1, TNstep
-      do j = 1, Nbeads
-        do i = 1, Natom
-          s(:,i,j,k) = matmul(r(:,i,j,k), lat_inv(:,:))
-        end do
-      end do
     end do
 
     do i = 1, TNstep
@@ -374,17 +378,6 @@ stop 'Not Update'
 
     do Ihist = 1, Nhist
       hist(Ihist,1) = Dhist * dble(Ihist)  ! not dble(Ihist-1)
-    end do
-
-    call get_inv_mat(lattice,lat_inv,3)
-
-    allocate(s(3,Natom,Nbeads,TNstep))
-    do k = 1, TNstep
-      do j = 1, Nbeads
-        do i = 1, Natom
-          s(:,i,j,k) = matmul(r(:,i,j,k), lat_inv(:,:))
-        end do
-      end do
     end do
 
     do i = 1, TNstep
