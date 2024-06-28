@@ -46,6 +46,10 @@ contains
         call RMSDatoms
       case(86)
         call Minimum_bond
+      case(87)
+        call Near_str1
+      case(88)
+        call Near_str2
       case(89)
         call oho_distribution
       case default
@@ -54,15 +58,115 @@ contains
     print *, "***** END periodic condition *****"
   end subroutine periodic
 
+  subroutine Near_str2
+    integer, parameter :: max_atom = 20
+    integer :: Istep, Ibead, i, j, k
+    integer :: Nnear, nearlabel(max_atom)
+    real(8) :: si1(3), ri1(3), si2(3), ri2(3), dis1, dis2
+    real(8) :: diff_r(3), diff_s(3)
+    real(8) :: nearatom(3,max_atom)
+    real(8), parameter :: cut_dis = 3.3d0
+    character(:), allocatable :: Fout
+
+    Fout = 'near_str2.xyz'
+    open(newunit=Uout,file=Fout,status='replace')
+    do Istep = 1, TNstep
+      do Ibead = 1, Nbeads
+        Nnear = 0
+        do i = 1, Natom
+          if ( i == atom1 .or. i == atom2) cycle
+          diff_r(:) = r(:,atom2,Ibead,Istep) - r(:,atom1,Ibead,Istep)
+          diff_s(:) = matmul(diff_r(:),lat_inv(:,:))
+          diff_s(:) = diff_s(:) - nint(diff_s(:))
+          diff_r(:) = matmul(diff_s(:),lattice(:,:))
+
+          si1(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
+          si2(:) = s(:,i,Ibead,Istep) - s(:,atom2,Ibead,Istep)
+
+          si1(:) = si1(:) - nint(si1(:))
+          si2(:) = si2(:) - nint(si2(:))
+
+          ri1(:) = matmul(si1(:),lattice(:,:))
+          ri2(:) = matmul(si2(:),lattice(:,:))
+
+          dis1 = dot_product(ri1(:),ri1(:))
+          dis2 = dot_product(ri2(:),ri2(:))
+
+          if ( dis1 <= cut_dis**2 ) then
+            Nnear = Nnear + 1
+            if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
+            nearlabel(Nnear) = i
+            nearatom(:,Nnear) = ri1(:)
+          else if ( dis2 <= cut_dis**2  ) then
+            Nnear = Nnear + 1
+            if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
+            nearlabel(Nnear) = i
+            nearatom(:,Nnear) = ri2(:) + diff_r(:)
+          end if
+        end do
+      end do
+
+      if ( 4000 <= Istep .and. Istep <= 4400 ) then
+      write(Uout,*) Nnear + 2
+      write(Uout,*) Istep
+      write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
+      write(Uout,*) label(atom2), diff_r(:)
+      do i = 1, Nnear
+        write(Uout,*)  label(nearlabel(i)), nearatom(:,i)
+      end do
+      end if
+    end do
+    close(Uout)
+  end subroutine Near_str2
+
+  subroutine Near_str1
+    integer, parameter :: max_atom = 12
+    integer :: Istep, Ibead, i, j, k
+    integer :: Nnear, nearlabel(max_atom)
+    real(8) :: s12(3), r12(3), dis2
+    real(8) :: nearatom(3,max_atom)
+    real(8), parameter :: cut_dis = 3.5d0
+    character(:), allocatable :: Fout
+
+    Fout = 'near_str1.xyz'
+    open(newunit=Uout,file=Fout,status='replace')
+    do Istep = 1, TNstep
+      do Ibead = 1, Nbeads
+        Nnear = 0
+        do i = 1, Natom
+          if ( i == atom1 ) cycle
+          s12(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
+          s12(:) = s12(:) - nint(s12(:))
+          r12(:) = matmul(s12(:),lattice(:,:))
+          dis2 = dot_product(r12(:),r12(:))
+          if ( dis2 <= cut_dis**2 ) then
+            Nnear = Nnear + 1
+            if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
+            nearlabel(Nnear) = i
+            nearatom(:,Nnear) = r12(:)
+          end if
+        end do
+      end do
+
+      write(Uout,*) Nnear + 1
+      write(Uout,*) Istep
+      write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
+      do i = 1, Nnear
+        write(Uout,*) label(nearlabel(i)), nearatom(:,i)
+      end do
+    end do
+    close(Uout)
+  end subroutine Near_str1
+
   subroutine Minimum_bond
     integer :: Istep, i, j, k
-    integer :: Uout, Iloc(3)
+    integer :: Iloc(3)
     real(8) :: s12(3), r12(3), d12, dis2(Natom,Natom,Nbeads)
     character(:), allocatable :: Fout
 
     Fout='step_mini_bond.out'
 
-    open(Uout,file=Fout,status='replace')
+    open(newunit=Uout,file=Fout,status='replace')
     write(Uout,*) "# step, bond, atom1, atom2, Beads"
 
     dis2(:,:,:) = 1.0d+100
@@ -77,11 +181,15 @@ contains
           end do
         end do
       end do
+
       Iloc = minloc(dis2)
-      !write(Uout,*) Istep, dsqrt(minval(dis2)), Iloc(1), label(Iloc(1)), Iloc(2), label(Iloc(2)), Iloc(3)
-      write(Uout,'(I5,F10.5,3X,A,I0," - ",A,I0,I4)') &
-          Istep, dsqrt(minval(dis2)), label(Iloc(1)),Iloc(1),  label(Iloc(2)),Iloc(2),  Iloc(3)
-      !write(Uout,'(I5,F10.5,3I4)') Istep, dsqrt(minval(dis2)), minloc(dis2)
+      write(Uout,'(I5,F10.5,3X,A,I0,"-",A,I0)', advance='no') &
+          Istep, dsqrt(minval(dis2)), trim(label(Iloc(1))),Iloc(1),  trim(label(Iloc(2))),Iloc(2)! , Iloc(3)
+
+      dis2(Iloc(1), Iloc(2), Iloc(3)) = 1.0d0+100
+      Iloc = minloc(dis2)
+      write(Uout,'(F10.5,3X,A,I0,"-",A,I0)') &
+           dsqrt(minval(dis2)), trim(label(Iloc(1))),Iloc(1),  trim(label(Iloc(2))),Iloc(2)! , Iloc(3)
     end do
     close(Uout)
   end subroutine Minimum_bond

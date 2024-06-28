@@ -27,10 +27,11 @@
 !  51 : Beads expansion      (all atoms)
 !  52 : Beads expansion      (export binary of atom1)
 !  53 : Beads expansion      (atom1 projected to atom2-atom3)
-!  61 : charge_analysis      (all atoms)
-!  62 : charge_analysis      (atom1)
-!  63 : dipole_analysis
-!  64 : hfcc_analysis        (atom1)
+!  61 : charge analysis      (all atoms)
+!  62 : charge analysis      (atom1)
+!  63 : dipole analysis
+!  64 : hfcc analysis        (atom1)
+!  65 : Force analysis
 !  71 : Rotation          (movie)
 !  72 : Rotation          (cube file)
 !  8* : === Periodic boundary condition ===
@@ -39,12 +40,12 @@
 !  83 : Bond length with periodic         (atom1-atom2)
 !  84 : Bond diff with periodic           (atom1-atom2  -  atom3-atom4)
 !  85 : RMSD (Root mean square deviation)
+!  86 : Minimum bond length               (from atom1)
 !  89 : OHO distribution
 !  91 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
 ! 191 : PbHPO4  (O-O distribution)
 ! 192 : PbHPO4  (dleta OH distribution)
 !!!  29 : 2D histogram from External   (Old, use the 28 mode)
-!!!  33 : Angle histgram for Centroid
 !!!  91 : projection           (atom1-atom2  T  atom3-atom4)
 
 program analysis
@@ -94,7 +95,7 @@ select case(jobtype)
     call dummy_atom
 !  case(51:54)
 !    call beads_expansion
-  case(61:64)
+  case(61:65)
     call other_quantities
   case(71:73)
     call rotation

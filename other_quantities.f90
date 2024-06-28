@@ -1,7 +1,7 @@
 module mod_other_quantities
   use input_parameter, &
       only: jobtype, Natom, Nbeads, TNstep, Ncut, Nfile, Nstep, &
-            DirResult, save_beads, FNameBinary1, &
+            DirResult, save_beads, FNameBinary1, label, &
             atom1, atom2, graph_step, &
             data_beads, data_step
   use calc_histogram1D
@@ -9,6 +9,7 @@ module mod_other_quantities
   implicit none
   private
   real(8), allocatable :: charge(:,:,:), dipole(:,:,:), hfcc(:,:,:)
+  real(8), allocatable :: force(:,:,:,:)
   character(:), allocatable :: PathFile
   integer :: Uinp, Uout, ierr
   public :: other_quantities
@@ -24,8 +25,71 @@ contains
         call dipole_analysis
       case(64)
         call hfcc_analysis
+      case(65)
+        call force_analysis
     end select
   end subroutine other_quantities
+
+! ++++++++++++++++++++++
+! +++ force_analysis +++
+! ++++++++++++++++++++++
+  subroutine force_analysis
+    integer :: Istep, i, j, k, Ifile
+    integer :: Iloc(2)
+    character(len=:), allocatable :: Finp, Fout
+    real(8) :: force_norm(Natom,Nbeads)
+
+    Fout='force_max.out'
+    allocate(force(3,Natom,Nbeads,TNstep))
+
+    open(Uout,file=Fout,status='replace')
+    Istep = 0
+    do Ifile = 1, Nfile
+      Finp=trim(DirResult(Ifile))//'/force.dat'
+
+      open(newunit=Uinp, file=Finp, status='old', iostat=ierr)
+        if ( ierr > 0 ) then
+          print *, 'Check the path : ', Finp
+          stop 'ERROR!!: There is no "force.dat"'
+        end if
+
+        do i = 1, Ncut(Ifile)
+          read(Uinp,'()')
+          do j = 1, Nbeads
+            read(Uinp,'()')
+          end do
+        end do
+
+        do k = Ncut(Ifile)+1, Nstep(Ifile)
+          Istep = Istep + 1
+          read(Uinp,'()')
+          do j = 1, Nbeads
+            do i = 1, Natom
+              read(Uinp,*) force(:,i,j,Istep)
+            end do
+          end do
+          force_norm(:,:) = force(1,:,:,Istep)**2 + &
+                            force(2,:,:,Istep)**2 + &
+                            force(3,:,:,Istep)**2
+          Iloc(:) = maxloc(force_norm)
+          !write(Uout,*) Istep, dsqrt(maxval(force_norm)), trim(label(Iloc(1))), Iloc(1)
+          write(Uout,'(I5,F10.5,2X,A,I0)') &
+            Istep, dsqrt(maxval(force_norm)), trim(label(Iloc(1))), Iloc(1)
+        end do
+      close(Uinp)
+    end do
+    close(Uout)
+
+!do i = 1, Natom
+!  print *, force(:,i,1,1)
+!end do
+!stop 'HERE'
+
+  end subroutine force_analysis
+! ++++++++++++++++++++++
+! +++ force_analysis +++
+! ++++++++++++++++++++++
+
 
 
 ! +++++++++++++++++++++++
