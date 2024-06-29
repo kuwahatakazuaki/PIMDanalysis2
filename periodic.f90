@@ -6,7 +6,7 @@ module mod_periodic
             r, data_beads, data_step, graph_step, atom1, atom2, atom3, atom4, &
             Ntetra, Itetra, Ndiv
   use calc_histogram1D, only: calc_1Dhist
-  use utility, only: get_volume, pi, get_inv_mat! , save_cube
+  use utility, only: get_volume, pi, get_inv_mat, real_max
   implicit none
   private
   integer :: Uout
@@ -169,7 +169,8 @@ contains
     open(newunit=Uout,file=Fout,status='replace')
     write(Uout,*) "# step, bond, atom1, atom2, Beads"
 
-    dis2(:,:,:) = 1.0d+100
+    !dis2(:,:,:) = 1.0d+100
+    dis2(:,:,:) = real_max
     do Istep = 1, TNstep
       do k = 1, Nbeads
         do i = 1, Natom-1
@@ -186,7 +187,8 @@ contains
       write(Uout,'(I5,F10.5,3X,A,I0,"-",A,I0)', advance='no') &
           Istep, dsqrt(minval(dis2)), trim(label(Iloc(1))),Iloc(1),  trim(label(Iloc(2))),Iloc(2)! , Iloc(3)
 
-      dis2(Iloc(1), Iloc(2), Iloc(3)) = 1.0d0+100
+      !dis2(Iloc(1), Iloc(2), Iloc(3)) = 1.0d0+100
+      dis2(Iloc(1), Iloc(2), Iloc(3)) = real_max
       Iloc = minloc(dis2)
       write(Uout,'(F10.5,3X,A,I0,"-",A,I0)') &
            dsqrt(minval(dis2)), trim(label(Iloc(1))),Iloc(1),  trim(label(Iloc(2))),Iloc(2)! , Iloc(3)

@@ -80,11 +80,6 @@ contains
     end do
     close(Uout)
 
-!do i = 1, Natom
-!  print *, force(:,i,1,1)
-!end do
-!stop 'HERE'
-
   end subroutine force_analysis
 ! ++++++++++++++++++++++
 ! +++ force_analysis +++

@@ -2,10 +2,13 @@ module utility
   use input_parameter,  only: data_beads, data_step, TNstep, graph_step, Ndiv, label
   implicit none
   private
-  real(8) :: pi = atan(1.0d0)*4.0d0
+  real(8), parameter :: pi = atan(1.0d0)*4.0d0
+  real(8), parameter :: real_max = huge(real(8))
+  real(8), parameter :: real_min = tiny(real(8))
+
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
             rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product, &
-            atom2num, save_cube
+            atom2num, save_cube, real_max, real_min
 contains
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
