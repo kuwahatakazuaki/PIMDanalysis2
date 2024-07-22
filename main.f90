@@ -43,6 +43,8 @@
 !  86 : Minimum bond length               (from atom1)
 !  89 : OHO distribution
 !  91 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
+! 10* : === Force + Coor ===
+! 101 : Product coor from center and force
 ! 191 : PbHPO4  (O-O distribution)
 ! 192 : PbHPO4  (dleta OH distribution)
 !!!  29 : 2D histogram from External   (Old, use the 28 mode)

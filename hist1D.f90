@@ -51,6 +51,8 @@ contains
     end if
 
     Dhist = (hist_max1 - hist_min1) / dble(Nhist)
+!print *, hist_min1, hist_max1
+!stop 'HERE'
 
     print '("    X range max =", F13.6)', hist_max1
     print '("    X range min =", F13.6)', hist_min1
@@ -83,7 +85,6 @@ contains
       beta = 1 / ( temperature * KtoAU )
       do l = 1, Nhist
         poten = umbrella_force * histogram(l,1)**2
-!        poten = umbrella_force * ( histogram(l,1) * AngtoAU )**2
         hist_umbre(l) = histogram(l,2) * dexp(beta*poten)
       end do
       normalization = sum(hist_umbre(:)) * (histogram(Nhist,1) - histogram(1,1)) / dble(Nhist-1)
@@ -136,11 +137,16 @@ contains
     do k = 1, UTNstep
       do j = 1, ubound(data_beads, dim=1)
         Ihist = int( (data_beads(j,k)-hist_min1) / Dhist )+1
-        histogram(Ihist,2) = histogram(Ihist,2) + 1.0d0
+        if ( Ihist > 0 .and. Ihist <= Nhist ) then
+          histogram(Ihist,2) = histogram(Ihist,2) + 1.0d0
+        !else
+        !  print *, Ihist
+        end if
       end do
     end do
     histogram(:,1) = histogram(:,1) - 0.5d0 * Dhist
     histogram(:,2) = histogram(:,2)/(dble(UTNstep*Nbeads)*Dhist)
+
   end subroutine calc_1Dhist_sub
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
