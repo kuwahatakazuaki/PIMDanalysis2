@@ -18,8 +18,7 @@
 #  42 : Dummy atom (X) for angle     (atom1-atom2-atomX)
 #  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)
 #  51 : Beads expansion      (all atoms)
-#  52 : Beads expansion      (export binary of atom1)
-#  53 : Beads expansion      (atom1 projected to atom2-atom3)
+#  52 : Beads expansion      (Multi atoms)
 #  61 : charge_analysis      (all atoms)
 #  62 : charge_analysis      (atom1)
 #  63 : dipole_analysis

@@ -61,15 +61,12 @@ subroutine multi_bond_sum
     data_step_multi(:,i) = data_step(:)
   end do
 
-  !data_beads(:,:) = sum(data_multi(:,:,:),dim=3) / dble(Nbond)
-
   OldStep = TNstep
   NewStep = TNstep * Nbond
   deallocate(data_beads)
   allocate(data_beads(Nbeads,NewStep))
   do i = 1, Nbond
     data_beads(:,1+TNstep*(i-1):TNstep*i) = data_multi(:,:,i)
-    !data_beads(:,1+TNstep*(i-1):1+TNstep*i) = data_multi(:,:,i)
   end do
 
   data_max = maxval(data_beads)

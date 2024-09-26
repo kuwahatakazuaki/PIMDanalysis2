@@ -25,8 +25,9 @@
 !  42 : Dummy atom (X) for angle     (atom1-atom2-atomX)
 !  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)
 !  51 : Beads expansion      (all atoms)
-!  52 : Beads expansion      (export binary of atom1)
-!  53 : Beads expansion      (atom1 projected to atom2-atom3)
+!  52 : Beads expansion      (Multi atom1 to atom2)
+!!  53 : Beads expansion      ( binary of atom1)
+!!  53 : Beads expansion      (atom1 projected to atom2-atom3)
 !  61 : charge analysis      (all atoms)
 !  62 : charge analysis      (atom1)
 !  63 : dipole analysis
@@ -95,8 +96,8 @@ select case(jobtype)
     call binary_calc
   case(41:49)
     call dummy_atom
-!  case(51:54)
-!    call beads_expansion
+  case(51:54)
+    call beads_expansion
   case(61:65)
     call other_quantities
   case(71:73)

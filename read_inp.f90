@@ -102,14 +102,14 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
 !          elseif (index(line,"$atom4" )    == 1) then; read(Uin,*) atom4
 !          elseif (index(line,"$atom5" )    == 1) then; read(Uin,*) atom5
 !! I will move these parameters to 'jobtype'
-          elseif (index(line,"# end file") == 1) then; exit
+        elseif (index(line,"# end file") == 1) then; exit
         end if
       end do
 ! --- End input file ---
 
 ! --- Check Lfirst ---
       if ( Lfirst .eqv. .False. ) then
-        sta = access(DirResult(Ifile)//'coor.bin', ' ')
+        sta = access(trim(DirResult(Ifile))//'/coor.bin', ' ')
         if ( sta /= 0 ) then
           print *, 'There is no "coor.bin"'
           print *, 'Change Lfirst from "False" to "True"'
