@@ -1,7 +1,6 @@
 
 subroutine beads_expansion
 use input_parameter
-!use calc_parameter, only: r, data_beads !, data_step
 use calc_histogram1D
 use utility
 implicit none
@@ -22,10 +21,10 @@ implicit none
 contains
 
   subroutine beads_multi
-    real(8) :: beads_ave(3,Natom,TNstep), beads_dev(Natom,TNstep)
-    real(8) :: rdif(3)
-    real(8) :: gyra_ave(TNstep)
+    real(8) :: beads_ave(3,Natom,TNstep), beads_dev(Natom,TNstep), rdif(3)
+    real(8) :: gyra_atom(TNstep), gyra_ave, gyra_dev, gyra_err
     integer :: Ngyra
+    integer :: Uout
 
     Ngyra = atom2 - atom1 + 1
 
@@ -47,10 +46,29 @@ contains
     beads_dev(:,:) = dsqrt( beads_dev(:,:) / Nbeads )
 
     do k = 1, TNstep
-      gyra_ave(k) = sum(beads_dev(atom2:atom1,k)) / dble(Ngyra)
+      gyra_atom(k) = sum(beads_dev(atom1:atom2,k)) / dble(Ngyra)
     end do
+    gyra_ave = sum(gyra_atom(:))/dble(TNstep)
 
-    print *, "Average gyration ", sum(gyra_ave(:))/dble(TNstep)
+    gyra_dev = 0.0d0
+    do k = 1, TNstep
+      gyra_dev = gyra_dev + (gyra_atom(k)-gyra_ave)**2
+    end do
+    gyra_dev = dsqrt( gyra_dev/dble(TNstep) )
+    gyra_err = gyra_dev / dsqrt(dble(TNstep))
+
+
+    open(newunit=Uout,file='gyra_step.out',status='replace')
+      write(Uout,'(" # Radius of gyration among atom",I0,"-atom",I0)') atom1, atom2
+      write(Uout,*) "# Average gyration   ", gyra_ave
+      write(Uout,*) "# Standard deviation ", gyra_dev
+      write(Uout,*) "# Standard error     ", gyra_err
+      do k = 1, TNstep
+        write(Uout,'(I7,F10.5)') k, gyra_atom(k)
+      end do
+    close(Uout)
+
+    print *, "Average gyration ", gyra_ave
 
   end subroutine beads_multi
 
@@ -104,8 +122,6 @@ stop 'Not Update'
     Nbeads_back = Nbeads
     Nbeads = 1
     do i = 1, Natom
-    !  hist_min(1) = 0.0d0
-    !  hist_max(1) = 0.0d0
       data_beads(1,:) = beads_dev(i,:)
     !  data_max = maxval(data_beads)
     !  data_min = minval(data_beads)
