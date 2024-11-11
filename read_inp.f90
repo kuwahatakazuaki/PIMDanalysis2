@@ -325,10 +325,11 @@ close(Uin)
   end do
   print *, ""
 
-  TNstep = 0
-  do j = 1, Nfile
-    TNstep = TNstep + Nstep(j) - Ncut(j)
-  end do
+  !TNstep = 0
+  !do j = 1, Nfile
+  !  TNstep = TNstep + Nstep(j) - Ncut(j)
+  !end do
+  TNstep = sum(Nstep(:)) - sum(Ncut)
   print '(a, i0)', "   The total number of step = ", TNstep
 ! --- End Print input parameters ---
 

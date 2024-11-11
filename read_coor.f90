@@ -19,9 +19,12 @@ subroutine read_coor
   return
 contains
 
+! ++++++++++++++++++++++++++++++++++
+! +++++ Start read_coor_binary +++++
+! ++++++++++++++++++++++++++++++++++
   subroutine read_coor_binary()
     integer :: Uin, ios
-   ! print '(a)', "  *** Binary reading ***"
+    print '(a)', "  *** Binary reading ***"
 
     if ( trim(FileName(1)) == "0" ) then
       FileName(1)=trim(DirResult(1))//'/coor.bin'
@@ -57,28 +60,72 @@ contains
     print '("     TNstep  = ",I0)', TNstep
     print '("     Nbeads  = ",I0)', Nbeads
 
-
     return
     911 print *, "ERROR!!: Reading line exceed the coor lines"; stop
   end subroutine read_coor_binary
+! ++++++++++++++++++++++++++++++++++
+! +++++ End!! read_coor_binary +++++
+! ++++++++++++++++++++++++++++++++++
 
+
+! ++++++++++++++++++++++++++++++++++
+! +++++ Start read_coor_format +++++
+! ++++++++++++++++++++++++++++++++++
   subroutine read_coor_format()
     integer :: Uin, ios, Istep, Ifile
-    !print '(a)', "  *** Format reading ***"
+    logical :: L0step = .False.
 
-    Istep = 0
+    print '(a)', "  *** Format reading ***"
+
+    ! +++ First reading for Automatically counting Nstep +++
     do Ifile = 1, Nfile
-
       if ( FileName(Ifile) == "0" ) then
         FileName(Ifile)=trim(DirResult(Ifile))//'/coor.xyz'
       end if
 
-      ! --- Reading formated file ---
       open(newunit=Uin, file=FileName(Ifile), status='old', iostat=ios)
         if ( ios /= 0 ) then
           print '(a,a)', 'ERROR!!: There is no coordinate of ', FileName(Ifile); stop
         end if
 
+        ! --- Automatically counting Nstep ---
+        if ( Nstep(Ifile) == 0 ) then
+          L0step = .True.
+          print '(a)', '  Nstep is set to be 0'
+          do
+            read(Uin,'()',end=100)
+            read(Uin,'()',end=100)
+            do j = 1, Nbeads
+              do i = 1, Natom
+                read(Uin,'()',end=100)
+              end do
+            end do
+            Nstep(Ifile) = Nstep(Ifile) + 1
+          end do
+          100 continue
+
+          print '(a,I0)', '  Reading Nstep automatically as ',Nstep(Ifile)
+          rewind(Uin)
+        end if
+
+        ! --- End Automatically counting Nstep ---
+
+      close(Uin)
+    end do
+
+    if ( L0step .eqv. .True.) then
+      TNstep = sum(Nstep(:)) - sum(Ncut)
+      print '(a, i0)', "   The total number of step = ", TNstep
+      deallocate(r)
+      allocate(r(3,Natom,Nbeads,TNstep))
+    end if
+    ! +++ End First reading for Automatically counting Nstep +++
+
+    Istep = 0
+    do Ifile = 1, Nfile
+
+      ! --- Reading formated file ---
+      open(newunit=Uin, file=FileName(Ifile), status='old', iostat=ios)
         ! --- Check the Natom and Nbeads ---
         read(Uin,*) check
           if (check /= Natom * Nbeads) then
@@ -87,25 +134,6 @@ contains
           end if
         rewind(Uin)
         ! --- End Check the Natom and Nbeads ---
-
-        !! --- Automatically counting Nstep ---
-        !if ( Nstep(Ifile) == 0 ) then
-        !  print '(a)', '  Nstep is set to be 0'
-        !  do
-        !    read(Uin,'()',end=100)
-        !    read(Uin,'()',end=100)
-        !    do j = 1, Nbeads
-        !      do i = 1, Natom
-        !        read(Uin,'()',end=100)
-        !      end do
-        !    end do
-        !    Nstep(Ifile) = Nstep(Ifile) + 1
-        !  end do
-        !  100 continue
-        !  rewind(Uin)
-        !  print '(a,I0)', '  Reading Nstep automatically as ',Nstep(Ifile)
-        !end if
-        !! --- End Automatically counting Nstep ---
 
       ! --- skip reading coor file ---
         do k = 1, Ncut(Ifile)
@@ -139,6 +167,9 @@ contains
     return
     911 print *, "ERROR!!: Reading line exceed the coor lines"; stop
   end subroutine read_coor_format
+! ++++++++++++++++++++++++++++++++++
+! +++++ End!! read_coor_format +++++
+! ++++++++++++++++++++++++++++++++++
 
   subroutine compression()
     character(len=:),allocatable :: ftemp

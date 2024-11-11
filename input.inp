@@ -23,6 +23,7 @@
 #  62 : charge_analysis      (atom1)
 #  63 : dipole_analysis
 #  64 : hfcc_analysis        (atom1)
+#  65 : Force analysis
 #  71 : Rotation          (movie)
 #  72 : Rotation          (cube file)
 #  81 : radial distribution  (element1)

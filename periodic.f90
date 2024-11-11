@@ -120,7 +120,7 @@ contains
   end subroutine Near_str2
 
   subroutine Near_str1
-    integer, parameter :: max_atom = 12
+    integer, parameter :: max_atom = 15
     integer :: Istep, Ibead, i, j, k
     integer :: Nnear, nearlabel(max_atom)
     real(8) :: s12(3), r12(3), dis2
