@@ -58,6 +58,9 @@ contains
     print *, "***** END periodic condition *****"
   end subroutine periodic
 
+! +++++++++++++++++++++++++++
+! +++++ Start Near_str2 +++++
+! +++++++++++++++++++++++++++
   subroutine Near_str2
     integer, parameter :: max_atom = 20
     integer :: Istep, Ibead, i, j, k
@@ -118,14 +121,20 @@ contains
     end do
     close(Uout)
   end subroutine Near_str2
+! +++++++++++++++++++++++++++
+! +++++ End!! Near_str2 +++++
+! +++++++++++++++++++++++++++
 
+! +++++++++++++++++++++++++++
+! +++++ Start Near_str1 +++++
+! +++++++++++++++++++++++++++
   subroutine Near_str1
-    integer, parameter :: max_atom = 15
+    integer, parameter :: max_atom = 20
     integer :: Istep, Ibead, i, j, k
     integer :: Nnear, nearlabel(max_atom)
     real(8) :: s12(3), r12(3), dis2
     real(8) :: nearatom(3,max_atom)
-    real(8), parameter :: cut_dis = 3.5d0
+    real(8), parameter :: cut_dis = 4.0d0
     character(:), allocatable :: Fout
 
     Fout = 'near_str1.xyz'
@@ -157,6 +166,9 @@ contains
     end do
     close(Uout)
   end subroutine Near_str1
+! +++++++++++++++++++++++++++
+! +++++ End!! Near_str1 +++++
+! +++++++++++++++++++++++++++
 
   subroutine Minimum_bond
     integer :: Istep, i, j, k
@@ -187,7 +199,7 @@ contains
       write(Uout,'(I5,F10.5,3X,A,I0,"-",A,I0)', advance='no') &
           Istep, dsqrt(minval(dis2)), trim(label(Iloc(1))),Iloc(1),  trim(label(Iloc(2))),Iloc(2)! , Iloc(3)
 
-      !dis2(Iloc(1), Iloc(2), Iloc(3)) = 1.0d0+100
+      !dis2(Iloc(1), Iloc(2), :) = real_max ??
       dis2(Iloc(1), Iloc(2), Iloc(3)) = real_max
       Iloc = minloc(dis2)
       write(Uout,'(F10.5,3X,A,I0,"-",A,I0)') &
@@ -367,32 +379,59 @@ stop 'Not Update'
 ! +++++ Start RMSD +++++
 ! ++++++++++++++++++++++
   subroutine RMSDatoms
-    real(8), allocatable :: rc(:,:,:), rmsd(:,:)
+    real(8), allocatable :: rc(:,:,:), rave(:,:)
+    real(8), allocatable :: rmsd_atom(:,:), rmsd(:)
     real(8) :: dis2, rij(3)
-    integer :: i, j, k, Uout
+    integer :: i, j, k, Uout, Nrmsd
+    character(len=32)  :: fmt1
+    character(len=256) :: fmt2
+
+    Nrmsd = atom2 - atom1 + 1
     allocate(rc(3,Natom,TNstep), source=0.0d0)
-    allocate(rmsd(Natom,TNstep))
+    allocate(rave(3,TNstep), source=0.0d0)
+    allocate(rmsd_atom(Nrmsd,TNstep))
+    allocate(rmsd(TNstep))
+
+    ! +++ Removing the center of mass +++
     do j = 1, Nbeads
       rc(:,:,:) = rc(:,:,:) + r(:,:,j,:)
     end do
     rc(:,:,:) = rc(:,:,:) / dble(Nbeads)
+    do i = 1, Natom
+      rave(:,:) = rave(:,:) + rc(:,i,:)
+    end do
+    rave(:,:) = rave(:,:) / dble(Natom)
+    do i = 1, Natom
+      rc(:,i,:) = rc(:,i,:) - rave(:,:)
+    end do
+    ! +++ Removing the center of mass +++
 
     do k = 1, TNstep
-      do i = 1, Natom
+      do i = atom1, atom2
         rij(:) = rc(:,i,k) - rc(:,i,1)
-        rmsd(i,k) = dot_product(rij(:),rij(:))
+        rmsd_atom(i,k) = dot_product(rij(:),rij(:))
       end do
     end do
-    rmsd(:,:) = dsqrt(rmsd(:,:))
+    do k = 1, TNstep
+      rmsd(k) = sum(rmsd_atom(:,k))
+    end do
+    rmsd_atom(:,:) = dsqrt(rmsd_atom(:,:))
+    rmsd(:) = dsqrt(rmsd(:)/dble(Nrmsd))
+
+    write(fmt1,'(A,I0,A)') '(',Nrmsd+1,'F8.4)'
+    fmt2 = "# Ave"
+    do i = atom1, atom2
+      write(fmt2,'(a, "     ",a,I0)') trim(fmt2), label(i), i
+    end do
 
     open(newunit=Uout,file='rmsd.out')
+      write(Uout,'(a)') trim(fmt2)
       do k = 1, TNstep
-        if (mod(k,graph_step) == 0) then
-          write(Uout,9999) rmsd(atom1:atom2,k)
-        end if
+        !if (mod(k,graph_step) == 0) then
+          write(Uout,fmt1) rmsd(k), rmsd_atom(:,k)
+        !end if
       end do
     close(Uout)
-  9999 format(48F8.4)
   end subroutine RMSDatoms
 ! ++++++++++++++++++++
 ! +++++ End RMSD +++++

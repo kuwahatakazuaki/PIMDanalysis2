@@ -121,6 +121,7 @@ contains
     end if
     ! +++ End First reading for Automatically counting Nstep +++
 
+    ! +++ Start Second reading for r(3,Natom,Nbeads,Nstep) +++
     Istep = 0
     do Ifile = 1, Nfile
 
@@ -160,6 +161,7 @@ contains
       close(Uin)
       ! --- Reading formated file ---
     end do
+    ! +++ End!! Second reading for r(3,Natom,Nbeads,Nstep) +++
 
     print '("   Formatted file reading ")'
     call compression

@@ -35,6 +35,7 @@
 !  65 : Force analysis
 !  71 : Rotation          (movie)
 !  72 : Rotation          (cube file)
+!!!  73 : RMSD (Root mean square deviation)
 !  8* : === Periodic boundary condition ===
 !  81 : Radial distribution (element1)
 !  82 : Radial distribution (element1 to element2)
@@ -100,7 +101,7 @@ select case(jobtype)
     call beads_expansion
   case(61:65)
     call other_quantities
-  case(71:73)
+  case(71:74)
     call rotation
   case(81:89)
     call periodic

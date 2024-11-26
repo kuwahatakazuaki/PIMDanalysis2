@@ -192,7 +192,5 @@ contains
     mat(3,:) = [y(2),   x(3),  0.d0, -x(1)]
     mat(4,:) = [y(3),  -x(2),  x(1),  0.d0]
   end function make_matA
-
-
 end subroutine rotation
 

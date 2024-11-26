@@ -28,7 +28,7 @@
 #  72 : Rotation          (cube file)
 #  81 : radial distribution  (element1)
 #  82 : radial distribution  (element1 to element2)
-#  85 : RMSD (Root mean square deviation)
+#  85 : RMSD (Root mean square deviation) (atom1-atom2)
 #  88 : Tetrahedron (O-H4)
 #  89 : OHO distribution
 #  91 : projection           (atom1-atom2  T  atom3-atom4)
