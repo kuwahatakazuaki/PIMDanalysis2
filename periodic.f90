@@ -50,7 +50,7 @@ contains
         call Near_str1
       case(88)
         call Near_str2
-      case(89)
+      case(99)
         call oho_distribution
       case default
         stop 'ERROR!!! wrong "Job type" option'
@@ -380,7 +380,7 @@ stop 'Not Update'
 ! ++++++++++++++++++++++
   subroutine RMSDatoms
     real(8), allocatable :: rc(:,:,:), rave(:,:)
-    real(8), allocatable :: rmsd_atom(:,:), rmsd(:)
+    real(8), allocatable :: rmsd_atom(:,:), rmsd(:), msd2(:)
     real(8) :: dis2, rij(3)
     integer :: i, j, k, Uout, Nrmsd
     character(len=32)  :: fmt1
@@ -391,6 +391,7 @@ stop 'Not Update'
     allocate(rave(3,TNstep), source=0.0d0)
     allocate(rmsd_atom(Nrmsd,TNstep))
     allocate(rmsd(TNstep))
+    allocate(msd2(TNstep))
 
     ! +++ Removing the center of mass +++
     do j = 1, Nbeads
@@ -416,19 +417,21 @@ stop 'Not Update'
       rmsd(k) = sum(rmsd_atom(:,k))
     end do
     rmsd_atom(:,:) = dsqrt(rmsd_atom(:,:))
-    rmsd(:) = dsqrt(rmsd(:)/dble(Nrmsd))
+    msd2(:) = rmsd(:)/dble(Nrmsd)
+    rmsd(:) = dsqrt(msd2(:))
+    !rmsd(:) = dsqrt(rmsd(:)/dble(Nrmsd))
 
-    write(fmt1,'(A,I0,A)') '(',Nrmsd+1,'F8.4)'
-    fmt2 = "# Ave"
+    write(fmt1,'(A,I0,A)') '(',Nrmsd+2,'G10.3)'
+    fmt2 = "# Ave       d2"
     do i = atom1, atom2
-      write(fmt2,'(a, "     ",a,I0)') trim(fmt2), label(i), i
+      write(fmt2,'(a, "       ",a,I0)') trim(fmt2), label(i), i
     end do
 
     open(newunit=Uout,file='rmsd.out')
       write(Uout,'(a)') trim(fmt2)
       do k = 1, TNstep
         !if (mod(k,graph_step) == 0) then
-          write(Uout,fmt1) rmsd(k), rmsd_atom(:,k)
+          write(Uout,fmt1) rmsd(k), msd2(k), rmsd_atom(:,k)
         !end if
       end do
     close(Uout)

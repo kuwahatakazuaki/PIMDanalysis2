@@ -43,14 +43,18 @@
 !  84 : Bond diff with periodic           (atom1-atom2  -  atom3-atom4)
 !  85 : RMSD (Root mean square deviation)
 !  86 : Minimum bond length               (from atom1)
-!  89 : OHO distribution
-!  91 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
-! 10* : === Force + Coor ===
-! 101 : Product coor from center and force
+!  87 : Near structure1 < Lbond           (from atom1)
+!  88 : Near structure2 < Lbond           (from atom1 and atom2)
+!  89 : Near structure1 < Natom           (from atom1)
+!  91 : Counting atoms
+!  98 : Atomic distribution (BCC)
+!  99 : OHO distribution
+!!! 10* : === Force + Coor ===
+!!! 101 : Product coor from center and force
+! 111 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
 ! 191 : PbHPO4  (O-O distribution)
 ! 192 : PbHPO4  (dleta OH distribution)
 !!!  29 : 2D histogram from External   (Old, use the 28 mode)
-!!!  91 : projection           (atom1-atom2  T  atom3-atom4)
 
 program analysis
 use input_parameter, &
@@ -103,9 +107,9 @@ select case(jobtype)
     call other_quantities
   case(71:74)
     call rotation
-  case(81:89)
+  case(81:99)
     call periodic
-  case(91)
+  case(111)
     call special_case
   case(191:195)
     call pbhpo4

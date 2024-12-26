@@ -7,18 +7,22 @@
 #   9 : 1D histgram from External
 #  11 : Multi bond for all
 #  12 : Multi bond sort
+#  13 : Multi bond sum
 #  21 : 2D histogram_bond            (atom1-atom2 and atom3-atom4)
 #  22 : 2D histogram_angle           (atom1-atom2 and atom3-atom4-atom5)
 #  29 : 2D histogram from External   (Arbitrary number line)
 #  31 : binary mask average    (coor.xyz if (bin1) )
 #  32 : binary mask each beads (coor.xyz if (bin1) )
-#  32 : binary add             (bin1 + bin2)
-#  33 : binary diff            (bin1 - bin2)
+#  33 : binary append
+#  34 : binary add             (bin1 + bin2)
+#  35 : binary diff            (bin1 - bin2)
 #  41 : Dummy atom (X) for bond      (atom1-atomX)
 #  42 : Dummy atom (X) for angle     (atom1-atom2-atomX)
 #  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)
 #  51 : Beads expansion      (all atoms)
-#  52 : Beads expansion      (Multi atoms)
+#  52 : Beads expansion      (Multi atom1 to atom2)
+#!  53 : Beads expansion      ( binary of atom1)
+#!  53 : Beads expansion      (atom1 projected to atom2-atom3)
 #  61 : charge_analysis      (all atoms)
 #  62 : charge_analysis      (atom1)
 #  63 : dipole_analysis
@@ -26,10 +30,17 @@
 #  65 : Force analysis
 #  71 : Rotation          (movie)
 #  72 : Rotation          (cube file)
-#  81 : radial distribution  (element1)
-#  82 : radial distribution  (element1 to element2)
+#  8* : === Periodic boundary condition ===
+#  81 : Radial distribution (element1)
+#  82 : Radial distribution (element1 to element2)
+#  83 : Bond length with periodic         (atom1-atom2)
+#  84 : Bond diff with periodic           (atom1-atom2  -  atom3-atom4)
 #  85 : RMSD (Root mean square deviation) (atom1-atom2)
-#  88 : Tetrahedron (O-H4)
+#  86 : Minimum bond length               (from atom1)
+#  87 : Near structure < Lbond            (from atom1)
+#  88 : Near structure < Lbond            (from atom1 and atom2)
+#  89 : Near structure1 < Natom           (from atom1)
+###  88 : Tetrahedron (O-H4)
 #  89 : OHO distribution
 #  91 : projection           (atom1-atom2  T  atom3-atom4)
 # 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
@@ -143,6 +154,8 @@ $Ielement2
 17
 $Felement2
 24
+$threshhold??
+0.71d0
 #$index tetrahedron  # loop by atom1
 # 33 20 30 15  1
 # 36 31 17 14  4
