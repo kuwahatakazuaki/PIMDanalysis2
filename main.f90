@@ -45,7 +45,7 @@
 !  86 : Minimum bond length               (from atom1)
 !  87 : Near structure1 < Lbond           (from atom1)
 !  88 : Near structure2 < Lbond           (from atom1 and atom2)
-!  89 : Near structure1 < Natom           (from atom1)
+!  89 : Near atoms1 < Natom               (from atom1)
 !  91 : Counting atoms
 !  98 : Atomic distribution (BCC)
 !  99 : OHO distribution
@@ -59,7 +59,6 @@
 program analysis
 use input_parameter, &
     only: Natom, Nbeads, TNstep, label, jobtype, r, data_step, data_beads, Lfirst
-!use calc_centoroid
 !use calc_histogram1D
 use calc_histogram2D
 use mod_other_quantities

@@ -232,6 +232,7 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
         elseif (index(line,"$Felement1")        == 1 ) then; read(Uin,*) Felement1
         elseif (index(line,"$Ielement2")        == 1 ) then; read(Uin,*) Ielement2
         elseif (index(line,"$Felement2")        == 1 ) then; read(Uin,*) Felement2
+        elseif (index(line,"$Natom_peri")       == 1 ) then; read(Uin,*) Natom_peri
         elseif (index(line,"$OHO distribution") == 1 ) then
           read(Uin,'(a)') line
             read(Uin,*) Noho

@@ -154,6 +154,8 @@ $Ielement2
 17
 $Felement2
 24
+$Natom_peri
+4
 $threshhold??
 0.71d0
 #$index tetrahedron  # loop by atom1

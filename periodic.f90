@@ -4,9 +4,9 @@ module mod_periodic
             hist_max1, hist_max2, hist_min1, hist_min2, Nhist, lattice, &
             Ielement1, Ielement2, Felement1, Felement2, Noho, Lbox, label_oho, &
             r, data_beads, data_step, graph_step, atom1, atom2, atom3, atom4, &
-            Ntetra, Itetra, Ndiv
+            Ntetra, Itetra, Ndiv, Natom_peri
   use calc_histogram1D, only: calc_1Dhist
-  use utility, only: get_volume, pi, get_inv_mat, real_max
+  use utility, only: get_volume, pi, get_inv_mat, real_max, sort_real
   implicit none
   private
   integer :: Uout
@@ -50,6 +50,8 @@ contains
         call Near_str1
       case(88)
         call Near_str2
+      case(89)
+        call Near_atoms1
       case(99)
         call oho_distribution
       case default
@@ -57,6 +59,51 @@ contains
     end select
     print *, "***** END periodic condition *****"
   end subroutine periodic
+
+! +++++++++++++++++++++++++++
+! +++++ Start Near_str1 +++++
+! +++++++++++++++++++++++++++
+  subroutine Near_atoms1
+    integer :: Istep, Ibead, i, j, k
+    integer :: Nnear, nearlabel(Natom_peri)
+    real(8) :: s12(3), r12(3), dis2
+    real(8) :: nearatom(3,Natom_peri)
+    real(8) :: temp(Natom-1)
+    character(:), allocatable :: Fout
+
+    Fout = 'near_atoms.xyz'
+    open(newunit=Uout,file=Fout,status='replace')
+    do Istep = 1, TNstep
+      do Ibead = 1, Nbeads
+        Nnear = 0
+        do i = 1, Natom
+          if ( i == atom1 ) cycle
+          s12(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
+          s12(:) = s12(:) - nint(s12(:))
+          r12(:) = matmul(s12(:),lattice(:,:))
+          dis2 = dot_product(r12(:),r12(:))
+          !if ( dis2 <= cut_dis**2 ) then
+          !  Nnear = Nnear + 1
+          !  if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
+          !  nearlabel(Nnear) = i
+          !  nearatom(:,Nnear) = r12(:)
+          !end if
+        end do
+      end do
+
+      write(Uout,*) Nnear + 1
+      write(Uout,*) Istep
+      write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
+      do i = 1, Nnear
+        write(Uout,*) label(nearlabel(i)), nearatom(:,i)
+      end do
+    end do
+    close(Uout)
+  end subroutine Near_atoms1
+! +++++++++++++++++++++++++++
+! +++++ End!! Near_str1 +++++
+! +++++++++++++++++++++++++++
+
 
 ! +++++++++++++++++++++++++++
 ! +++++ Start Near_str2 +++++
@@ -666,63 +713,4 @@ stop 'Not Update'
   end function get_min_edge
 
 end module mod_periodic
-
-!! +++++++++++++++++++++++++++++
-!! +++++ Start Tetrahedron +++++
-!! +++++++++++++++++++++++++++++
-!  subroutine Tetrahedron
-!    integer :: i, j, k, xyz, Utem
-!    real(8), allocatable :: rt(:,:,:,:,:), st(:,:,:,:)
-!    real(8), allocatable :: rcub(:,:,:,:)
-!    real(8) :: rc(3), Lbox(3)
-!    integer :: Iatoms(4) = [2,3,4,5]
-!
-!    do i = 1, 3
-!      Lbox(i) = lattice(i,i)
-!    end do
-!
-!    !call get_inv_mat(lattice,lat_inv,3)
-!
-!    allocate(rt(3,5,Ntetra,Nbeads,TNstep))
-!    allocate(st(3,5,Ntetra,Nbeads))
-!
-!    do k = 1, TNstep
-!      do xyz = 1, 3
-!        rc(xyz) = sum(r(xyz,:,:,k)) / dble(Natom*Nbeads)
-!        r(xyz,:,:,k) = r(xyz,:,:,k) - rc(xyz)
-!      end do
-!    end do
-!
-!    do i = 1, Ntetra
-!      do j = 1, 5
-!        rt(:,j,i,:,:) = r(:,Itetra(i,j),:,:)
-!      end do
-!      do xyz = 1, 3
-!        rc(xyz) = sum(r(xyz,Itetra(i,1),:,:)) / dble(Nbeads*TNstep)
-!        rt(xyz,:,i,:,:) = rt(xyz,:,i,:,:) - rc(xyz)
-!      end do
-!    end do
-!
-!    do k = 1, TNstep
-!      do i = 1, Ntetra
-!        do xyz = 1, 3
-!          st(xyz,:,i,:) = rt(xyz,:,i,:,k) / Lbox(xyz)
-!        end do
-!        st(:,:,:,:) = st(:,:,:,:) - nint(st(:,:,:,:))
-!        do xyz = 1, 3
-!          rt(xyz,:,i,:,k) = st(xyz,:,i,:) * Lbox(xyz)
-!        end do
-!      end do
-!    end do
-!
-!    allocate(rcub(3,5,Nbeads,TNstep*Ntetra))
-!    do i = 1, Ntetra
-!      rcub(:,:,:,TNstep*(i-1)+1:TNstep*i) = rt(:,:,i,:,:)
-!    end do
-!
-!    call save_cube_sub(rcub,Iatoms)
-!  end subroutine Tetrahedron
-!! +++++++++++++++++++++++++++
-!! +++++ End Tetrahedron +++++
-!! +++++++++++++++++++++++++++
 

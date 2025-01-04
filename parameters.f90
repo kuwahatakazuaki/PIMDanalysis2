@@ -1,12 +1,12 @@
 module input_parameter
   implicit none
 
-  integer :: Natom, Nbeads, TNstep, Nhist, Nbond, Nfile
+  integer :: Natom, Nbeads, TNstep, Nhist, Nbond, Nfile, Natom_peri
   integer :: atom1, atom2, atom3, atom4, atom5
   integer :: jobtype
   integer :: type_dummy, atom_dummy1, atom_dummy2
   integer :: graph_step = 10
-  integer, allocatable :: Nstep(:), Ncut(:) !, atom1(:), atom2(:), atom3(:), atom4(:), atom5(:)
+  integer, allocatable :: Nstep(:), Ncut(:)
   real(8) :: hist_min1=0.0d0, hist_max1=0.0d0, hist_min2=0.0d0, hist_max2=0.0d0, hist_margin !, hist_max
   character(len=128), allocatable :: FileName(:), DirResult(:)
   integer, allocatable :: Imulti(:,:)

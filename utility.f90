@@ -434,5 +434,39 @@ contains
 ! +++++ End outer_product ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ Start sort_real ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  subroutine sort_real(num, idx)
+    real(8), intent(inout) :: num(:)
+    integer, intent(out), optional :: idx(:)
+    integer :: Nele, i, j, Itemp
+    real(8) :: temp
+    logical :: Lidx
+    Nele = size(num)
+
+    Lidx = present(idx)
+    if (Lidx) idx = [(i, i = 1, Nele)]
+
+    do i = 1, Nele
+      do j = i+1, Nele
+        if (num(i) > num(j) ) then
+          temp = num(i)
+          num(i) = num(j)
+          num(j) = temp
+
+          if ( Lidx ) then
+            Itemp  = idx(i)
+            idx(i) = idx(j)
+            idx(j) = Itemp
+          end if
+        end if
+      end do
+    end do
+  end subroutine sort_real
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ End!! sort_real ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 end module utility
 
