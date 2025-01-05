@@ -8,7 +8,7 @@ module utility
 
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
             rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product, &
-            atom2num, save_cube, real_max, real_min
+            atom2num, save_cube, real_max, real_min, sort_real
 contains
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -371,6 +371,8 @@ contains
     num = 0
     if     ( trim(cha) == 'h' ) then
       num = 1
+    elseif ( trim(cha) == 'he' ) then
+      num = 2
     elseif ( trim(cha) == 'li' ) then
       num = 3
     elseif ( trim(cha) == 'be' ) then
@@ -385,6 +387,14 @@ contains
       num = 8
     elseif ( trim(cha) == 'f' ) then
       num = 9
+    elseif ( trim(cha) == 'ne' ) then
+      num = 10
+    elseif ( trim(cha) == 'na' ) then
+      num = 11
+    elseif ( trim(cha) == 'mg' ) then
+      num = 12
+    elseif ( trim(cha) == 'al' ) then
+      num = 13
     elseif ( trim(cha) == 'si' ) then
       num = 14
     elseif ( trim(cha) == 'p' ) then
@@ -393,6 +403,28 @@ contains
       num = 16
     elseif ( trim(cha) == 'cl' ) then
       num = 17
+    elseif ( trim(cha) == 'v' ) then
+      num = 23
+    elseif ( trim(cha) == 'cr' ) then
+      num = 24
+    elseif ( trim(cha) == 'mn' ) then
+      num = 25
+    elseif ( trim(cha) == 'fe' ) then
+      num = 26
+    elseif ( trim(cha) == 'co' ) then
+      num = 27
+    elseif ( trim(cha) == 'ni' ) then
+      num = 28
+    elseif ( trim(cha) == 'cu' ) then
+      num = 29
+    elseif ( trim(cha) == 'zn' ) then
+      num = 30
+    elseif ( trim(cha) == 'ga' ) then
+      num = 31
+    elseif ( trim(cha) == 'ge' ) then
+      num = 32
+    elseif ( trim(cha) == 'as' ) then
+      num = 33
     else
       print *, cha, 'is not exist in atom2num'
       stop 'ERROR!! "atom2num" cannot chage '

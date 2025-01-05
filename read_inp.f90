@@ -196,7 +196,6 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
           read(Uin,*) Nhyd
           allocate(hyd(Nhyd), r_ref(3,Natom), weight(Natom))
           if ( .not. allocated(label) ) allocate(label(Natom))
-        !elseif (index(line,"$Ndiv")   == 1 ) then; read(Uin,*) Ndiv
         elseif (index(line,"$Hatom")  == 1)  then
           do i = 1, Nhyd
             read(Uin,*) hyd(i)

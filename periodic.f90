@@ -4,7 +4,7 @@ module mod_periodic
             hist_max1, hist_max2, hist_min1, hist_min2, Nhist, lattice, &
             Ielement1, Ielement2, Felement1, Felement2, Noho, Lbox, label_oho, &
             r, data_beads, data_step, graph_step, atom1, atom2, atom3, atom4, &
-            Ntetra, Itetra, Ndiv, Natom_peri
+            Ntetra, Itetra, Ndiv, Natom_peri, FNameBinary1
   use calc_histogram1D, only: calc_1Dhist
   use utility, only: get_volume, pi, get_inv_mat, real_max, sort_real
   implicit none
@@ -64,40 +64,45 @@ contains
 ! +++++ Start Near_str1 +++++
 ! +++++++++++++++++++++++++++
   subroutine Near_atoms1
-    integer :: Istep, Ibead, i, j, k
-    integer :: Nnear, nearlabel(Natom_peri)
+    integer :: Iatom, Istep, Ibead, i, j, k
+    integer :: near_idx(Natom_peri), temp_idx(Natom)
+    real(8) :: near_str(3,Natom_peri), temp_dis(Natom), temp_str(3,Natom)
     real(8) :: s12(3), r12(3), dis2
-    real(8) :: nearatom(3,Natom_peri)
-    real(8) :: temp(Natom-1)
     character(:), allocatable :: Fout
 
     Fout = 'near_atoms.xyz'
     open(newunit=Uout,file=Fout,status='replace')
-    do Istep = 1, TNstep
+    !open(newunit=Uout,file=FNameBinary1, form='unformatted', access='stream', status='replace')
+    LoopStep : do Istep = 1, TNstep
+    LoopAtom : do Iatom = atom1, atom2
+      write(Uout,*) (Natom_peri+1)*Nbeads
+      write(Uout,*) Istep, Iatom
       do Ibead = 1, Nbeads
-        Nnear = 0
+        temp_dis(:) = real_max
+
         do i = 1, Natom
-          if ( i == atom1 ) cycle
-          s12(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
+          if ( i == Iatom ) cycle
+          s12(:) = s(:,i,Ibead,Istep) - s(:,Iatom,Ibead,Istep)
           s12(:) = s12(:) - nint(s12(:))
           r12(:) = matmul(s12(:),lattice(:,:))
           dis2 = dot_product(r12(:),r12(:))
-          !if ( dis2 <= cut_dis**2 ) then
-          !  Nnear = Nnear + 1
-          !  if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
-          !  nearlabel(Nnear) = i
-          !  nearatom(:,Nnear) = r12(:)
-          !end if
+          temp_dis(i) = dis2
+          temp_str(:,i) = r12(:)
+        end do
+        call sort_real(temp_dis,temp_idx)
+        near_idx(1:Natom_peri) = temp_idx(1:Natom_peri)
+        do j = 1, Natom_peri
+          near_str(:,j) = temp_str(:,near_idx(j))
+        end do
+
+        write(Uout,*) label(Iatom), 0.0d0, 0.0d0, 0.0d0
+        do i = 1, Natom_peri
+          write(Uout,*) label(near_idx(i)), near_str(:,i)
         end do
       end do
 
-      write(Uout,*) Nnear + 1
-      write(Uout,*) Istep
-      write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
-      do i = 1, Nnear
-        write(Uout,*) label(nearlabel(i)), nearatom(:,i)
-      end do
-    end do
+    end do LoopAtom
+    end do LoopStep
     close(Uout)
   end subroutine Near_atoms1
 ! +++++++++++++++++++++++++++
@@ -111,10 +116,10 @@ contains
   subroutine Near_str2
     integer, parameter :: max_atom = 20
     integer :: Istep, Ibead, i, j, k
-    integer :: Nnear, nearlabel(max_atom)
+    integer :: Nnear, near_idx(max_atom)
     real(8) :: si1(3), ri1(3), si2(3), ri2(3), dis1, dis2
     real(8) :: diff_r(3), diff_s(3)
-    real(8) :: nearatom(3,max_atom)
+    real(8) :: near_str(3,max_atom)
     real(8), parameter :: cut_dis = 3.3d0
     character(:), allocatable :: Fout
 
@@ -145,13 +150,13 @@ contains
           if ( dis1 <= cut_dis**2 ) then
             Nnear = Nnear + 1
             if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
-            nearlabel(Nnear) = i
-            nearatom(:,Nnear) = ri1(:)
+            near_idx(Nnear) = i
+            near_str(:,Nnear) = ri1(:)
           else if ( dis2 <= cut_dis**2  ) then
             Nnear = Nnear + 1
             if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
-            nearlabel(Nnear) = i
-            nearatom(:,Nnear) = ri2(:) + diff_r(:)
+            near_idx(Nnear) = i
+            near_str(:,Nnear) = ri2(:) + diff_r(:)
           end if
         end do
       end do
@@ -162,7 +167,7 @@ contains
       write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
       write(Uout,*) label(atom2), diff_r(:)
       do i = 1, Nnear
-        write(Uout,*)  label(nearlabel(i)), nearatom(:,i)
+        write(Uout,*)  label(near_idx(i)), near_str(:,i)
       end do
       end if
     end do
@@ -178,9 +183,9 @@ contains
   subroutine Near_str1
     integer, parameter :: max_atom = 20
     integer :: Istep, Ibead, i, j, k
-    integer :: Nnear, nearlabel(max_atom)
+    integer :: Nnear, near_idx(max_atom)
     real(8) :: s12(3), r12(3), dis2
-    real(8) :: nearatom(3,max_atom)
+    real(8) :: near_str(3,max_atom)
     real(8), parameter :: cut_dis = 4.0d0
     character(:), allocatable :: Fout
 
@@ -198,8 +203,8 @@ contains
           if ( dis2 <= cut_dis**2 ) then
             Nnear = Nnear + 1
             if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
-            nearlabel(Nnear) = i
-            nearatom(:,Nnear) = r12(:)
+            near_idx(Nnear) = i
+            near_str(:,Nnear) = r12(:)
           end if
         end do
       end do
@@ -208,7 +213,7 @@ contains
       write(Uout,*) Istep
       write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
       do i = 1, Nnear
-        write(Uout,*) label(nearlabel(i)), nearatom(:,i)
+        write(Uout,*) label(near_idx(i)), near_str(:,i)
       end do
     end do
     close(Uout)
