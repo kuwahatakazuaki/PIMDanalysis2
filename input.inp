@@ -21,15 +21,14 @@
 #  43 : Dummy atom (X) for dihedral  (atom1-atom2-atomX-atom4)
 #  51 : Beads expansion      (all atoms)
 #  52 : Beads expansion      (Multi atom1 to atom2)
-#!  53 : Beads expansion      ( binary of atom1)
 #!  53 : Beads expansion      (atom1 projected to atom2-atom3)
 #  61 : charge_analysis      (all atoms)
 #  62 : charge_analysis      (atom1)
 #  63 : dipole_analysis
 #  64 : hfcc_analysis        (atom1)
 #  65 : Force analysis
-#  71 : Rotation          (movie)
-#  72 : Rotation          (cube file)
+#  71 : Rotation for all beads  (older version)
+#  72 : Rotation for each beads (newer version)
 #  8* : === Periodic boundary condition ===
 #  81 : Radial distribution (element1)
 #  82 : Radial distribution (element1 to element2)
@@ -39,7 +38,7 @@
 #  86 : Minimum bond length               (from atom1)
 #  87 : Near structure < Lbond            (from atom1)
 #  88 : Near structure < Lbond            (from atom1 and atom2)
-#  89 : Near structure1 < Natom           (from atom1)
+#  89 : Near structure1 < Natom           (from atom1 to atom2)
 ###  88 : Tetrahedron (O-H4)
 #  89 : OHO distribution
 #  91 : projection           (atom1-atom2  T  atom3-atom4)

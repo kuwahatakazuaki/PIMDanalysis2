@@ -65,7 +65,6 @@ subroutine calc_cent_1Dhist_sub(Ifile,atomA,atomB,step)
   integer, intent(in) :: Ifile, atomA, atomB
   integer, intent(inout) :: step
   integer :: k
-!  real(8) :: norm
   do k = Nstart(Ifile), Nstart(Ifile)
   step = step + 1
     data_cent = norm( r_cent(:,atomA,step) - r_cent(:,atomB,step))

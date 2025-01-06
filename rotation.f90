@@ -29,6 +29,73 @@ subroutine rotation
   end do
   r_ref(:,:) = r_ref(:,:) - spread(rave(:), dim=2, ncopies=Natom)
 
+  select case(jobtype)
+    case(71)
+      call remove_rotation_allbeads ! older version
+    case(72)
+      call remove_rotation_eachbeads ! newer version
+  end select
+
+  call save_cube_sub
+
+  open(newunit=Uout,file='eigen.out')
+    do k = 1, TNstep
+      if ( mod(k,graph_step) == 0 ) then
+        write(Uout,9999) eigenArray(k)
+      end if
+    end do
+  close(Uout)
+
+  !select case(jobtype)
+  !  case(71)
+  !    call save_movie
+  !  case(72)
+  !    call save_cube_sub
+  !end select
+  print '(a)',  " ***** END Removing rotation freedom *****"
+
+  9999 format(E12.5)
+contains
+
+  subroutine remove_rotation_eachbeads
+  integer :: Istep, Ibead
+! --- Start Remove center of mass ---
+  Loop_step1:do Istep = 1, TNstep
+    rave(:) = 0.0d0
+    do j = 1, Nbeads
+      do xyz = 1, 3
+        rave(xyz) = rave(xyz) + dot_product(r(xyz,:,j,Istep), weight(:))
+      end do
+      rave(:) = rave(:) / Tweight
+      r(:,:,j,Istep) = r(:,:,j,Istep) - spread(rave(:),dim=2,ncopies=Natom)
+    end do
+  end do Loop_step1
+! --- End Remove center of mass ---
+
+! --- Start Rotation to r_ref ---
+  Loop_step2:do Istep = 1, TNstep
+    matB(:,:) = 0.0d0
+    do j = 1, Nbeads
+      do i = 1, Natom
+        matA(:,:) = make_matA(r_ref(:,i)+r(:,i,j,Istep),r_ref(:,i)-r(:,i,j,Istep))
+        matB(:,:) = matB(:,:) + weight(i)*matmul(transpose(matA),matA)
+      end do
+      matB(:,:) = matB(:,:) / Tweight
+
+      call dsyevd('V', 'U', N, matB, N, eigen, work, lwork, iwork, liwork, info)
+      qua(:) = matB(:,1)
+      eigenArray(Istep) = eigen(1)
+      rot(:,:) = get_rot_mat(qua(:))
+
+      do i = 1, Natom
+        rnew(:,i,j,Istep) = matmul(rot(:,:), r(:,i,j,Istep))
+      end do
+    end do
+  end do Loop_step2
+! --- End Rotation to r_ref ---
+  end subroutine remove_rotation_eachbeads
+
+  subroutine remove_rotation_allbeads
 ! --- Start Remove center of mass ---
   step_loop1:do k = 1, TNstep
     rave(:) = 0.0d0
@@ -64,25 +131,7 @@ subroutine rotation
     end do
   end do step_loop2
 ! --- End Rotation to r_ref ---
-
-  open(newunit=Uout,file='eigen.out')
-    do k = 1, TNstep
-      if ( mod(k,graph_step) == 0 ) then
-        write(Uout,9999) eigenArray(k)
-      end if
-    end do
-  close(Uout)
-
-  select case(jobtype)
-    case(71)
-      call save_movie
-    case(72)
-      call save_cube_sub
-  end select
-  print '(a)',  " ***** END Removing rotation freedom *****"
-
-  9999 format(E12.5)
-contains
+  end subroutine remove_rotation_allbeads
 
   ! Please reffer the save_cube in utility, in the futhure 
   subroutine save_cube_sub
