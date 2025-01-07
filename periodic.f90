@@ -64,15 +64,17 @@ contains
 ! +++++ Start Near_str1 +++++
 ! +++++++++++++++++++++++++++
   subroutine Near_atoms1
-    integer :: Iatom, Istep, Ibead, i, j, k
+    use utility, only: count_letter
+    integer :: Iatom, Istep, Ibead, i, j, k!, Ulab
     integer :: near_idx(Natom_peri), temp_idx(Natom)
     real(8) :: near_str(3,Natom_peri), temp_dis(Natom), temp_str(3,Natom)
     real(8) :: s12(3), r12(3), dis2
-    character(:), allocatable :: Fout
+    character(:), allocatable :: Fout!, Flab
+    character(len=2) :: Alllabel(Natom_peri,Nbeads,TNstep,atom2-atom1+1)
+    !integer :: count_letter
 
     Fout = 'near_atoms.xyz'
     open(newunit=Uout,file=Fout,status='replace')
-    !open(newunit=Uout,file=FNameBinary1, form='unformatted', access='stream', status='replace')
     LoopStep : do Istep = 1, TNstep
     LoopAtom : do Iatom = atom1, atom2
       write(Uout,*) (Natom_peri+1)*Nbeads
@@ -99,10 +101,25 @@ contains
         do i = 1, Natom_peri
           write(Uout,*) label(near_idx(i)), near_str(:,i)
         end do
+        do i = 1, Natom_peri
+          Alllabel(i,Ibead,Istep,Iatom) = label(near_idx(i))
+        end do
       end do
 
     end do LoopAtom
     end do LoopStep
+    close(Uout)
+
+    open(newunit=Uout,file='near_label.dat',status='replace')
+      do Iatom = atom1, atom2
+        do Istep = 1, TNstep
+          !write(Uout,*) Iatom, Istep
+          do Ibead = 1, Nbeads
+            !write(Uout,*) Alllabel(:,Ibead,Istep,Iatom), count_letter(Alllabel(:,Ibead,Istep,Iatom),'Fe')
+            write(Uout,*) count_letter(Alllabel(:,Ibead,Istep,Iatom),'Fe')
+          end do
+        end do
+      end do
     close(Uout)
   end subroutine Near_atoms1
 ! +++++++++++++++++++++++++++

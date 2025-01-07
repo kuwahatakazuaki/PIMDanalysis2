@@ -4,6 +4,7 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+100	read_coor.f90	/^          100 continue$/;"	l	subroutine:read_coor_format	file:
 800	hist1D.f90	/^      800 continue$/;"	l	subroutine:external_1Dhist	file:
 800	hist2D.f90	/^        800 continue$/;"	l	subroutine:external_2Dhits_arbitrary	file:
 801	hist1D.f90	/^      801 continue$/;"	l	subroutine:external_1Dhist	file:
@@ -22,7 +23,6 @@
 9998	utility.f90	/^  9998  format(I5,4F12.6)$/;"	l	file:
 9999	pbhpo4.f90	/^    9999  format(6F12.7)$/;"	l	subroutine:print_unit_step	file:
 9999	periodic.f90	/^  9999  format(I5,4F12.6)$/;"	l	file:
-9999	periodic.f90	/^  9999 format(48F8.4)$/;"	l	subroutine:RMSDatoms	file:
 9999	periodic.f90	/^  9999 format(F10.5)$/;"	l	subroutine:oho_distribution	file:
 9999	rotation.f90	/^    9999 format(a,4F11.7)$/;"	l	subroutine:save_movie	file:
 9999	rotation.f90	/^  9999  format(I5,4F12.6)$/;"	l	subroutine:save_cube_sub	file:
@@ -52,13 +52,15 @@ Lfirst	parameters.f90	/^  logical :: Lfirst /;"	v	module:input_parameter
 Lfolding	parameters.f90	/^  logical :: Lfolding /;"	v	module:input_parameter
 Minimum_bond	periodic.f90	/^  subroutine Minimum_bond$/;"	s	module:mod_periodic
 Natom	parameters.f90	/^  integer :: Natom,/;"	v	module:input_parameter
+Natom_peri	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist, Nbond, Nfile, Natom_peri$/;"	v	module:input_parameter
 Nbeads	parameters.f90	/^  integer :: Natom, Nbeads,/;"	v	module:input_parameter
 Nbond	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist, Nbond,/;"	v	module:input_parameter
 Ncut	parameters.f90	/^  integer, allocatable :: Nstep(:), Ncut(/;"	v	module:input_parameter
 Ndiv	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, Nunit, Nhyd, Ndiv /;"	v	module:input_parameter
+Near_atoms1	periodic.f90	/^  subroutine Near_atoms1$/;"	s	module:mod_periodic
 Near_str1	periodic.f90	/^  subroutine Near_str1$/;"	s	module:mod_periodic
 Near_str2	periodic.f90	/^  subroutine Near_str2$/;"	s	module:mod_periodic
-Nfile	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist, Nbond, Nfile$/;"	v	module:input_parameter
+Nfile	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist, Nbond, Nfile,/;"	v	module:input_parameter
 Nhist	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist,/;"	v	module:input_parameter
 Nhyd	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, Nunit, Nhyd,/;"	v	module:input_parameter
 Noho	parameters.f90	/^  integer :: atom_cube, Noho,/;"	v	module:input_parameter
@@ -227,6 +229,8 @@ read_input	read_inp.f90	/^subroutine read_input$/;"	s
 real_max	utility.f90	/^  real(8), parameter :: real_max /;"	v	module:utility
 real_min	utility.f90	/^  real(8), parameter :: real_min /;"	v	module:utility
 reblock_step	utility.f90	/^  subroutine reblock_step(/;"	s
+remove_rotation_allbeads	rotation.f90	/^  subroutine remove_rotation_allbeads$/;"	s	subroutine:rotation
+remove_rotation_eachbeads	rotation.f90	/^  subroutine remove_rotation_eachbeads$/;"	s	subroutine:rotation
 rotation	rotation.f90	/^subroutine rotation$/;"	s
 s	periodic.f90	/^  real(8), allocatable :: s(/;"	v	module:mod_periodic
 save_beads	parameters.f90	/^  logical :: save_beads /;"	v	module:input_parameter
@@ -234,6 +238,7 @@ save_cube	utility.f90	/^  subroutine save_cube(/;"	s	module:utility
 save_cube_sub	periodic.f90	/^  subroutine save_cube_sub(/;"	s	module:mod_periodic
 save_cube_sub	rotation.f90	/^  subroutine save_cube_sub$/;"	s	subroutine:rotation
 save_movie	rotation.f90	/^  subroutine save_movie$/;"	s	subroutine:rotation
+sort_real	utility.f90	/^  subroutine sort_real(/;"	s
 special_case	special_case.f90	/^  subroutine special_case$/;"	s	module:mod_special_case
 step	cent.f90	/^  integer, private :: i, j, k, l, Ifile, step /;"	v	module:calc_centoroid
 step	hist2D.f90	/^  integer :: i, j, k, l, Ifile, step!/;"	v	module:calc_histogram2D

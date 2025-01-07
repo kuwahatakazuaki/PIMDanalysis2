@@ -8,7 +8,7 @@ module utility
 
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
             rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product, &
-            atom2num, save_cube, real_max, real_min, sort_real
+            atom2num, save_cube, real_max, real_min, sort_real, count_letter
 contains
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -499,6 +499,18 @@ contains
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ End!! sort_real ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  function count_letter(array, targer) result(num)
+    character(len=*), intent(in) :: array(:)
+    character(len=*), intent(in) :: targer
+    integer :: num, i
+    num = 0
+    do i = 1, size(array)
+      if (trim(array(i)) == trim(targer) ) then
+        num = num + 1
+      end if
+    end do
+  end function count_letter
 
 end module utility
 
