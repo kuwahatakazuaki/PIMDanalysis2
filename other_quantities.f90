@@ -59,7 +59,6 @@ contains
             read(Uinp,'()')
           end do
         end do
-
         do k = Ncut(Ifile)+1, Nstep(Ifile)
           Istep = Istep + 1
           read(Uinp,'()')

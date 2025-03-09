@@ -128,6 +128,7 @@ calc_unit_diff	pbhpo4.f90	/^  subroutine calc_unit_diff(/;"	s	subroutine:pbhpo4
 charge	other_quantities.f90	/^  real(8), allocatable :: charge(/;"	v	module:mod_other_quantities
 charge_analysis	other_quantities.f90	/^  subroutine charge_analysis$/;"	s	module:mod_other_quantities
 compression	read_coor.f90	/^  subroutine compression(/;"	s	subroutine:read_coor
+count_letter	utility.f90	/^  function count_letter(/;"	f
 data_ave_cent	cent.f90	/^  real(8), public :: data_max_cent, data_min_cent, data_ave_cent$/;"	v	module:calc_centoroid
 data_beads	parameters.f90	/^  real(8), save, allocatable :: data_step(:), data_beads(/;"	v	module:input_parameter
 data_cent	cent.f90	/^  real(8), public, allocatable :: data_cent(/;"	v	module:calc_centoroid

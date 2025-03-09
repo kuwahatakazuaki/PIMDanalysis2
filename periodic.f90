@@ -85,7 +85,7 @@ contains
         do i = 1, Natom
           if ( i == Iatom ) cycle
           s12(:) = s(:,i,Ibead,Istep) - s(:,Iatom,Ibead,Istep)
-          s12(:) = s12(:) - nint(s12(:))
+          s12(:) = s12(:) - anint(s12(:))
           r12(:) = matmul(s12(:),lattice(:,:))
           dis2 = dot_product(r12(:),r12(:))
           temp_dis(i) = dis2
@@ -113,10 +113,9 @@ contains
     open(newunit=Uout,file='near_label.dat',status='replace')
       do Iatom = atom1, atom2
         do Istep = 1, TNstep
-          !write(Uout,*) Iatom, Istep
           do Ibead = 1, Nbeads
             !write(Uout,*) Alllabel(:,Ibead,Istep,Iatom), count_letter(Alllabel(:,Ibead,Istep,Iatom),'Fe')
-            write(Uout,*) count_letter(Alllabel(:,Ibead,Istep,Iatom),'Fe')
+            write(Uout,*) Istep, Ibead, count_letter(Alllabel(:,Ibead,Istep,Iatom),'Fe')
           end do
         end do
       end do
@@ -149,14 +148,14 @@ contains
           if ( i == atom1 .or. i == atom2) cycle
           diff_r(:) = r(:,atom2,Ibead,Istep) - r(:,atom1,Ibead,Istep)
           diff_s(:) = matmul(diff_r(:),lat_inv(:,:))
-          diff_s(:) = diff_s(:) - nint(diff_s(:))
+          diff_s(:) = diff_s(:) - anint(diff_s(:))
           diff_r(:) = matmul(diff_s(:),lattice(:,:))
 
           si1(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
           si2(:) = s(:,i,Ibead,Istep) - s(:,atom2,Ibead,Istep)
 
-          si1(:) = si1(:) - nint(si1(:))
-          si2(:) = si2(:) - nint(si2(:))
+          si1(:) = si1(:) - anint(si1(:))
+          si2(:) = si2(:) - anint(si2(:))
 
           ri1(:) = matmul(si1(:),lattice(:,:))
           ri2(:) = matmul(si2(:),lattice(:,:))
@@ -214,7 +213,7 @@ contains
         do i = 1, Natom
           if ( i == atom1 ) cycle
           s12(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
-          s12(:) = s12(:) - nint(s12(:))
+          s12(:) = s12(:) - anint(s12(:))
           r12(:) = matmul(s12(:),lattice(:,:))
           dis2 = dot_product(r12(:),r12(:))
           if ( dis2 <= cut_dis**2 ) then
@@ -257,7 +256,7 @@ contains
         do i = 1, Natom-1
           do j = i+1, Natom
             s12(:) = s(:,i,k,Istep) - s(:,j,k,Istep)
-            s12(:) = s12(:) - nint(s12(:))
+            s12(:) = s12(:) - anint(s12(:))
             r12(:) = matmul(s12(:),lattice(:,:))
             dis2(i,j,k) = dot_product(r12(:),r12(:))
           end do
@@ -290,12 +289,12 @@ contains
     do i = 1, TNstep
       do j = 1, Nbeads
         s12(:) = s(:,atom1,j,i) - s(:,atom2,j,i)
-        s12(:) = s12(:) - nint(s12(:))
+        s12(:) = s12(:) - anint(s12(:))
         r12(:) = matmul(s12(:),lattice(:,:))
         d12 = norm2(r12(:))
 
         s34(:) = s(:,atom3,j,i) - s(:,atom4,j,i)
-        s34(:) = s34(:) - nint(s34(:))
+        s34(:) = s34(:) - anint(s34(:))
         r34(:) = matmul(s34(:),lattice(:,:))
         d34 = norm2(r34(:))
         data_beads(j,i) = d12 - d34
@@ -317,7 +316,7 @@ stop 'Not Update'
     do i = 1, TNstep
       do j = 1, Nbeads
         s12(:) = s(:,atom1,j,i) - s(:,atom2,j,i)
-        s12(:) = s12(:) - nint(s12(:))
+        s12(:) = s12(:) - anint(s12(:))
         r12(:) = matmul(s12(:),lattice(:,:))
         d12 = norm2(r12(:))
         data_beads(j,i) = d12
@@ -540,7 +539,7 @@ stop 'Not Update'
         do k = Ielement1, Felement1
           do l = k+1, Felement1
             s12(:) = s(:,k,j,i) - s(:,l,j,i)
-            s12(:) = s12(:) - nint(s12(:))
+            s12(:) = s12(:) - anint(s12(:))
             r12(:) = matmul(s12(:),lattice(:,:))
             d12 = dsqrt( sum( r12(:)*r12(:) ) )
 
@@ -606,7 +605,7 @@ stop 'Not Update'
         do k = Ielement1, Felement1
           do l = Ielement2, Felement2
             s12(:) = s(:,k,j,i) - s(:,l,j,i)
-            s12(:) = s12(:) - nint(s12(:))
+            s12(:) = s12(:) - anint(s12(:))
             r12(:) = matmul(s12(:),lattice(:,:))
             d12 = dsqrt( sum( r12(:)*r12(:) ) )
 
@@ -664,9 +663,9 @@ stop 'Not Update'
           r12(:) = r(:,label_oho(1,Ioho),j,k) - r(:,label_oho(2,Ioho),j,k)
           r23(:) = r(:,label_oho(2,Ioho),j,k) - r(:,label_oho(3,Ioho),j,k)
           r13(:) = r(:,label_oho(1,Ioho),j,k) - r(:,label_oho(3,Ioho),j,k)
-          r12(:) = r12(:) - Lbox(:) * nint(r12(:)/Lbox(:))
-          r23(:) = r23(:) - Lbox(:) * nint(r23(:)/Lbox(:))
-          r13(:) = r13(:) - Lbox(:) * nint(r13(:)/Lbox(:))
+          r12(:) = r12(:) - Lbox(:) * anint(r12(:)/Lbox(:))
+          r23(:) = r23(:) - Lbox(:) * anint(r23(:)/Lbox(:))
+          r13(:) = r13(:) - Lbox(:) * anint(r13(:)/Lbox(:))
           d12 = sqrt( sum(r12(:)*r12(:)) )
           d23 = sqrt( sum(r23(:)*r23(:)) )
           d13 = sqrt( sum(r13(:)*r13(:)) )
