@@ -8,7 +8,13 @@ module utility
 
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
             rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product, &
-            atom2num, save_cube, real_max, real_min, sort_real, count_letter
+            atom2num, save_cube, real_max, real_min, sort_real, count_letter, sort
+
+  interface sort
+    module procedure sort_real
+    module procedure sort_int
+  end interface
+
 contains
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -467,7 +473,7 @@ contains
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ Start sort_real ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ Start sort +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   subroutine sort_real(num, idx)
     real(8), intent(inout) :: num(:)
@@ -496,8 +502,35 @@ contains
       end do
     end do
   end subroutine sort_real
+
+  subroutine sort_int(num, idx)
+    integer, intent(inout) :: num(:)
+    integer, intent(out), optional :: idx(:)
+    integer :: Nele, i, j, Itemp, temp
+    logical :: Lidx
+    Nele = size(num)
+
+    Lidx = present(idx)
+    if (Lidx) idx = [(i, i = 1, Nele)]
+
+    do i = 1, Nele
+      do j = i+1, Nele
+        if (num(i) > num(j) ) then
+          temp = num(i)
+          num(i) = num(j)
+          num(j) = temp
+
+          if ( Lidx ) then
+            Itemp  = idx(i)
+            idx(i) = idx(j)
+            idx(j) = Itemp
+          end if
+        end if
+      end do
+    end do
+  end subroutine sort_int
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ End!! sort_real ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ End!! sort +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   function count_letter(array, targer) result(num)
