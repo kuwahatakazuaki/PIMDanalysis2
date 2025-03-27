@@ -25,8 +25,8 @@ contains
     character(len=*), optional :: Fout
     real(8), intent(inout) :: rcub(:,:,:,:) ! rcub(3,Natom,Nbeads,TNstep)
     real(8), parameter :: Ledge = 10.0d0
-    real(8), parameter :: Bohr2Angs = 0.529177249
-    real(8), parameter :: Angs2Bohr = 1.8897259886
+    !real(8), parameter :: Bohr2Angs = 0.529177249d0
+    real(8), parameter :: Angs2Bohr = 1.8897259886d0
     real(8), parameter :: margine = 1d-1
     real(8) :: grid(Ndiv,Ndiv,Ndiv)
     real(8) :: Lmin(3), Lmax(3)
@@ -321,13 +321,14 @@ contains
     r3(:) = r3(:) - 0.5d0
   end function rand3
 
-  subroutine random_seed_ini
+  subroutine random_seed_ini(set_seed)
+    integer, intent(in) :: set_seed
     integer :: seedsize
     integer, allocatable :: seed(:)
 
     call random_seed(size=seedsize)
     allocate(seed(seedsize))
-    seed(:) = 123456
+    seed(:) = set_seed
     call random_seed(put=seed)
   end subroutine random_seed_ini
 

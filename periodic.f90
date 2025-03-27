@@ -6,18 +6,23 @@ module mod_periodic
             r, data_beads, data_step, graph_step, atom1, atom2, atom3, atom4, &
             Ntetra, Itetra, Ndiv, Natom_peri, FNameBinary1
   use calc_histogram1D, only: calc_1Dhist
-  use utility, only: get_volume, pi, get_inv_mat, real_max, sort_real
+  use utility, only: get_volume, pi, get_inv_mat, real_max, sort !, sort_real
   implicit none
   private
   integer :: Uout
   real(8) :: Dhist, lat_inv(3,3)
   real(8), allocatable :: s(:,:,:,:), hist(:,:)
+  integer :: Nelement1, Nelement2
   public periodic
 
 contains
 
   subroutine periodic
     integer :: i, j, k
+
+    Nelement1 = Felement1-Ielement1+1
+    Nelement2 = Felement2-Ielement2+1
+
     print *, "***** START periodic condition *****"
     do i = 1, 3
       print '(a,3F13.6)', '    lattice = ', lattice(i,:)
@@ -52,6 +57,8 @@ contains
         call Near_str2
       case(89)
         call Near_atoms1
+      case(98)
+        call Fealloy_near4
       case(99)
         call oho_distribution
       case default
@@ -59,6 +66,132 @@ contains
     end select
     print *, "***** END periodic condition *****"
   end subroutine periodic
+! +++++++++++++++++++++++++++++++
+! +++++ Start Fealloy_near4 +++++
+! +++++++++++++++++++++++++++++++
+  subroutine Fealloy_near4
+    use utility, only: count_letter
+    integer, parameter :: Nsite = 2592
+    integer :: Iatom, Istep, Ibead, i, j, k, Idis, Uinp, ios, Isite
+    !integer :: near_idx(Natom_peri),   temp_idx(Nelement2)
+    integer :: near_idx(Natom_peri+1),   temp_idx(Nelement2)
+    real(8) :: near_str(3,Natom_peri), temp_dis(Nelement2), temp_str(3,Nelement2)
+    real(8) :: s12(3), r12(3), dis2
+    integer :: site_dat(4,2,Nsite)
+    logical :: Lmatch
+    character(len=*), parameter :: Fsite="site.dat", Fout = 'near_atoms.xyz'
+    character :: Cdummy
+
+    open(newunit=Uinp,file=Fsite,status='old',iostat=ios)
+      if (ios /= 0) then
+        print *, "ERROR!! opening file : ", Fout
+        stop
+      end if
+      do i = 1, Nsite
+        read(Uinp,*) site_dat(:,1,i), Cdummy, site_dat(:,2,i)
+      end do
+    close(Uinp)
+
+    open(newunit=Uout,file=Fout,status='replace')
+    !LoopStep : do Istep = 1, 10
+    LoopStep : do Istep = 1, TNstep
+    LoopAtom : do Iatom = Ielement1, Felement1
+      write(Uout,*) (Natom_peri+1)*Nbeads
+      write(Uout,*) Istep, Iatom
+      do Ibead = 1, Nbeads
+        temp_dis(:) = real_max
+
+        Idis = 1
+        do i = Ielement2, Felement2
+          s12(:) = s(:,i,Ibead,Istep) - s(:,Iatom,Ibead,Istep)
+          s12(:) = s12(:) - anint(s12(:))
+          r12(:) = matmul(s12(:),lattice(:,:))
+          dis2 = dot_product(r12(:),r12(:))
+          temp_dis(Idis) = dis2
+          temp_str(:,Idis) = r12(:)
+          Idis = Idis + 1
+        end do
+        call sort(temp_dis,temp_idx)
+        near_idx(1:Natom_peri+1) = temp_idx(1:Natom_peri+1)
+        !near_idx(1:Natom_peri) = temp_idx(1:Natom_peri)
+
+        call compare_array(Isite,Lmatch)
+        if ( Lmatch ) then
+          do i = 1, Natom_peri
+            near_str(:,i) = temp_str(:,site_dat(i,2,Isite))
+          end do
+        else
+          do i = 1, Natom_peri
+            near_str(:,i) = temp_str(:,near_idx(i))
+print *, near_str(:,i)
+          end do
+stop 'HERE'
+        end if
+
+        write(Uout,*) label(Iatom), 0.0d0, 0.0d0, 0.0d0
+        do i = 1, Natom_peri
+          write(Uout,*) label(near_idx(i)+Felement1), near_str(:,i), site_dat(i,2,Isite)
+          !write(Uout,*) label(near_idx(i)+Felement1), near_str(:,i), near_idx(i)
+        end do
+      end do
+
+    end do LoopAtom
+    end do LoopStep
+    close(Uout)
+
+    !open(newunit=Uout,file='near_label.dat',status='replace')
+    !  do Iatom = atom1, atom2
+    !    do Istep = 1, TNstep
+    !      do Ibead = 1, Nbeads
+    !        !write(Uout,*) Alllabel(:,Ibead,Istep,Iatom), count_letter(Alllabel(:,Ibead,Istep,Iatom),'Fe')
+    !        write(Uout,*) Istep, Ibead, count_letter(Alllabel(:,Ibead,Istep,Iatom),'Fe')
+    !      end do
+    !    end do
+    !  end do
+    !close(Uout)
+contains
+    subroutine compare_array(Isite, Lmatch)
+      integer :: temp_arry(Natom_peri+1)
+      !integer :: temp_arry(Natom_peri)
+      integer, intent(out) :: Isite
+      logical, intent(out) :: Lmatch
+      integer :: i, j
+      logical :: Lenddo
+      temp_arry(:) = near_idx(:)
+      call sort(temp_arry(1:4))
+      Lenddo = .True.
+      do Isite = 1, Nsite
+        if ( all(temp_arry(1:4) == site_dat(:,1,Isite)) ) then
+          Lenddo = .False.
+          exit
+        end if
+      end do
+!print *, Isite, ":", near_idx(1:4)
+!print *, site_dat(:,1,Isite)
+!print *, site_dat(:,2,Isite)
+
+      if ( Lenddo ) then
+        Lenddo = .True.
+!print *,Istep, Iatom, Ibead, ":", temp_arry(:)
+        temp_arry(:) = near_idx(:)
+        temp_arry(4) = near_idx(5)
+        call sort(temp_arry(1:4))
+        do Isite = 1, Nsite
+          if ( all(temp_arry(1:4) == site_dat(:,1,Isite)) ) then
+            !print *, "match!! ",i, ":", temp_arry(:)
+            Lenddo = .False.
+            exit
+          end if
+        end do
+      end if
+      if ( Lenddo ) then
+        Lmatch = .True.
+      end if
+    end subroutine compare_array
+  end subroutine Fealloy_near4
+! +++++++++++++++++++++++++++++++
+! +++++ End!! Fealloy_near4 +++++
+! +++++++++++++++++++++++++++++++
 
 ! +++++++++++++++++++++++++++
 ! +++++ Start Near_str1 +++++
@@ -91,7 +224,7 @@ contains
           temp_dis(i) = dis2
           temp_str(:,i) = r12(:)
         end do
-        call sort_real(temp_dis,temp_idx)
+        call sort(temp_dis,temp_idx)
         near_idx(1:Natom_peri) = temp_idx(1:Natom_peri)
         do j = 1, Natom_peri
           near_str(:,j) = temp_str(:,near_idx(j))
@@ -277,7 +410,6 @@ contains
   end subroutine Minimum_bond
 
   subroutine bond_diff_perio
-    integer :: Nelement
     integer :: i, j, k, l, Ihist
     real(8) :: r12(3), r34(3), s12(3), s34(3), d12, d34
     character(len=128) :: out_hist
@@ -305,7 +437,6 @@ stop 'Not Update'
   end subroutine bond_diff_perio
 
   subroutine bond_perio
-    integer :: Nelement
     integer :: i, j, k, l, Ihist
     real(8) :: r12(3), s12(3), d12
     character(len=128) :: out_hist
@@ -324,124 +455,6 @@ stop 'Not Update'
     end do
     call calc_1Dhist(out_hist=trim(out_hist))
   end subroutine bond_perio
-
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ Start save_cube ++++++++++++++++++++++++++++++++++++++++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  subroutine save_cube_sub(rcub,Iatoms)
-    integer, intent(in) :: Iatoms(:)
-    ! character(len=*), optional :: Fout
-    real(8), intent(inout) :: rcub(:,:,:,:) ! rcub(3,Natom,Nbeads,TNstep)
-    real(8), parameter :: Ledge = 10.0d0
-    real(8), parameter :: Bohr2Angs = 0.529177249
-    real(8), parameter :: Angs2Bohr = 1.8897259886
-    real(8), parameter :: margine = 1d-1
-    real(8) :: grid(Ndiv,Ndiv,Ndiv)
-    real(8) :: Lmin(3), Lmax(3)
-    real(8) :: dL(3), base_vec(3,3)
-    integer, allocatable :: coun(:,:,:,:)
-    integer :: Uout,i,j,k
-    integer :: uboun(4), Natom, Nbeads, TNstep, Ncube
-
-    uboun(:) = ubound(rcub)
-    Natom  = uboun(2)
-    Nbeads = uboun(3)
-    TNstep = uboun(4)
-    Ncube  = size(Iatoms)
-
-    rcub(:,:,:,:) = rcub(:,:,:,:) * Angs2Bohr
-
-    block
-      real(8), allocatable :: temp1(:), temp2(:)
-      allocate(temp1(Ncube), temp2(Ncube))
-      do i = 1, 3
-        do j = 1, Ncube
-          temp1(j) = minval(rcub(i,Iatoms(j),:,:))
-          temp2(j) = maxval(rcub(i,Iatoms(j),:,:))
-        end do
-        Lmin(i) = minval(temp1(:)) - margine
-        Lmax(i) = maxval(temp2(:)) + margine
-      end do
-    end block
-
-    dL(:) = (Lmax(:) - Lmin(:)) / dble(Ndiv)
-
-    print '(a)',        '  *** Constructing the cube file ***'
-    print '(a,I4)',     '     Ndiv      = ', Ndiv
-    print '(a,1pe11.3)','     margine   = ', margine
-    print '(a,*(I4))',  '     cube atom = ', Iatoms(:)
-    print '(a,3F10.5)', '     dL        = ', dL(:)
-    print '(a,3F10.5)', '     Lmin      = ', Lmin(:)
-    base_vec(:,:) = 0.0d0
-    do i = 1, 3
-      base_vec(i,i) = dL(i)
-    end do
-
-    allocate(coun(3,5,Nbeads,TNstep))
-    do k = 1, TNstep
-      do j = 1, Nbeads
-        do i = 1, 5
-          coun(:,i,j,k) = int( ( rcub(:,i,j,k)-Lmin(:) ) / dL(:) ) + 1
-          !coun(:,i,j,k) = int( ( rcub(:,Iatoms(i),j,k)-Lmin(:) ) / dL(:) ) + 1
-        end do
-      end do
-    end do
-
-    block
-      integer :: c1,c2,c3
-      grid(:,:,:) = 0.0d0
-      do k = 1, TNstep
-        do j = 1, Nbeads
-          c1 = coun(1,1,j,k); c2 = coun(2,1,j,k); c3 = coun(3,1,j,k)
-          grid(c1,c2,c3) = grid(c1,c2,c3) + 1.0d0
-          do i = 2, 5
-            c1 = coun(1,i,j,k); c2 = coun(2,i,j,k); c3 = coun(3,i,j,k)
-            grid(c1,c2,c3) = grid(c1,c2,c3) - 1.0d0
-          end do
-        end do
-      end do
-    end block
-
-    grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
-    open(newunit=Uout,file='cube.cube',status='replace')
-      write(Uout,*) "commnet"
-      write(Uout,*) "commnet"
-      write(Uout,9999) Natom-Ncube, Lmin(:)
-      do i = 1, 3
-        write(Uout,9999) Ndiv, base_vec(i,:)
-      end do
-      j = 1
-      do i = 1, Natom
-        if ( i == Iatoms(j) ) then
-          j = j + 1
-          cycle
-        end if
-        write(Uout,9999) -1, dble(i), &  ! Only for Tetrahedra O-H4
-        !write(Uout,9999) atom2num(trim(label(i))), dble(i), &
-                         [sum(rcub(1,i,:,:)),sum(rcub(2,i,:,:)),sum(rcub(3,i,:,:))]/dble(TNstep*Nbeads)
-      end do
-
-      do i = 1, Ndiv
-        do j = 1, Ndiv
-          do k = 1, Ndiv
-            write(Uout,'(E13.5)',advance='no') grid(i,j,k)
-            if ( mod(k,6) == 0 ) write(Uout,*)
-          end do
-          write(Uout,*)
-        end do
-      end do
-    close(Uout)
-    print '(a)', '  *** Cube file is saved in "cube.cube" ***'
-
-  9998  format(I5,4F12.6)
-  9999  format(I5,4F12.6)
-
-  end subroutine save_cube_sub
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ End save_cube ++++++++++++++++++++++++++++++++++++++++++
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
 
 ! ++++++++++++++++++++++
 ! +++++ Start RMSD +++++
@@ -715,8 +728,6 @@ stop 'Not Update'
         write(Uout) oo_bead(:,:,:)
       close(Uout)
     end if
-
-
   9999 format(F10.5)
   end subroutine oho_distribution
 ! ++++++++++++++++++++++++++++++++
@@ -733,5 +744,34 @@ stop 'Not Update'
     mini = minval(edge)
   end function get_min_edge
 
+  !subroutine sort_real_label(num, idx)
+  !  real(8), intent(inout) :: num(:)
+  !  integer, intent(inout) :: idx(:)
+  !  integer :: Nele, i, j, Itemp, Nidx
+  !  real(8) :: temp
+  !  logical :: Lidx
+  !  Nele = size(num)
+  !  Nidx = size(idx)
+  !  if ( Nele /= Nidx ) then
+  !    print *, 'Nele and Nidx is different'
+  !    stop "ERROR!!"
+  !  end if
+
+  !  do i = 1, Nele
+  !    do j = i+1, Nele
+  !      if (num(i) > num(j) ) then
+  !        temp = num(i)
+  !        num(i) = num(j)
+  !        num(j) = temp
+
+  !        if ( Lidx ) then
+  !          Itemp  = idx(i)
+  !          idx(i) = idx(j)
+  !          idx(j) = Itemp
+  !        end if
+  !      end if
+  !    end do
+  !  end do
+  !end subroutine sort_real_label
 end module mod_periodic
 

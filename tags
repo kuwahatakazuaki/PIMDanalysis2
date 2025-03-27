@@ -18,11 +18,9 @@
 911	read_coor.f90	/^    911 print *, "ERROR!!: Reading line exceed the coor lines"; stop$/;"	l	subroutine:read_coor_binary	file:
 911	read_coor.f90	/^    911 print *, "ERROR!!: Reading line exceed the coor lines"; stop$/;"	l	subroutine:read_coor_format	file:
 9998	pbhpo4.f90	/^    9998  format(i0,6F11.6)$/;"	l	subroutine:print_unit_step	file:
-9998	periodic.f90	/^  9998  format(I5,4F12.6)$/;"	l	file:
 9998	rotation.f90	/^  9998  format(I5,4F12.6)$/;"	l	subroutine:save_cube_sub	file:
 9998	utility.f90	/^  9998  format(I5,4F12.6)$/;"	l	file:
 9999	pbhpo4.f90	/^    9999  format(6F12.7)$/;"	l	subroutine:print_unit_step	file:
-9999	periodic.f90	/^  9999  format(I5,4F12.6)$/;"	l	file:
 9999	periodic.f90	/^  9999 format(F10.5)$/;"	l	subroutine:oho_distribution	file:
 9999	rotation.f90	/^    9999 format(a,4F11.7)$/;"	l	subroutine:save_movie	file:
 9999	rotation.f90	/^  9999  format(I5,4F12.6)$/;"	l	subroutine:save_cube_sub	file:
@@ -37,6 +35,7 @@ Dhist	periodic.f90	/^  real(8) :: Dhist,/;"	v	module:mod_periodic
 DirResult	parameters.f90	/^  character(len=128), allocatable :: FileName(:), DirResult(/;"	v	module:input_parameter
 FNameBinary1	parameters.f90	/^  character(len=:), allocatable :: FNameBinary1,/;"	v	module:input_parameter
 FNameBinary2	parameters.f90	/^  character(len=:), allocatable :: FNameBinary1, FNameBinary2$/;"	v	module:input_parameter
+Fealloy_near4	periodic.f90	/^  subroutine Fealloy_near4$/;"	s	module:mod_periodic
 Felement1	parameters.f90	/^  integer :: Ielement1, Felement1,/;"	v	module:input_parameter
 Felement2	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2,/;"	v	module:input_parameter
 FileName	parameters.f90	/^  character(len=128), allocatable :: FileName(/;"	v	module:input_parameter
@@ -60,6 +59,8 @@ Ndiv	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, N
 Near_atoms1	periodic.f90	/^  subroutine Near_atoms1$/;"	s	module:mod_periodic
 Near_str1	periodic.f90	/^  subroutine Near_str1$/;"	s	module:mod_periodic
 Near_str2	periodic.f90	/^  subroutine Near_str2$/;"	s	module:mod_periodic
+Nelement1	periodic.f90	/^  integer :: Nelement1,/;"	v	module:mod_periodic
+Nelement2	periodic.f90	/^  integer :: Nelement1, Nelement2$/;"	v	module:mod_periodic
 Nfile	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist, Nbond, Nfile,/;"	v	module:input_parameter
 Nhist	parameters.f90	/^  integer :: Natom, Nbeads, TNstep, Nhist,/;"	v	module:input_parameter
 Nhyd	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, Nunit, Nhyd,/;"	v	module:input_parameter
@@ -68,9 +69,9 @@ Nstep	parameters.f90	/^  integer, allocatable :: Nstep(/;"	v	module:input_parame
 Ntetra	parameters.f90	/^  integer :: atom_cube, Noho, Ntetra$/;"	v	module:input_parameter
 Nunit	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2, Nunit,/;"	v	module:input_parameter
 PathFile	other_quantities.f90	/^  character(:), allocatable :: PathFile$/;"	v	module:mod_other_quantities
-RDF1	periodic.f90	/^  subroutine RDF1$/;"	s
-RDF2	periodic.f90	/^  subroutine RDF2$/;"	s
-RMSDatoms	periodic.f90	/^  subroutine RMSDatoms$/;"	s
+RDF1	periodic.f90	/^  subroutine RDF1$/;"	s	module:mod_periodic
+RDF2	periodic.f90	/^  subroutine RDF2$/;"	s	module:mod_periodic
+RMSDatoms	periodic.f90	/^  subroutine RMSDatoms$/;"	s	module:mod_periodic
 TNstep	parameters.f90	/^  integer :: Natom, Nbeads, TNstep,/;"	v	module:input_parameter
 Uinp	other_quantities.f90	/^  integer :: Uinp,/;"	v	module:mod_other_quantities
 Uinp	special_case.f90	/^  integer :: Uinp,/;"	v	module:mod_special_case
@@ -127,6 +128,7 @@ calc_unit_bond	pbhpo4.f90	/^  subroutine calc_unit_bond(/;"	s	subroutine:pbhpo4
 calc_unit_diff	pbhpo4.f90	/^  subroutine calc_unit_diff(/;"	s	subroutine:pbhpo4
 charge	other_quantities.f90	/^  real(8), allocatable :: charge(/;"	v	module:mod_other_quantities
 charge_analysis	other_quantities.f90	/^  subroutine charge_analysis$/;"	s	module:mod_other_quantities
+compare_array	periodic.f90	/^    subroutine compare_array(/;"	s	subroutine:Fealloy_near4
 compression	read_coor.f90	/^  subroutine compression(/;"	s	subroutine:read_coor
 count_letter	utility.f90	/^  function count_letter(/;"	f
 data_ave_cent	cent.f90	/^  real(8), public :: data_max_cent, data_min_cent, data_ave_cent$/;"	v	module:calc_centoroid
@@ -148,7 +150,7 @@ fcopt	Makefile	/^fcopt =  -O2 -pipe -lblas -llapack$/;"	m
 force	other_quantities.f90	/^  real(8), allocatable :: force(/;"	v	module:mod_other_quantities
 force_analysis	other_quantities.f90	/^  subroutine force_analysis$/;"	s	module:mod_other_quantities
 get_inv_mat	utility.f90	/^  subroutine get_inv_mat(/;"	s
-get_min_edge	periodic.f90	/^  function get_min_edge(/;"	f
+get_min_edge	periodic.f90	/^  function get_min_edge(/;"	f	module:mod_periodic
 get_qua_theta	utility.f90	/^  function get_qua_theta(/;"	f
 get_rot_mat	utility.f90	/^  function get_rot_mat(/;"	f
 get_volume	utility.f90	/^  function get_volume(/;"	f
@@ -204,7 +206,7 @@ multi_bond_sort	multi_bond.f90	/^subroutine multi_bond_sort$/;"	s	subroutine:mul
 multi_bond_sum	multi_bond.f90	/^subroutine multi_bond_sum$/;"	s	subroutine:multi_bond
 norm	utility.f90	/^  real(8) function norm(/;"	f
 objs	Makefile	/^objs = \\$/;"	m
-oho_distribution	periodic.f90	/^  subroutine oho_distribution$/;"	s
+oho_distribution	periodic.f90	/^  subroutine oho_distribution$/;"	s	module:mod_periodic
 oo_bond	pbhpo4.f90	/^  subroutine oo_bond$/;"	s	subroutine:pbhpo4
 other_quantities	other_quantities.f90	/^  subroutine  other_quantities$/;"	s	module:mod_other_quantities
 out_name	hist2D.f90	/^  character(len=:), allocatable :: out_name$/;"	v	module:calc_histogram2D
@@ -220,7 +222,7 @@ r	parameters.f90	/^  re/;"	v	module:input_parameter
 r_cent	cent.f90	/^  real(8), public, allocatable :: r_cent(/;"	v	module:calc_centoroid
 r_ref	parameters.f90	/^  real(8), allocatable :: r_ref(/;"	v	module:input_parameter
 rand3	utility.f90	/^  function rand3(/;"	f
-random_seed_ini	utility.f90	/^  subroutine random_seed_ini$/;"	s
+random_seed_ini	utility.f90	/^  subroutine random_seed_ini(/;"	s
 read_binary1	binary_calc.f90	/^  subroutine read_binary1$/;"	s	subroutine:binary_calc
 read_binary2	binary_calc.f90	/^  subroutine read_binary2$/;"	s	subroutine:binary_calc
 read_coor	read_coor.f90	/^subroutine read_coor$/;"	s
@@ -236,9 +238,9 @@ rotation	rotation.f90	/^subroutine rotation$/;"	s
 s	periodic.f90	/^  real(8), allocatable :: s(/;"	v	module:mod_periodic
 save_beads	parameters.f90	/^  logical :: save_beads /;"	v	module:input_parameter
 save_cube	utility.f90	/^  subroutine save_cube(/;"	s	module:utility
-save_cube_sub	periodic.f90	/^  subroutine save_cube_sub(/;"	s	module:mod_periodic
 save_cube_sub	rotation.f90	/^  subroutine save_cube_sub$/;"	s	subroutine:rotation
 save_movie	rotation.f90	/^  subroutine save_movie$/;"	s	subroutine:rotation
+sort_int	utility.f90	/^  subroutine sort_int(/;"	s
 sort_real	utility.f90	/^  subroutine sort_real(/;"	s
 special_case	special_case.f90	/^  subroutine special_case$/;"	s	module:mod_special_case
 step	cent.f90	/^  integer, private :: i, j, k, l, Ifile, step /;"	v	module:calc_centoroid
