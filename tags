@@ -18,12 +18,10 @@
 911	read_coor.f90	/^    911 print *, "ERROR!!: Reading line exceed the coor lines"; stop$/;"	l	subroutine:read_coor_binary	file:
 911	read_coor.f90	/^    911 print *, "ERROR!!: Reading line exceed the coor lines"; stop$/;"	l	subroutine:read_coor_format	file:
 9998	pbhpo4.f90	/^    9998  format(i0,6F11.6)$/;"	l	subroutine:print_unit_step	file:
-9998	rotation.f90	/^  9998  format(I5,4F12.6)$/;"	l	subroutine:save_cube_sub	file:
 9998	utility.f90	/^  9998  format(I5,4F12.6)$/;"	l	file:
 9999	pbhpo4.f90	/^    9999  format(6F12.7)$/;"	l	subroutine:print_unit_step	file:
 9999	periodic.f90	/^  9999 format(F10.5)$/;"	l	subroutine:oho_distribution	file:
 9999	rotation.f90	/^    9999 format(a,4F11.7)$/;"	l	subroutine:save_movie	file:
-9999	rotation.f90	/^  9999  format(I5,4F12.6)$/;"	l	subroutine:save_cube_sub	file:
 9999	rotation.f90	/^  9999 format(E12.5)$/;"	l	subroutine:rotation	file:
 9999	utility.f90	/^  9999  format(I5,4F12.6)$/;"	l	file:
 AUtoAng	parameters.f90	/^  real(8), parameter :: AUtoAng /;"	v	module:input_parameter
@@ -238,7 +236,6 @@ rotation	rotation.f90	/^subroutine rotation$/;"	s
 s	periodic.f90	/^  real(8), allocatable :: s(/;"	v	module:mod_periodic
 save_beads	parameters.f90	/^  logical :: save_beads /;"	v	module:input_parameter
 save_cube	utility.f90	/^  subroutine save_cube(/;"	s	module:utility
-save_cube_sub	rotation.f90	/^  subroutine save_cube_sub$/;"	s	subroutine:rotation
 save_movie	rotation.f90	/^  subroutine save_movie$/;"	s	subroutine:rotation
 sort_int	utility.f90	/^  subroutine sort_int(/;"	s
 sort_real	utility.f90	/^  subroutine sort_real(/;"	s

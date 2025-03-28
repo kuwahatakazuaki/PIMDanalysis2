@@ -4,13 +4,9 @@ subroutine rotation
   use input_parameter,  only: label, TNstep, save_beads, Nbeads, Natom, &
       FNameBinary1, graph_step, weight, r_ref, jobtype, label, Ndiv, &
       muon => atom_cube, Nhyd, hyd, r
-  use utility,          only: calc_deviation, calc_cumulative, get_rot_mat, atom2num
+  use utility,          only: calc_deviation, calc_cumulative, get_rot_mat, atom2num, save_cube
   implicit none
   real(8), parameter :: pi = 4.0d0*atan(1.0d0)
-  integer, parameter :: N = 4
-  integer, parameter :: liwork = 5*N+3,  lwork = 2*N*N+6*N+1
-  real(8) :: work(lwork)
-  integer :: iwork(liwork)
   integer :: i, j, k, xyz, info, Uout
   real(8), allocatable :: rnew(:,:,:,:), eigenArray(:)
   real(8) :: rot(3,3), qua(4), rave(3), Tweight
@@ -36,7 +32,8 @@ subroutine rotation
       call remove_rotation_eachbeads ! newer version
   end select
 
-  call save_cube_sub
+  !call save_cube_sub
+  call save_cube(rnew,[muon],'cube.cube')
 
   open(newunit=Uout,file='eigen.out')
     do k = 1, TNstep
@@ -59,6 +56,10 @@ contains
 
   subroutine remove_rotation_eachbeads
   integer :: Istep, Ibead
+  integer, parameter :: N = 4
+  integer, parameter :: liwork = 5*N+3,  lwork = 2*N*N+6*N+1
+  real(8) :: work(lwork)
+  integer :: iwork(liwork)
 ! --- Start Remove center of mass ---
   Loop_step1:do Istep = 1, TNstep
     rave(:) = 0.0d0
@@ -95,7 +96,14 @@ contains
 ! --- End Rotation to r_ref ---
   end subroutine remove_rotation_eachbeads
 
+! =========================================================
+! === Older version, this will be deleted in the future ===
+! =========================================================
   subroutine remove_rotation_allbeads
+  integer, parameter :: N = 4
+  integer, parameter :: liwork = 5*N+3,  lwork = 2*N*N+6*N+1
+  real(8) :: work(lwork)
+  integer :: iwork(liwork)
 ! --- Start Remove center of mass ---
   step_loop1:do k = 1, TNstep
     rave(:) = 0.0d0
@@ -133,87 +141,86 @@ contains
 ! --- End Rotation to r_ref ---
   end subroutine remove_rotation_allbeads
 
-  ! Please reffer the save_cube in utility, in the futhure 
-  subroutine save_cube_sub
-    integer :: Uout
-!    integer, parameter :: Ndiv = 20
-    real(8), parameter :: Ledge = 10.0d0
-    real(8), parameter :: Bohr2Angs = 0.529177249
-    real(8), parameter :: Angs2Bohr = 1.8897259886
-    real(8), parameter :: margine = 1d-1
-    real(8) :: grid(Ndiv,Ndiv,Ndiv)
-    real(8) :: Lmin(3), Lmax(3)
-    real(8) :: dL(3), base_vec(3,3)
-    integer, allocatable :: coun(:,:,:)
-    integer :: cx,cy,cz
-
-    rnew(:,:,:,:) = rnew(:,:,:,:) * Angs2Bohr
-    do i = 1, 3
-      Lmin(i) = minval(rnew(i,muon,:,:)) - margine
-      Lmax(i) = maxval(rnew(i,muon,:,:)) + margine
-    end do
-    dL(:) = (Lmax(:) - Lmin(:)) / dble(Ndiv)
-
-    print '(a)',        '   Constructing the cube file '
-    print '(a,I4)',     '     Ndiv     = ', Ndiv
-    print '(a,I4)',     '     cube atom= ', muon
-    print '(a,1pe11.3)','     margine  = ', margine
-    print '(a,3F10.5)', '     dL       = ', dL(:)
-    print '(a,3F10.5)', '     Lmin     = ', Lmin(:)
-    base_vec(:,:) = 0.0d0
-    do i = 1, 3
-      base_vec(i,i) = dL(i)
-    end do
-
-    allocate(coun(3,Nbeads,TNstep))
-    do k = 1, TNstep
-      do j = 1, Nbeads
-        coun(:,j,k) = int( ( rnew(:,muon,j,k)-Lmin(:) ) / dL(:) ) + 1
-      end do
-    end do
-
-    grid(:,:,:) = 0.0d0
-    do k = 1, TNstep
-      do j = 1, Nbeads
-          cx = coun(1,j,k)
-          cy = coun(2,j,k)
-          cz = coun(3,j,k)
-          grid(cx,cy,cz) = grid(cx,cy,cz) + 1.0d0
-      end do
-    end do
-
-    grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
-    open(newunit=Uout,file='hyd.cube',status='replace')
-      write(Uout,*) "commnet"
-      write(Uout,*) "commnet"
-      write(Uout,9999) Natom-Nhyd, Lmin(:)
-      do i = 1, 3
-        write(Uout,9999) Ndiv, base_vec(i,:)
-      end do
-      j = 1
-      do i = 1, Natom
-        if ( i == hyd(j) ) then
-          j = j + 1
-          cycle
-        end if
-        write(Uout,9999) atom2num(trim(label(i))), dble(i), &
-                         [sum(rnew(1,i,:,:)),sum(rnew(2,i,:,:)),sum(rnew(3,i,:,:))]/dble(TNstep*Nbeads)
-      end do
-      do i = 1, Ndiv
-        do j = 1, Ndiv
-          do k = 1, Ndiv
-            write(Uout,'(E13.5)',advance='no') grid(i,j,k)
-            if ( mod(k,6) == 0 ) write(Uout,*)
-          end do
-          write(Uout,*)
-        end do
-      end do
-    close(Uout)
-    print '(a)', '   Cube file is saved in "hyd.cube"'
-
-  9998  format(I5,4F12.6)
-  9999  format(I5,4F12.6)
-  end subroutine save_cube_sub
+!  ! Please reffer the save_cube in utility, in the futhure 
+!  subroutine save_cube_sub
+!    integer :: Uout
+!    real(8), parameter :: Ledge = 10.0d0
+!    real(8), parameter :: Angs2Bohr = 1.8897259886d0
+!    real(8), parameter :: margine = 1d-1
+!    real(8) :: grid(Ndiv,Ndiv,Ndiv)
+!    real(8) :: Lmin(3), Lmax(3)
+!    real(8) :: dL(3), base_vec(3,3)
+!    integer, allocatable :: coun(:,:,:)
+!    integer :: cx,cy,cz
+!
+!    rnew(:,:,:,:) = rnew(:,:,:,:) * Angs2Bohr
+!    do i = 1, 3
+!      Lmin(i) = minval(rnew(i,muon,:,:)) - margine
+!      Lmax(i) = maxval(rnew(i,muon,:,:)) + margine
+!    end do
+!    dL(:) = (Lmax(:) - Lmin(:)) / dble(Ndiv)
+!
+!    print '(a)',        '   Constructing the cube file '
+!    print '(a,I4)',     '     Ndiv     = ', Ndiv
+!    print '(a,I4)',     '     cube atom= ', muon
+!    print '(a,1pe11.3)','     margine  = ', margine
+!    print '(a,3F10.5)', '     dL       = ', dL(:)
+!    print '(a,3F10.5)', '     Lmin     = ', Lmin(:)
+!
+!    base_vec(:,:) = 0.0d0
+!    do i = 1, 3
+!      base_vec(i,i) = dL(i)
+!    end do
+!
+!    allocate(coun(3,Nbeads,TNstep))
+!    do k = 1, TNstep
+!      do j = 1, Nbeads
+!        coun(:,j,k) = int( ( rnew(:,muon,j,k)-Lmin(:) ) / dL(:) ) + 1
+!      end do
+!    end do
+!
+!    grid(:,:,:) = 0.0d0
+!    do k = 1, TNstep
+!      do j = 1, Nbeads
+!          cx = coun(1,j,k)
+!          cy = coun(2,j,k)
+!          cz = coun(3,j,k)
+!          grid(cx,cy,cz) = grid(cx,cy,cz) + 1.0d0
+!      end do
+!    end do
+!
+!    grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
+!    open(newunit=Uout,file='hyd.cube',status='replace')
+!      write(Uout,*) "commnet"
+!      write(Uout,*) "commnet"
+!      write(Uout,9999) Natom-Nhyd, Lmin(:)
+!      do i = 1, 3
+!        write(Uout,9999) Ndiv, base_vec(i,:)
+!      end do
+!      j = 1
+!      do i = 1, Natom
+!        if ( i == hyd(j) ) then
+!          j = j + 1
+!          cycle
+!        end if
+!        write(Uout,9999) atom2num(trim(label(i))), dble(i), &
+!                         [sum(rnew(1,i,:,:)),sum(rnew(2,i,:,:)),sum(rnew(3,i,:,:))]/dble(TNstep*Nbeads)
+!      end do
+!      do i = 1, Ndiv
+!        do j = 1, Ndiv
+!          do k = 1, Ndiv
+!            write(Uout,'(E13.5)',advance='no') grid(i,j,k)
+!            if ( mod(k,6) == 0 ) write(Uout,*)
+!          end do
+!          write(Uout,*)
+!        end do
+!      end do
+!    close(Uout)
+!    print '(a)', '   Cube file is saved in "hyd.cube"'
+!
+!  9998  format(I5,4F12.6)
+!  9999  format(I5,4F12.6)
+!  end subroutine save_cube_sub
 
   subroutine save_movie
     integer :: Uout

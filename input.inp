@@ -157,16 +157,6 @@ $Natom_peri
 4
 $threshhold??
 0.71d0
-#$index tetrahedron  # loop by atom1
-# 33 20 30 15  1
-# 36 31 17 14  4
-# 38 23 25 12  6
-# 39 22 28  9  7
-# 37 24 26 11  5
-# 34 19 29 16  2
-# 35 32 18 13  3
-# 40 21 27 10  8
-#$end index tetrahedron  # loop by atom1
 # end periodic
 
 ## Rotation

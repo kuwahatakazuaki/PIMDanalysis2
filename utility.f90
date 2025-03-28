@@ -20,8 +20,8 @@ contains
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ Start save_cube ++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  subroutine save_cube(rcub,Iatoms,Fout)
-    integer, intent(in) :: Iatoms(:)
+  subroutine save_cube(rcub,cube_list,Fout)
+    integer, intent(in) :: cube_list(:)
     character(len=*), optional :: Fout
     real(8), intent(inout) :: rcub(:,:,:,:) ! rcub(3,Natom,Nbeads,TNstep)
     real(8), parameter :: Ledge = 10.0d0
@@ -32,27 +32,32 @@ contains
     real(8) :: Lmin(3), Lmax(3)
     real(8) :: dL(3), base_vec(3,3)
     integer, allocatable :: coun(:,:,:,:)
-    integer :: Uout,i,j,k
+    integer :: Uout,i,j,k, Icube, xyz
     integer :: uboun(4), Natom, Nbeads, TNstep, Ncube
+
+    if ( present(Fout) .eqv. .False. ) Fout='cube.cube'
+
+!print *, "present", present(Fout)
+!print *, "Fout :",Fout
 
     uboun(:) = ubound(rcub)
     Natom  = uboun(2)
     Nbeads = uboun(3)
     TNstep = uboun(4)
-    Ncube  = size(Iatoms)
+    Ncube  = size(cube_list)
 
     rcub(:,:,:,:) = rcub(:,:,:,:) * Angs2Bohr
 
     block
       real(8), allocatable :: temp1(:), temp2(:)
       allocate(temp1(Ncube), temp2(Ncube))
-      do i = 1, 3
-        do j = 1, Ncube
-          temp1(j) = minval(rcub(i,Iatoms(j),:,:))
-          temp2(j) = maxval(rcub(i,Iatoms(j),:,:))
+      do xyz = 1, 3
+        do Icube = 1, Ncube
+          temp1(Icube) = minval(rcub(xyz,cube_list(Icube),:,:))
+          temp2(Icube) = maxval(rcub(xyz,cube_list(Icube),:,:))
         end do
-        Lmin(i) = minval(temp1(:)) - margine
-        Lmax(i) = maxval(temp2(:)) + margine
+        Lmin(xyz) = minval(temp1(:)) - margine
+        Lmax(xyz) = maxval(temp2(:)) + margine
       end do
     end block
 
@@ -61,19 +66,20 @@ contains
     print '(a)',        '  *** Constructing the cube file ***'
     print '(a,I4)',     '     Ndiv      = ', Ndiv
     print '(a,1pe11.3)','     margine   = ', margine
-    print '(a,*(I4))',  '     cube atom = ', Iatoms(:)
+    print '(a,*(I4))',  '     cube atom = ', cube_list(:)
     print '(a,3F10.5)', '     dL        = ', dL(:)
     print '(a,3F10.5)', '     Lmin      = ', Lmin(:)
+
     base_vec(:,:) = 0.0d0
     do i = 1, 3
       base_vec(i,i) = dL(i)
     end do
 
     allocate(coun(3,Ncube,Nbeads,TNstep))
-    do i = 1, Ncube
-      do k = 1, TNstep
-        do j = 1, Nbeads
-          coun(:,i,j,k) = int( ( rcub(:,Iatoms(i),j,k)-Lmin(:) ) / dL(:) ) + 1
+    do k = 1, TNstep
+      do j = 1, Nbeads
+        do Icube = 1, Ncube
+          coun(:,Icube,j,k) = int( ( rcub(:,cube_list(Icube),j,k)-Lmin(:) ) / dL(:) ) + 1
         end do
       end do
     end do
@@ -94,7 +100,8 @@ contains
     end block
 
     grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
-    open(newunit=Uout,file='cube.cube',status='replace')
+    open(newunit=Uout,file=Fout,status='replace')
+    !open(newunit=Uout,file='cube.cube',status='replace')
       write(Uout,*) "commnet"
       write(Uout,*) "commnet"
       write(Uout,9999) Natom-Ncube, Lmin(:)
@@ -103,11 +110,10 @@ contains
       end do
       j = 1
       do i = 1, Natom
-        if ( i == Iatoms(j) ) then
+        if ( i == cube_list(j) ) then
           j = j + 1
           cycle
         end if
-        !write(Uout,9999) 8, dble(i), &  ! Only for Tetrahedra O-H4
         write(Uout,9999) atom2num(trim(label(i))), dble(i), &
                          [sum(rcub(1,i,:,:)),sum(rcub(2,i,:,:)),sum(rcub(3,i,:,:))]/dble(TNstep*Nbeads)
       end do
@@ -122,7 +128,7 @@ contains
         end do
       end do
     close(Uout)
-    print '(a)', '  *** Cube file is saved in "cube.cube" ***'
+    print '(a)', '  *** Cube file is saved in "'//Fout//'" ***'
 
   9998  format(I5,4F12.6)
   9999  format(I5,4F12.6)
