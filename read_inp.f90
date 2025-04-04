@@ -6,6 +6,7 @@ integer :: i, j, Uin, ios, Ifile, sta
 character(:), allocatable :: input_file
 character(len=128) :: line
 character(len=128) :: FNtemp1 = "bin1.bin", FNtemp2 = "bin2.bin"
+integer :: access
 
 Ifile = 0
 

@@ -3,7 +3,7 @@
 subroutine rotation
   use input_parameter,  only: label, TNstep, save_beads, Nbeads, Natom, &
       FNameBinary1, graph_step, weight, r_ref, jobtype, label, Ndiv, &
-      muon => atom_cube, Nhyd, hyd, r
+      muon => atom_cube, Nhyd, hyd, r, AngtoAU, AUtoAng
   use utility,          only: calc_deviation, calc_cumulative, get_rot_mat, atom2num, save_cube
   implicit none
   real(8), parameter :: pi = 4.0d0*atan(1.0d0)
@@ -28,12 +28,16 @@ subroutine rotation
   select case(jobtype)
     case(71)
       call remove_rotation_allbeads ! older version
-    case(72)
+    case(72:73)
       call remove_rotation_eachbeads ! newer version
   end select
 
   !call save_cube_sub
-  call save_cube(rnew,[muon],'cube.cube')
+  if ( jobtype == 73 ) then
+    call save_cube_FeH()
+  else
+    call save_cube(rnew,[muon],'cube.cube')
+  end if
 
   open(newunit=Uout,file='eigen.out')
     do k = 1, TNstep
@@ -53,6 +57,106 @@ subroutine rotation
 
   9999 format(E12.5)
 contains
+
+  subroutine save_cube_FeH()
+    integer, parameter :: Nf = 6
+    real(8) :: rH(3,Nbeads,TNstep*4)
+    real(8) :: rave(3,5) ! 1:H, 2:F1, 3,F2,
+    real(8) :: center(3), rF(3,Nf)
+    real(8) :: Lmin(3), Lmax(3), dL(3)
+    !real(8) :: base_vec(3,3)
+    real(8) :: grid(Ndiv,Ndiv,Ndiv)
+    real(8), parameter :: margine = 1d-1
+    integer :: xyz, Iatom, i, Ibead, Istep
+    character(len=*), parameter :: Fout = 'oct.cube'
+    !character(len=2), parameter :: atom_list()
+
+    rnew(:,:,:,:) = rnew(:,:,:,:) * AngtoAU
+    do Iatom = 1, Natom
+      do xyz = 1, 3
+        rave(xyz,Iatom) = sum(rnew(xyz,Iatom,:,:))/dble(TNstep*Nbeads)
+      end do
+    end do
+    center(:) = 0.5d0 * ( rave(:,2)+rave(:,3) )
+    do xyz = 1, 3
+      rnew(xyz,:,:,:) = rnew(xyz,:,:,:) - center(xyz)
+      rave(xyz,:) = rave(xyz,:) - center(xyz)
+    end do
+    rF(:,:) = 0.0d0
+    rF(3,1) = rave(3,2)
+    rF(3,2) = (-1.0d0)*rF(3,1)
+    rF(1,3) = 0.5d0*(rave(1,4)+rave(2,5))
+    rF(2,4) = rF(1,3)
+    rF(1,5) = (-1.0d0)*rF(1,3)
+    rF(2,6) = (-1.0d0)*rF(1,3)
+
+    do i = 1, 4
+      rH(:,:,TNstep*(i-1)+1:TNstep*i) = rnew(:,1,:,:)
+    end do
+    i = 2; rH(1,:,TNstep*(i-1)+1:TNstep*i) = rH(1,:,TNstep*(i-1)+1:TNstep*i) * (-1.0d0)
+    i = 3; rH(2,:,TNstep*(i-1)+1:TNstep*i) = rH(2,:,TNstep*(i-1)+1:TNstep*i) * (-1.0d0)
+    i = 4; rH(1,:,TNstep*(i-1)+1:TNstep*i) = rH(1,:,TNstep*(i-1)+1:TNstep*i) * (-1.0d0); &
+           rH(2,:,TNstep*(i-1)+1:TNstep*i) = rH(2,:,TNstep*(i-1)+1:TNstep*i) * (-1.0d0)
+    do xyz = 1, 3
+      Lmin(xyz) = minval(rH(xyz,:,:)) - margine
+      Lmax(xyz) = maxval(rH(xyz,:,:)) + margine
+    end do
+    dL(:) = (Lmax(:)-Lmin(:)) / dble(Ndiv)
+
+    block
+      integer :: coun(3,Nbeads,TNstep*4)
+      integer :: cx, cy, cz
+      grid(:,:,:) = 0.0d0
+      do Istep = 1, TNstep*4
+      do Ibead = 1, Nbeads
+        coun(:,Ibead,Istep) = int( (rH(:,Ibead,Istep)-Lmin(:))/dL(:) ) + 1
+      end do
+      end do
+      !do Istep = 1, TNstep*2
+      do Istep = 1, TNstep*4
+      do Ibead = 1, Nbeads
+        if ( all(coun(:,Ibead,Istep) >= 1 .and. coun(:,Ibead,Istep) <= Ndiv )  ) then
+        cx = coun(1,Ibead,Istep)
+        cy = coun(2,Ibead,Istep)
+        cz = coun(3,Ibead,Istep)
+        grid(cx,cy,cz) = grid(cx,cy,cz) + 1.0d0
+        else
+          print *, Ibead, Istep, ":", coun(:,Ibead,Istep)
+        end if
+      end do
+      end do
+      grid(:,:,:) = grid(:,:,:) / dble(4*TNstep*Nbeads)
+    end block
+
+    open(newunit=Uout,file=Fout,status='replace')
+      write(Uout,*) "commnet"
+      write(Uout,*) "commnet"
+      write(Uout,9999) Nf, Lmin(:)
+      write(Uout,9999) Ndiv, dL(1), 0.0,    0.0
+      write(Uout,9999) Ndiv, 0.0,   dL(2),  0.0
+      write(Uout,9999) Ndiv, 0.0,   0.0,    dL(3)
+      do Iatom = 1, Nf
+        write(Uout,9999) 26, dble(Iatom), rF(:,Iatom)
+      end do
+
+      do i = 1, Ndiv
+        do j = 1, Ndiv
+          do k = 1, Ndiv
+            write(Uout,'(E13.5)',advance='no') grid(i,j,k)
+            if ( mod(k,6) == 0 ) write(Uout,*)
+          end do
+          write(Uout,*)
+        end do
+      end do
+    close(Uout)
+
+!print *, "rF"
+!do Iatom = 1, 6
+!  print '(3F10.5)', rF(:,Iatom) * AUtoAng
+!end do
+  9998  format(I5,4F12.6)
+  9999  format(I5,4F12.6)
+  end subroutine save_cube_FeH
 
   subroutine remove_rotation_eachbeads
   integer :: Istep, Ibead

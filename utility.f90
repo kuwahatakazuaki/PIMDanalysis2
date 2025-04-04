@@ -1,5 +1,5 @@
 module utility
-  use input_parameter,  only: data_beads, data_step, TNstep, graph_step, Ndiv, label
+  use input_parameter,  only: data_beads, data_step, TNstep, graph_step, Ndiv, label, Angs2Bohr
   implicit none
   private
   real(8), parameter :: pi = atan(1.0d0)*4.0d0
@@ -24,14 +24,11 @@ contains
     integer, intent(in) :: cube_list(:)
     character(len=*), optional :: Fout
     real(8), intent(inout) :: rcub(:,:,:,:) ! rcub(3,Natom,Nbeads,TNstep)
-    real(8), parameter :: Ledge = 10.0d0
-    !real(8), parameter :: Bohr2Angs = 0.529177249d0
-    real(8), parameter :: Angs2Bohr = 1.8897259886d0
     real(8), parameter :: margine = 1d-1
     real(8) :: grid(Ndiv,Ndiv,Ndiv)
     real(8) :: Lmin(3), Lmax(3)
     real(8) :: dL(3), base_vec(3,3)
-    integer, allocatable :: coun(:,:,:,:)
+    integer, allocatable :: coun(:,:,:,:) ! coun(3,Ncube,Nbeads,TNstep)
     integer :: Uout,i,j,k, Icube, xyz
     integer :: uboun(4), Natom, Nbeads, TNstep, Ncube
 
@@ -97,9 +94,9 @@ contains
           end do
         end do
       end do
+      grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
     end block
 
-    grid(:,:,:) = grid(:,:,:) / dble(TNstep*Nbeads)
     open(newunit=Uout,file=Fout,status='replace')
     !open(newunit=Uout,file='cube.cube',status='replace')
       write(Uout,*) "commnet"
@@ -180,11 +177,11 @@ contains
         data1(1:Neach) = data2(1:Neach)
       end do
     close(Uout)
-    print '(a)',
+    print '(a)', ""
     print '(a)', '   Reblocking data is saved in "reblock.out"'
     print '(a)', '   Type "plot "reblock.out" with errorbar" in Gnuplot'
     print '(a)', " ***** End Reblocking methods*****"
-    print '(a)',
+    print '(a)', ""
   end subroutine reblock_step
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ End Reblocking  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
