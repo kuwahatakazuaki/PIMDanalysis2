@@ -101,7 +101,7 @@ contains
     !open(newunit=Uout,file='cube.cube',status='replace')
       write(Uout,*) "commnet"
       write(Uout,*) "commnet"
-      write(Uout,9999) Natom-Ncube, Lmin(:)
+      write(Uout,9999) Natom-Ncube, Lmin(:)+dL(:)*0.5d0
       do i = 1, 3
         write(Uout,9999) Ndiv, base_vec(i,:)
       end do

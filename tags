@@ -18,14 +18,17 @@
 911	read_coor.f90	/^    911 print *, "ERROR!!: Reading line exceed the coor lines"; stop$/;"	l	subroutine:read_coor_binary	file:
 911	read_coor.f90	/^    911 print *, "ERROR!!: Reading line exceed the coor lines"; stop$/;"	l	subroutine:read_coor_format	file:
 9998	pbhpo4.f90	/^    9998  format(i0,6F11.6)$/;"	l	subroutine:print_unit_step	file:
+9998	rotation.f90	/^  9998  format(I5,4F12.6)$/;"	l	file:
 9998	utility.f90	/^  9998  format(I5,4F12.6)$/;"	l	file:
 9999	pbhpo4.f90	/^    9999  format(6F12.7)$/;"	l	subroutine:print_unit_step	file:
 9999	periodic.f90	/^  9999 format(F10.5)$/;"	l	subroutine:oho_distribution	file:
 9999	rotation.f90	/^    9999 format(a,4F11.7)$/;"	l	subroutine:save_movie	file:
+9999	rotation.f90	/^  9999  format(I5,4F12.6)$/;"	l	file:
 9999	rotation.f90	/^  9999 format(E12.5)$/;"	l	subroutine:rotation	file:
 9999	utility.f90	/^  9999  format(I5,4F12.6)$/;"	l	file:
 AUtoAng	parameters.f90	/^  real(8), parameter :: AUtoAng /;"	v	module:input_parameter
 AUtoK	parameters.f90	/^  real(8), parameter :: AUtoK /;"	v	module:input_parameter
+Angs2Bohr	parameters.f90	/^  real(8), parameter :: Angs2Bohr /;"	v	module:input_parameter
 AngtoAU	parameters.f90	/^  real(8), parameter :: AngtoAU /;"	v	module:input_parameter
 Dhist	hist1D.f90	/^  real(8) :: Dhist,/;"	v	module:calc_histogram1D
 Dhist	hist2D.f90	/^  real(8) :: hist2D_min(2), hist2D_max(2), Dhist(/;"	v	module:calc_histogram2D
@@ -193,7 +196,7 @@ label_oho	parameters.f90	/^  integer, allocatable :: hyd(:), label_oho(/;"	v	mod
 lat_inv	periodic.f90	/^  real(8) :: Dhist, lat_inv(/;"	v	module:mod_periodic
 lattice	parameters.f90	/^  real(8) :: lattice(/;"	v	module:input_parameter
 lowerchr	utility.f90	/^  function lowerchr(/;"	f
-make_matA	rotation.f90	/^  function make_matA(/;"	f	subroutine:rotation
+make_matA	rotation.f90	/^  function make_matA(/;"	f
 mod_other_quantities	other_quantities.f90	/^module mod_other_quantities$/;"	m
 mod_periodic	periodic.f90	/^module mod_periodic$/;"	m
 mod_special_case	special_case.f90	/^module mod_special_case$/;"	m
@@ -230,13 +233,14 @@ read_input	read_inp.f90	/^subroutine read_input$/;"	s
 real_max	utility.f90	/^  real(8), parameter :: real_max /;"	v	module:utility
 real_min	utility.f90	/^  real(8), parameter :: real_min /;"	v	module:utility
 reblock_step	utility.f90	/^  subroutine reblock_step(/;"	s
-remove_rotation_allbeads	rotation.f90	/^  subroutine remove_rotation_allbeads$/;"	s	subroutine:rotation
-remove_rotation_eachbeads	rotation.f90	/^  subroutine remove_rotation_eachbeads$/;"	s	subroutine:rotation
+remove_rotation_allbeads	rotation.f90	/^  subroutine remove_rotation_allbeads$/;"	s
+remove_rotation_eachbeads	rotation.f90	/^  subroutine remove_rotation_eachbeads$/;"	s
 rotation	rotation.f90	/^subroutine rotation$/;"	s
 s	periodic.f90	/^  real(8), allocatable :: s(/;"	v	module:mod_periodic
 save_beads	parameters.f90	/^  logical :: save_beads /;"	v	module:input_parameter
 save_cube	utility.f90	/^  subroutine save_cube(/;"	s	module:utility
-save_movie	rotation.f90	/^  subroutine save_movie$/;"	s	subroutine:rotation
+save_cube_FeH	rotation.f90	/^  subroutine save_cube_FeH(/;"	s	subroutine:rotation
+save_movie	rotation.f90	/^  subroutine save_movie$/;"	s
 sort_int	utility.f90	/^  subroutine sort_int(/;"	s
 sort_real	utility.f90	/^  subroutine sort_real(/;"	s
 special_case	special_case.f90	/^  subroutine special_case$/;"	s	module:mod_special_case

@@ -37,7 +37,7 @@ contains
       end if
 
       read(Uin) Natom, Nbeads, Ncut, Nstep, TNstep
-
+!print *, Natom, Nbeads, Ncut, Nstep, TNstep
       allocate(r(3,Natom,Nbeads,TNstep))
       if ( allocated(label) .eqv. .False.) then
         allocate(label(Natom))
@@ -182,6 +182,7 @@ contains
     open(newunit=Uout,file=ftemp, form='unformatted', access='stream', status='replace')
       write(Uout) Natom, Nbeads, Ncut, Nstep, TNstep
       write(Uout) label(:)
+!print *, Natom, Nbeads, Ncut, Nstep, TNstep
       do k = 1, TNstep
         do j = 1, Nbeads
           do i = 1, Natom

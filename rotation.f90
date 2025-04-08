@@ -69,7 +69,6 @@ contains
     real(8), parameter :: margine = 1d-1
     integer :: xyz, Iatom, i, Ibead, Istep
     character(len=*), parameter :: Fout = 'oct.cube'
-    !character(len=2), parameter :: atom_list()
 
     rnew(:,:,:,:) = rnew(:,:,:,:) * AngtoAU
     do Iatom = 1, Natom
@@ -101,6 +100,8 @@ contains
       Lmin(xyz) = minval(rH(xyz,:,:)) - margine
       Lmax(xyz) = maxval(rH(xyz,:,:)) + margine
     end do
+    Lmax(:) = 0.5d0*(Lmax(:)-Lmin(:))
+    Lmin(:) = -Lmax(:)
     dL(:) = (Lmax(:)-Lmin(:)) / dble(Ndiv)
 
     block
@@ -109,6 +110,7 @@ contains
       grid(:,:,:) = 0.0d0
       do Istep = 1, TNstep*4
       do Ibead = 1, Nbeads
+        !coun(:,Ibead,Istep) = int( (rH(:,Ibead,Istep)-Lmin(:))/dL(:) ) + 1
         coun(:,Ibead,Istep) = int( (rH(:,Ibead,Istep)-Lmin(:))/dL(:) ) + 1
       end do
       end do
@@ -129,9 +131,9 @@ contains
     end block
 
     open(newunit=Uout,file=Fout,status='replace')
-      write(Uout,*) "commnet"
-      write(Uout,*) "commnet"
-      write(Uout,9999) Nf, Lmin(:)
+      write(Uout,'(a,3F9.4,a)') "# average of H ", rave(:,1)*AUtoAng, " in Angstrom"
+      write(Uout,'(a,3F9.4,a)') "# average of Fe", rave(:,3)*AUtoAng, " in Angstrom"
+      write(Uout,9999) Nf, Lmin(:) + dL(:)*0.5d0
       write(Uout,9999) Ndiv, dL(1), 0.0,    0.0
       write(Uout,9999) Ndiv, 0.0,   dL(2),  0.0
       write(Uout,9999) Ndiv, 0.0,   0.0,    dL(3)
@@ -150,10 +152,46 @@ contains
       end do
     close(Uout)
 
-!print *, "rF"
-!do Iatom = 1, 6
-!  print '(3F10.5)', rF(:,Iatom) * AUtoAng
-!end do
+    block
+    real(8) :: rx, ry
+    real(8) :: grid_cut(Ndiv,Ndiv)
+    integer :: mid0, Imax(1)
+    mid0 = Ndiv/2 + 1
+    do i = 1, Ndiv
+      do j = mid0, Ndiv
+        grid_cut(i,j) = sum(grid(i,j,mid0-1:mid0+1) + grid(Ndiv-i+1,j,mid0-1:mid0+1))/6.0d0
+      end do
+    end do
+
+    open(newunit=Uout,file='plot_xy.dat',status='replace')
+      write(Uout,'(a,3F9.4,a)') "# average of H ", rave(:,1)*AUtoAng, " in Angstrom"
+      write(Uout,'(a,3F9.4,a)') "# average of Fe", rave(:,3)*AUtoAng, " in Angstrom"
+      do i = 1, Ndiv
+        write(Uout,*) "# index of x", i
+        rx = ( Lmin(1)+dL(1)*(dble(i)-0.5d0) ) * AUtoAng
+        do j = mid0, Ndiv
+          ry = ( Lmin(2)+dL(2)*(dble(j)-0.5d0) ) * AUtoAng
+          write(Uout,*) rx, ry, grid_cut(i,j)
+          !write(Uout,*) rx, ry, sum(grid(i,j,mid0-1:mid0+1) + grid(Ndiv-i+1,j,mid0-1:mid0+1))/6.0d0
+        end do
+        write(Uout,*) ""
+      end do
+    close(Uout)
+
+    open(newunit=Uout,file='max_xy.dat',status='replace')
+      write(Uout,'(a,3F9.4,a)') "# average of H ", rave(:,1)*AUtoAng, " in Angstrom"
+      write(Uout,'(a,3F9.4,a)') "# average of Fe", rave(:,3)*AUtoAng, " in Angstrom"
+      do i = 1, Ndiv
+        rx = ( Lmin(1)+dL(1)*(dble(i)-0.5d0) ) * AUtoAng
+        !Imax(:) = maxloc( grid(i,mid0:,mid0) ) + mid0-1
+        Imax(:) = maxloc( grid_cut(i,mid0:) ) + mid0-1
+        ry = ( Lmin(2)+dL(2)*(dble(Imax(1))-0.5d0) ) * AUtoAng
+        write(Uout,*) rx, ry, Imax(1)
+      end do
+    close(Uout)
+
+    end block
+
   9998  format(I5,4F12.6)
   9999  format(I5,4F12.6)
   end subroutine save_cube_FeH
