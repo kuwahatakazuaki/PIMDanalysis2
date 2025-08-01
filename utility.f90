@@ -34,9 +34,6 @@ contains
 
     if ( present(Fout) .eqv. .False. ) Fout='cube.cube'
 
-!print *, "present", present(Fout)
-!print *, "Fout :",Fout
-
     uboun(:) = ubound(rcub)
     Natom  = uboun(2)
     Nbeads = uboun(3)
@@ -125,6 +122,8 @@ contains
         end do
       end do
     close(Uout)
+    print *, '  MaX value : ', maxval(grid)
+    print *, '  Min value : ', minval(grid)
     print '(a)', '  *** Cube file is saved in "'//Fout//'" ***'
 
   9998  format(I5,4F12.6)

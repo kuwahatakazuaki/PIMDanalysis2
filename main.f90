@@ -50,7 +50,8 @@
 !  99 : OHO distribution
 !!! 10* : === Force + Coor ===
 !!! 101 : Product coor from center and force
-! 111 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
+! 111 : Out of plane              (atom2-atom1-atom3 -> atom1-atom4)
+! 112 : Dihedral Pz orbital       (atom2-atom1 -> atom3-(atom4,atom5))
 ! 191 : PbHPO4  (O-O distribution)
 ! 192 : PbHPO4  (dleta OH distribution)
 !!!  29 : 2D histogram from External   (Old, use the 28 mode)
@@ -107,7 +108,7 @@ select case(jobtype)
     call rotation
   case(81:99)
     call periodic
-  case(111)
+  case(111:120)
     call special_case
   case(191:195)
     call pbhpo4

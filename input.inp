@@ -41,8 +41,9 @@
 #  89 : Near structure1 < Natom           (from atom1 to atom2)
 ###  88 : Tetrahedron (O-H4)
 #  89 : OHO distribution
-#  91 : projection           (atom1-atom2  T  atom3-atom4)
-# 101 : Out of plane         (atom2-atom1-atom3 -> atom1-atom4)
+#  91 : projection                (atom1-atom2  T  atom3-atom4)
+# 111 : Out of plane              (atom2-atom1-atom3 -> atom1-atom4)
+# 112 : Dihedral Pz orbital       (atom2-atom1 -> atom3-(atom4,atom5))
 # 191 : PbHPO4  (O-O distribution)
 # 192 : PbHPO4  (dleta OH distribution)
 #!!  29 : 2D histogram from External   (Old, use the 28 mode)
@@ -78,11 +79,6 @@ bin1.bin
 $name_binary2
 bin2.bin
 # end job type
-
-# utility
-$Ndiv
-20
-# end utility
 
 # input file 1
 $DirResult
@@ -159,6 +155,11 @@ $threshhold??
 0.71d0
 # end periodic
 
+# utility
+$Ndiv
+20
+# end utility
+
 ## Rotation
 #$Nhyd                # the number of hydrogen or muon
 #5
@@ -185,18 +186,5 @@ $threshhold??
 #H    1.0078   1.97916300   -0.59402300    0.37815700
 #$end coord
 ## end Rotation
-
-## umbrella sampling
-#$temperature
-#300
-#$type   # 1:atom1-atom2 2:atom1-atom2-atom3
-#0
-#$atom1
-#1
-#$atom2
-#2
-#$force constant
-#1d-2
-## end umbrella sampling
 
 

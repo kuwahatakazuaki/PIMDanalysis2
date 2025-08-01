@@ -152,6 +152,10 @@ contains
       end do
     close(Uout)
 
+    print *, '  MaX value : ', maxval(grid)
+    print *, '  Min value : ', minval(grid)
+    print '(a)', '  *** Cube file is saved in "'//Fout//'" ***'
+
     block
     real(8) :: rx, ry
     real(8) :: grid_cut(Ndiv,Ndiv)

@@ -61,7 +61,7 @@ $(program): $(objs)
 
 
 clean:
-	rm -f *.o *.mod $(program)
+	rm -f *.o *.mod $(program) "*2.*"
 
 install: $(objs)
 	$(fc) $(fcopt) $(objs) -o $(program)
