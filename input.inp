@@ -57,7 +57,7 @@ $Nfile          # The number of files
 $Job type
 91
 $Natom
-10
+440
 $Nbeads
 16
 $atom1
@@ -82,11 +82,11 @@ bin2.bin
 
 # input file 1
 $DirResult
-../Data1
+/Users/kuwahatakazuaki/PIMD/Result/FeH/300K/QM/run1
 #$FileName
 # coor.bin
 $Ncut
-5000
+0
 $Nstep
 0
 # end file 1
@@ -138,9 +138,9 @@ $dummy_atom2
 
 # periodic
 $Lattice
- 7.5340385437         0.0000000000         0.0000000000
--3.7670192719         6.5246687719         0.0000000000
- 0.0000000000         0.0000000000         7.3154616356
+       17.0626583099         0.0000000000         0.0000000000
+        0.0000000000        17.0626583099         0.0000000000
+        0.0000000000         0.0000000000        17.0626583099
 $Ielement1   #  For RDF
 1
 $Felement1

@@ -57,7 +57,7 @@ end subroutine calc_dihedral
 
 subroutine calc_dihedral_sub(Tatom1, Tatom2, Tatom3, Tatom4)
   use input_parameter, only: r, data_beads, data_step, TNstep, Nbeads
-  use utility, only: norm, outer_product, pi
+  use utility, only: norm, cross_product, pi
   implicit none
   integer, intent(in) :: Tatom1, Tatom2, Tatom3, Tatom4
   integer :: j, k ! i=atom, j=beads, k=step
@@ -70,8 +70,8 @@ subroutine calc_dihedral_sub(Tatom1, Tatom2, Tatom3, Tatom4)
       r23(:) = r(:,Tatom2,j,k) - r(:,Tatom3,j,k)
       r34(:) = r(:,Tatom3,j,k) - r(:,Tatom4,j,k)
 
-      vec123(:) = outer_product(r12(:),r23(:))
-      vec234(:) = outer_product(r23(:),r34(:))
+      vec123(:) = cross_product(r12(:),r23(:))
+      vec234(:) = cross_product(r23(:),r34(:))
 
       vec123(:) = vec123(:) / norm(vec123(:))
       vec234(:) = vec234(:) / norm(vec234(:))

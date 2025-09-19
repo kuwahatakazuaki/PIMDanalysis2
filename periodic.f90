@@ -6,7 +6,7 @@ module mod_periodic
             r, data_beads, data_step, graph_step, atom1, atom2, atom3, atom4, &
             Ntetra, Itetra, Ndiv, Natom_peri, FNameBinary1
   use calc_histogram1D, only: calc_1Dhist
-  use utility, only: get_volume, pi, get_inv_mat, real_max, sort !, sort_real
+  use utility, only: get_volume, pi, get_inv_mat, real_max, sort, cross_product !, sort_real
   implicit none
   private
   integer :: Uout
@@ -57,6 +57,8 @@ contains
         call Near_str2
       case(89)
         call Near_atoms1
+      case(97)
+        call Fealloy_volume
       case(98)
         call Fealloy_near4
       case(99)
@@ -66,6 +68,91 @@ contains
     end select
     print *, "***** END periodic condition *****"
   end subroutine periodic
+
+! ++++++++++++++++++++++++++++++++
+! +++++ Start Fealloy_volume +++++
+! ++++++++++++++++++++++++++++++++
+  subroutine Fealloy_volume
+    integer, parameter :: Nsite = 2592
+    integer :: Iatom, Istep, Ibead, Uinp, ios, Isite, xyz
+    integer :: i, j, k
+    real(8) :: s12(3), r12(3), dis2
+    integer :: site_dat(4,2,Nsite)
+    real(8), allocatable :: s_site(:,:,:), cent_site(:,:)
+    real(8), allocatable :: r_site(:,:,:)
+    character(len=*), parameter :: Fsite="site.dat", Fout = 'near_atoms.xyz'
+    character :: Cdummy
+
+    open(newunit=Uinp,file=Fsite,status='old',iostat=ios)
+      if (ios /= 0) then
+        print *, "ERROR!! opening file : ", Fout
+        stop
+      end if
+      do i = 1, Nsite
+        read(Uinp,*) site_dat(:,1,i), Cdummy, site_dat(:,2,i)
+      end do
+    close(Uinp)
+
+    allocate(s_site(3,4,Nsite))
+    allocate(r_site(3,4,Nsite))
+    allocate(cent_site(3,Nsite))
+
+    do Istep = 1, TNstep
+      do Ibead = 1, Nbeads
+        do Isite = 1, Nsite
+          do i = 1, 4
+            s_site(:,i,Isite) = s(:,site_dat(i,1,Isite),Ibead,Istep)
+          end do
+          do i = 2, 4
+            s12(:) = s_site(:,i,Isite) - s_site(:,1,Isite)
+            s12(:) = s12(:) - anint(s12(:))
+            s_site(:,i,Isite) = s_site(:,1,Isite) + s12(:)
+          end do
+          do xyz = 1, 3
+            cent_site(xyz,Isite) = sum(s_site(xyz,:,Isite)) / 4.0d0
+          end do
+        end do
+! === We will calculate the volume without r_site ===
+        do Isite = 1, Nsite
+          do i = 1, 4
+            r_site(:,i,Isite) = matmul(s_site(:,i,Isite),lattice(:,:))
+          end do
+        end do
+
+do Isite = 1, Nsite
+!print *, 5
+!print *, ""
+!do i = 1, 4
+!  print *, 'H', s_site(:,i,Isite)
+!end do
+!print *, 'O', cent_site(:,Isite)
+  print *, get_volume_tetra(r_site(:,:,Isite))
+end do
+stop 'HERE0'
+      end do
+    end do
+
+  contains
+
+    function get_volume_tetra(inp) result(volume)
+      real(8), intent(in) :: inp(3,4)
+      real(8) :: volume
+      real(8) :: r21(3), r31(3), r41(3), cross(3)
+
+      r21(:) = inp(:,2) - inp(:,1)
+      r31(:) = inp(:,3) - inp(:,1)
+      r41(:) = inp(:,4) - inp(:,1)
+
+      cross(:) = cross_product(r21,r31)
+      volume = abs( dot_product(r41,cross) / 6.0d0 )
+    end function get_volume_tetra
+
+  end subroutine Fealloy_volume
+! ++++++++++++++++++++++++++++++++
+! +++++ End!! Fealloy_volume +++++
+! ++++++++++++++++++++++++++++++++
+
+
 ! +++++++++++++++++++++++++++++++
 ! +++++ Start Fealloy_near4 +++++
 ! +++++++++++++++++++++++++++++++
@@ -73,7 +160,6 @@ contains
     use utility, only: count_letter
     integer, parameter :: Nsite = 2592
     integer :: Iatom, Istep, Ibead, i, j, k, Idis, Uinp, ios, Isite
-    !integer :: near_idx(Natom_peri),   temp_idx(Nelement2)
     integer :: near_idx(Natom_peri+1),   temp_idx(Nelement2)
     real(8) :: near_str(3,Natom_peri), temp_dis(Nelement2), temp_str(3,Nelement2)
     real(8) :: s12(3), r12(3), dis2
@@ -93,7 +179,6 @@ contains
     close(Uinp)
 
     open(newunit=Uout,file=Fout,status='replace')
-    !LoopStep : do Istep = 1, 10
     LoopStep : do Istep = 1, TNstep
     LoopAtom : do Iatom = Ielement1, Felement1
       write(Uout,*) (Natom_peri+1)*Nbeads
@@ -113,7 +198,6 @@ contains
         end do
         call sort(temp_dis,temp_idx)
         near_idx(1:Natom_peri+1) = temp_idx(1:Natom_peri+1)
-        !near_idx(1:Natom_peri) = temp_idx(1:Natom_peri)
 
         call compare_array(Isite,Lmatch)
         if ( Lmatch ) then
@@ -125,7 +209,7 @@ contains
             near_str(:,i) = temp_str(:,near_idx(i))
 print *, near_str(:,i)
           end do
-stop 'HERE'
+stop 'HERE0'
         end if
 
         write(Uout,*) label(Iatom), 0.0d0, 0.0d0, 0.0d0
@@ -166,9 +250,6 @@ contains
           exit
         end if
       end do
-!print *, Isite, ":", near_idx(1:4)
-!print *, site_dat(:,1,Isite)
-!print *, site_dat(:,2,Isite)
 
       if ( Lenddo ) then
         Lenddo = .True.
@@ -340,31 +421,31 @@ contains
 
     Fout = 'near_str1.xyz'
     open(newunit=Uout,file=Fout,status='replace')
-    do Istep = 1, TNstep
-      do Ibead = 1, Nbeads
-        Nnear = 0
-        do i = 1, Natom
-          if ( i == atom1 ) cycle
-          s12(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
-          s12(:) = s12(:) - anint(s12(:))
-          r12(:) = matmul(s12(:),lattice(:,:))
-          dis2 = dot_product(r12(:),r12(:))
-          if ( dis2 <= cut_dis**2 ) then
-            Nnear = Nnear + 1
-            if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
-            near_idx(Nnear) = i
-            near_str(:,Nnear) = r12(:)
-          end if
+      do Istep = 1, TNstep
+        do Ibead = 1, Nbeads
+          Nnear = 0
+          do i = 1, Natom
+            if ( i == atom1 ) cycle
+            s12(:) = s(:,i,Ibead,Istep) - s(:,atom1,Ibead,Istep)
+            s12(:) = s12(:) - anint(s12(:))
+            r12(:) = matmul(s12(:),lattice(:,:))
+            dis2 = dot_product(r12(:),r12(:))
+            if ( dis2 <= cut_dis**2 ) then
+              Nnear = Nnear + 1
+              if ( Nnear > max_atom ) stop 'ERROR!! Nnear exceed max_atom'
+              near_idx(Nnear) = i
+              near_str(:,Nnear) = r12(:)
+            end if
+          end do
+        end do
+
+        write(Uout,*) Nnear + 1
+        write(Uout,*) Istep
+        write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
+        do i = 1, Nnear
+          write(Uout,*) label(near_idx(i)), near_str(:,i)
         end do
       end do
-
-      write(Uout,*) Nnear + 1
-      write(Uout,*) Istep
-      write(Uout,*) label(atom1), 0.0d0, 0.0d0, 0.0d0
-      do i = 1, Nnear
-        write(Uout,*) label(near_idx(i)), near_str(:,i)
-      end do
-    end do
     close(Uout)
   end subroutine Near_str1
 ! +++++++++++++++++++++++++++

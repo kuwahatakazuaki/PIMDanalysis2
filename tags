@@ -37,6 +37,7 @@ DirResult	parameters.f90	/^  character(len=128), allocatable :: FileName(:), Dir
 FNameBinary1	parameters.f90	/^  character(len=:), allocatable :: FNameBinary1,/;"	v	module:input_parameter
 FNameBinary2	parameters.f90	/^  character(len=:), allocatable :: FNameBinary1, FNameBinary2$/;"	v	module:input_parameter
 Fealloy_near4	periodic.f90	/^  subroutine Fealloy_near4$/;"	s	module:mod_periodic
+Fealloy_volume	periodic.f90	/^  subroutine Fealloy_volume$/;"	s	module:mod_periodic
 Felement1	parameters.f90	/^  integer :: Ielement1, Felement1,/;"	v	module:input_parameter
 Felement2	parameters.f90	/^  integer :: Ielement1, Felement1, Ielement2, Felement2,/;"	v	module:input_parameter
 FileName	parameters.f90	/^  character(len=128), allocatable :: FileName(/;"	v	module:input_parameter
@@ -139,6 +140,7 @@ data_max_cent	cent.f90	/^  real(8), public :: data_max_cent,/;"	v	module:calc_ce
 data_min_cent	cent.f90	/^  real(8), public :: data_max_cent, data_min_cent,/;"	v	module:calc_centoroid
 data_step	parameters.f90	/^  real(8), save, allocatable :: data_step(/;"	v	module:input_parameter
 deltaOH	pbhpo4.f90	/^  subroutine deltaOH$/;"	s	subroutine:pbhpo4
+dihedral_pz	special_case.f90	/^  subroutine dihedral_pz$/;"	s	module:mod_special_case
 dipole	other_quantities.f90	/^  real(8), allocatable :: charge(:,:,:), dipole(/;"	v	module:mod_other_quantities
 dipole_analysis	other_quantities.f90	/^  subroutine dipole_analysis$/;"	s	module:mod_other_quantities
 dirfile	Makefile	/^dirfile = \/Users\/kuwahatakazuaki\/Program\/bin\/PIMDanalysis$/;"	m

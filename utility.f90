@@ -7,7 +7,7 @@ module utility
   real(8), parameter :: real_min = tiny(real(8))
 
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
-            rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, outer_product, &
+            rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, cross_product, &
             atom2num, save_cube, real_max, real_min, sort_real, count_letter, sort
 
   interface sort
@@ -353,7 +353,7 @@ contains
   function get_volume(vec) result(vol)
     real(8) :: vec(3,3)
     real(8) :: vol
-    vol = dot_product(vec(1,:), outer_product(vec(2,:),vec(3,:)))
+    vol = dot_product(vec(1,:), cross_product(vec(2,:),vec(3,:)))
   end function get_volume
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ End get_volume +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -461,18 +461,19 @@ contains
   end function itoc
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ Start outer_product ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ Start cross_product ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  function outer_product(a,b) result(vec)
+  !function outer_product(a,b) result(vec)
+  function cross_product(a,b) result(vec)
     real(8), intent(in) :: a(3), b(3)
     real(8) :: vec(3)
 
-    vec(1) = a(2) * b(3) - a(3) * b(2)
-    vec(2) = a(3) * b(1) - a(1) * b(3)
-    vec(3) = a(1) * b(2) - a(2) * b(1)
-  end function outer_product
+    vec(1) = a(2)*b(3) - a(3)*b(2)
+    vec(2) = a(3)*b(1) - a(1)*b(3)
+    vec(3) = a(1)*b(2) - a(2)*b(1)
+  end function cross_product
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! +++++ End outer_product ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ End cross_product ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -3,7 +3,7 @@ module mod_special_case
           Natom, Nbeads, TNstep, jobtype, r, data_beads, data_step, &
           save_beads, FNameBinary1, atom1, atom2, atom3, atom4, atom5, graph_step
   use calc_histogram1D
-  use utility,  only: calc_deviation, norm, pi, outer_product
+  use utility,  only: calc_deviation, norm, pi, cross_product
   implicit none
   private
   integer :: Uinp, Uout, ierr
@@ -93,7 +93,7 @@ contains
         r31(:) = r31(:) / norm( r31(:) )
         r41(:) = r41(:) / norm( r41(:) )
 
-        rt(:) = outer_product(r21(:),r31(:))
+        rt(:) = cross_product(r21(:),r31(:))
         data_beads(j,k) = (0.5 *  pi - acos( dot_product(r41(:),rt(:)) ) ) * 180.0 / pi
       end do
       data_step(k) = sum(data_beads(:,k))/dble(Nbeads)
