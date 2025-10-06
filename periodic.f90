@@ -6,7 +6,7 @@ module mod_periodic
             r, data_beads, data_step, graph_step, atom1, atom2, atom3, atom4, &
             Ntetra, Itetra, Ndiv, Natom_peri, FNameBinary1
   use calc_histogram1D, only: calc_1Dhist
-  use utility, only: get_volume, pi, get_inv_mat, real_max, sort, cross_product !, sort_real
+  use utility, only: get_volume, pi, get_inv_mat, real_max, sort, cross_product, save_bead_data
   implicit none
   private
   integer :: Uout
@@ -514,7 +514,7 @@ contains
       end do
     end do
     call calc_1Dhist(out_hist=trim(out_hist))
-stop 'Not Update'
+    if ( save_beads .eqv. .True. ) call save_bead_data()
   end subroutine bond_diff_perio
 
   subroutine bond_perio
@@ -535,6 +535,7 @@ stop 'Not Update'
       end do
     end do
     call calc_1Dhist(out_hist=trim(out_hist))
+    if ( save_beads .eqv. .True. ) call save_bead_data()
   end subroutine bond_perio
 
 ! ++++++++++++++++++++++

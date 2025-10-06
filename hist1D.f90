@@ -51,8 +51,6 @@ contains
     end if
 
     Dhist = (hist_max1 - hist_min1) / dble(Nhist)
-!print *, hist_min1, hist_max1
-!stop 'HERE'
 
     print '("    X range max =", F13.6)', hist_max1
     print '("    X range min =", F13.6)', hist_min1
@@ -78,20 +76,20 @@ contains
 
     call calc_deviation(data_dev, data_err)
 
-! ************* Umbrella **************
-    if ( umbrella_type > 0 ) then
-    block
-      real(8) :: poten, normalization
-      beta = 1 / ( temperature * KtoAU )
-      do l = 1, Nhist
-        poten = umbrella_force * histogram(l,1)**2
-        hist_umbre(l) = histogram(l,2) * dexp(beta*poten)
-      end do
-      normalization = sum(hist_umbre(:)) * (histogram(Nhist,1) - histogram(1,1)) / dble(Nhist-1)
-      hist_umbre(:) = hist_umbre(:) / normalization
-    end block
-    end if
-! ************* Umbrella **************
+!! ************* Umbrella **************
+!    if ( umbrella_type > 0 ) then
+!    block
+!      real(8) :: poten, normalization
+!      beta = 1 / ( temperature * KtoAU )
+!      do l = 1, Nhist
+!        poten = umbrella_force * histogram(l,1)**2
+!        hist_umbre(l) = histogram(l,2) * dexp(beta*poten)
+!      end do
+!      normalization = sum(hist_umbre(:)) * (histogram(Nhist,1) - histogram(1,1)) / dble(Nhist-1)
+!      hist_umbre(:) = hist_umbre(:) / normalization
+!    end block
+!    end if
+!! ************* Umbrella **************
 
     open(newunit=Uout, file=out_name, status='replace')
       write(Uout,'(" # Maximum hist =", F13.6)')  data_max

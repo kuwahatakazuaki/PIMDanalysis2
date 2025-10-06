@@ -1,5 +1,7 @@
 module utility
-  use input_parameter,  only: data_beads, data_step, TNstep, graph_step, Ndiv, label, Angs2Bohr
+  use input_parameter, &
+    only: data_beads, data_step, TNstep, graph_step, Ndiv, label, Ang2AU, &
+          FNameBinary1, TNstep, Nbeads
   implicit none
   private
   real(8), parameter :: pi = atan(1.0d0)*4.0d0
@@ -8,7 +10,7 @@ module utility
 
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
             rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, cross_product, &
-            atom2num, save_cube, real_max, real_min, sort_real, count_letter, sort
+            atom2num, save_cube, real_max, real_min, sort_real, count_letter, sort, save_bead_data
 
   interface sort
     module procedure sort_real
@@ -16,6 +18,25 @@ module utility
   end interface
 
 contains
+
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ Start save_bead_data +++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  subroutine save_bead_data()
+    integer :: Uout, i, j, k
+    open(newunit=Uout,file=FNameBinary1, form='unformatted', access='stream', status='replace')
+      do k = 1, TNstep
+        do i = 1, Nbeads
+          write(Uout) data_beads(i,k)
+        end do
+      end do
+    close(Uout)
+  end subroutine save_bead_data
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! +++++ End save_bead_data +++++++++++++++++++++++++++++++++++++
+! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ Start save_cube ++++++++++++++++++++++++++++++++++++++++++
@@ -40,7 +61,7 @@ contains
     TNstep = uboun(4)
     Ncube  = size(cube_list)
 
-    rcub(:,:,:,:) = rcub(:,:,:,:) * Angs2Bohr
+    rcub(:,:,:,:) = rcub(:,:,:,:) * Ang2AU
 
     block
       real(8), allocatable :: temp1(:), temp2(:)
@@ -95,7 +116,6 @@ contains
     end block
 
     open(newunit=Uout,file=Fout,status='replace')
-    !open(newunit=Uout,file='cube.cube',status='replace')
       write(Uout,*) "commnet"
       write(Uout,*) "commnet"
       write(Uout,9999) Natom-Ncube, Lmin(:)+dL(:)*0.5d0

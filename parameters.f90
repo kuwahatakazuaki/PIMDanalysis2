@@ -31,7 +31,7 @@ module input_parameter
   real(8), parameter :: AUtoK     = 627.51d0/1.98624d-3  ! Boltzmann constant K to AU
   real(8), parameter :: AngtoAU   = 1/0.529177249d0 ! 1.8897259886d0
   real(8), parameter :: AUtoAng   = 0.529177249d0
-  real(8), parameter :: Angs2Bohr = 1.8897259886d0
+  real(8), parameter :: Ang2AU    = 1.8897259886d0
 
 !  character(len=:), allocatable :: out_hist
 end module input_parameter
