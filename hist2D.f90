@@ -2,7 +2,7 @@ module calc_histogram2D
   use input_parameter, &
       only: Natom, Nbeads, TNstep, Nhist, Nbond, jobtype,  &
             hist_min1, hist_max1, hist_min2, hist_max2, FNameBinary1, FNameBinary2, &
-            hist_margin, r, data_beads, &
+            hist_margin, r, data_beads, delta, &
             atom1, atom2, atom3, atom4, atom5
   implicit none
   private
@@ -128,8 +128,9 @@ contains
     integer :: coun(2)
     real(8), intent(in) :: hist2D_beads(:,:,:)
     character :: axis(2) = (/"X","Y"/)
+    hist_min(:) = [hist_min1,hist_min2]
+    hist_max(:) = [hist_max1,hist_max2]
 
-!    print *, ubound(hist2D_beads)
 
     do i = 1, 2
       if ( hist_min(i) == 0.0d0 .and. hist_max(i) == 0.0d0 ) then
@@ -175,9 +176,11 @@ contains
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   subroutine external_2Dhits_arbitrary
     implicit none
-    character :: axis(2) = (/"X","Y"/)
     integer :: Nunit, Nline, coun(2), Ihist1, Ihist2
     real(8), allocatable :: binary_data(:,:)
+    character :: axis(2) = (/"X","Y"/)
+    hist_min(:) = [hist_min1,hist_min2]
+    hist_max(:) = [hist_max1,hist_max2]
 
     out_name='hist_2D_external.out'
     block ! Check the number of line between Finput1 and Finput2
@@ -208,13 +211,10 @@ contains
         stop "ERROR!!"
       end if
     end block
-
     allocate(binary_data(Nline,2))
     allocate(hist_axis(Nhist,2))
     allocate(hist_data(Nhist,Nhist))
 
-!    allocate(hist_data1D(Nhist))
-!    allocate(hist2D_beads(Nbeads,TNstep,2))
 
     open(newunit=Nunit, file=FNameBinary1, form='unformatted', access='stream', status='old', err=901)
       do i = 1, Nline
@@ -236,7 +236,8 @@ contains
 
 ! ----- Start call calc_2Dhist_sub -----
     do i = 1, 2
-      if ( hist_min(i) == 0.0d0 .and. hist_max(i) == 0.0d0 ) then
+      if ( abs(hist_min(i)) < delta .and. abs(hist_max(i)) < delta ) then
+      !if ( hist_min(i) == 0.0d0 .and. hist_max(i) == 0.0d0 ) then
         print '(a,a)', "    Using the margin parameter to ", axis(i)
         hist_min(i) = hist2D_min(i) - hist_margin
         hist_max(i) = hist2D_max(i) + hist_margin
@@ -246,7 +247,6 @@ contains
 
       Dhist(i) = (hist_max(i) - hist_min(i)) / dble(Nhist)
     end do
-
     do i = 1, 2
       do l = 1, Nhist
         hist_axis(l,i) = hist_min(i) + Dhist(i) * dble(l)

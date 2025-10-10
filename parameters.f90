@@ -23,6 +23,7 @@ module input_parameter
   real(8), allocatable :: r_ref(:,:), weight(:)  ! r_ref(xyz,Natom), weight(Natom)
   real(8) :: lattice(3,3)
   real(8) :: bin_min, bin_max
+  real(8), parameter :: delta = 10d-10
 
   real(8), save, allocatable :: r(:,:,:,:) ! r(xyz,i=atom,j=beads,k=step)
   real(8), save, allocatable :: data_step(:), data_beads(:,:) ! step(TNstep), beads(Nbeads,TNstep)
