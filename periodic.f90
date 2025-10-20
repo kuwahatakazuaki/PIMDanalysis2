@@ -1,12 +1,15 @@
 module mod_periodic
   use input_parameter, &
       only: jobtype, Natom, Nbeads, TNstep, label, save_beads, &
-            hist_max1, hist_max2, hist_min1, hist_min2, Nhist, lattice, &
+            Nhist, lattice, &
+            !hist_max1, hist_max2, hist_min1, hist_min2, & 
             Ielement1, Ielement2, Felement1, Felement2, Noho, Lbox, label_oho, &
             r, data_beads, data_step, graph_step, atom1, atom2, atom3, atom4, &
             Ntetra, Itetra, Ndiv, Natom_peri, FNameBinary1
   use calc_histogram1D, only: calc_1Dhist
-  use utility, only: get_volume, pi, get_inv_mat, real_max, sort, cross_product, save_bead_data
+  use utility, &
+      only: get_volume, pi, get_inv_mat, real_max, sort, cross_product, save_bead_data, &
+            calc_determinant33
   implicit none
   private
   integer :: Uout
@@ -34,6 +37,7 @@ contains
       do j = 1, Nbeads
         do i = 1, Natom
           s(:,i,j,k) = matmul(r(:,i,j,k), lat_inv(:,:))
+          !s(:,i,j,k) = matmul(lat_inv(:,:), r(:,i,j,k))
         end do
       end do
     end do
@@ -73,64 +77,101 @@ contains
 ! +++++ Start Fealloy_volume +++++
 ! ++++++++++++++++++++++++++++++++
   subroutine Fealloy_volume
+  use calc_histogram2D, only : calc_2Dhist_sub, hist2D_bead, calc_2Dhist
     integer, parameter :: Nsite = 2592
+    integer, parameter :: Nhyd = 8
     integer :: Iatom, Istep, Ibead, Uinp, ios, Isite, xyz
     integer :: i, j, k
-    real(8) :: s12(3), r12(3), dis2
-    integer :: site_dat(4,2,Nsite)
-    real(8), allocatable :: s_site(:,:,:), cent_site(:,:)
-    real(8), allocatable :: r_site(:,:,:)
+    real(8) :: s12(3), r12(3), dis2(Nhyd), data_min, data_max
+    integer :: site_dat(4,Nsite)
+    real(8), allocatable :: s_site(:,:,:), s_cent(:,:), r_site(:,:,:)
     character(len=*), parameter :: Fsite="site.dat", Fout = 'near_atoms.xyz'
     character :: Cdummy
+    real(8) :: volu_r, volu_s, deter
+    real(8) :: data_volue(Nsite,Nbeads,TNstep)
+    real(8) :: dis_hydsite(Nsite,Nbeads,TNstep)
+!real(8), allocatable  :: data_volue(:,:,:)
+!real(8), allocatable :: dis_hydsite(:,:,:)
+!allocate(data_volue(Nsite,Nbeads,TNstep),dis_hydsite(Nsite,Nbeads,TNstep))
 
     open(newunit=Uinp,file=Fsite,status='old',iostat=ios)
       if (ios /= 0) then
-        print *, "ERROR!! opening file : ", Fout
+        print *, "ERROR!! opening file : ", Fsite
         stop
       end if
       do i = 1, Nsite
-        read(Uinp,*) site_dat(:,1,i), Cdummy, site_dat(:,2,i)
+        read(Uinp,*) site_dat(:,i), Cdummy!, site_dat(:,2,i)
       end do
     close(Uinp)
 
     allocate(s_site(3,4,Nsite))
     allocate(r_site(3,4,Nsite))
-    allocate(cent_site(3,Nsite))
+    allocate(s_cent(3,Nsite))
 
     do Istep = 1, TNstep
       do Ibead = 1, Nbeads
         do Isite = 1, Nsite
           do i = 1, 4
-            s_site(:,i,Isite) = s(:,site_dat(i,1,Isite),Ibead,Istep)
+            s_site(:,i,Isite) = s(:,site_dat(i,Isite)+Nhyd,Ibead,Istep)
+            !r_site(:,i,Isite) = r(:,site_dat(i,Isite)+Nhyd,Ibead,Istep)
           end do
           do i = 2, 4
             s12(:) = s_site(:,i,Isite) - s_site(:,1,Isite)
             s12(:) = s12(:) - anint(s12(:))
             s_site(:,i,Isite) = s_site(:,1,Isite) + s12(:)
           end do
-          do xyz = 1, 3
-            cent_site(xyz,Isite) = sum(s_site(xyz,:,Isite)) / 4.0d0
-          end do
+          data_volue(Isite,Ibead,Istep) = get_volume_tetra(s_site(:,:,Isite))
         end do
-! === We will calculate the volume without r_site ===
+        s_cent(:,:) = sum(s_site,dim=2) / 4.0d0
+        !s_cent(:,:) = 0.25d0 * ( s_site(:,1,:) + s_site(:,2,:) + s_site(:,3,:) + s_site(:,4,:) )
+
+
         do Isite = 1, Nsite
-          do i = 1, 4
-            r_site(:,i,Isite) = matmul(s_site(:,i,Isite),lattice(:,:))
+          do i = 1, Nhyd
+            s12(:) = s_cent(:,Isite) - s(:,i,Ibead,Istep)
+            s12(:) = s12(:) - anint(s12(:))
+            dis2(i) = dot_product(s12(:),s12(:))
           end do
+          dis_hydsite(Isite,Ibead,Istep) = minval(dis2(:))
         end do
 
-do Isite = 1, Nsite
-!print *, 5
-!print *, ""
-!do i = 1, 4
-!  print *, 'H', s_site(:,i,Isite)
-!end do
-!print *, 'O', cent_site(:,Isite)
-  print *, get_volume_tetra(r_site(:,:,Isite))
-end do
-stop 'HERE0'
       end do
     end do
+    deter = calc_determinant33(lattice(:,:))
+    data_volue(:,:,:) = data_volue(:,:,:) * deter
+    dis_hydsite(:,:,:) = dsqrt( dis_hydsite(:,:,:) ) * lattice(1,1)
+
+    deallocate(data_beads,data_step)
+    allocate(data_beads(Nbeads,TNstep*Nsite))
+
+    do i = 1, Nsite
+      data_beads(:,TNstep*(i-1)+1:TNstep*i) = data_volue(i,:,:)
+    end do
+    data_max = maxval(data_beads)
+    data_min = minval(data_beads)
+    call calc_1Dhist(hist_min=data_min,hist_max=data_max,out_hist="hist_volume.out")
+
+    do i = 1, Nsite
+      data_beads(:,TNstep*(i-1)+1:TNstep*i) = dis_hydsite(i,:,:)
+    end do
+    data_max = maxval(data_beads)
+    data_min = minval(data_beads)
+    call calc_1Dhist(hist_min=data_min,hist_max=data_max,out_hist="hist_dis_hyd.out")
+
+    allocate(hist2D_bead(Nbeads,TNstep*Nsite,2))
+    !allocate(hist_axis(Nhist,2))
+    do i = 1, Nsite
+      hist2D_bead(:,TNstep*(i-1)+1:TNstep*i,1) = dis_hydsite(i,:,:)
+      hist2D_bead(:,TNstep*(i-1)+1:TNstep*i,2) = data_volue(i,:,:)
+    end do
+    !call calc_2Dhist_sub()
+    call calc_2Dhist()
+
+!data_beads(:,:) = hist2D_bead(:,:,1)
+!data_max = maxval(data_beads)
+!data_min = minval(data_beads)
+!call calc_1Dhist(hist_min=data_min,hist_max=data_max,out_hist="temp.out")
+    !deallocate(data_beads)
 
   contains
 
@@ -209,7 +250,7 @@ stop 'HERE0'
             near_str(:,i) = temp_str(:,near_idx(i))
 print *, near_str(:,i)
           end do
-stop 'HERE0'
+stop 'Not Updated'
         end if
 
         write(Uout,*) label(Iatom), 0.0d0, 0.0d0, 0.0d0
@@ -749,8 +790,6 @@ contains
     allocate(oo_step(Noho,TNstep))
     allocate(oh_bead(Noho,Nbeads,TNstep))
 
-    deallocate(data_beads,data_step)
-    allocate(data_beads(Nbeads,TNstep*Noho))
 
     do k = 1, TNstep
       do j = 1, Nbeads
@@ -783,20 +822,22 @@ contains
     close(Uout)
 
 
+    deallocate(data_beads,data_step)
+    allocate(data_beads(Nbeads,TNstep*Noho))
     do i = 1, Noho
       data_beads(:,TNstep*(i-1)+1:TNstep*i) = oho_bead(i,:,:)
     end do
     call calc_1Dhist(out_hist="hist1D_oho.out")
 
-    hist_max1 = 0.0d0
-    hist_min1 = 0.0d0
+    !hist_max1 = 0.0d0
+    !hist_min1 = 0.0d0
     do i = 1, Noho
       data_beads(:,TNstep*(i-1)+1:TNstep*i) = oo_bead(i,:,:)
     end do
     call calc_1Dhist(out_hist="hist1D_oo.out")
 
-    hist_max1 = 0.0d0
-    hist_min1 = 0.0d0
+    !hist_max1 = 0.0d0
+    !hist_min1 = 0.0d0
     do i = 1, Noho
       data_beads(:,TNstep*(i-1)+1:TNstep*i) = oh_bead(i,:,:)
     end do

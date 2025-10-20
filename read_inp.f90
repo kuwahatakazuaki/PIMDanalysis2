@@ -127,10 +127,10 @@ open(newunit=Uin,file=input_file,status='Old',iostat=ios)
           print *, 'ERROR!!: There is no "# end "'
           stop
         elseif (index(line,"$Nhist")       == 1) then; read(Uin,*) Nhist
-        elseif (index(line,"$Xrange_min" ) == 1) then; read(Uin,*) hist_min1
-        elseif (index(line,"$Xrange_max" ) == 1) then; read(Uin,*) hist_max1
-        elseif (index(line,"$Yrange_min" ) == 1) then; read(Uin,*) hist_min2
-        elseif (index(line,"$Yrange_max" ) == 1) then; read(Uin,*) hist_max2
+        elseif (index(line,"$Xrange_min" ) == 1) then; read(Uin,*) hist_min_inp1
+        elseif (index(line,"$Xrange_max" ) == 1) then; read(Uin,*) hist_max_inp1
+        elseif (index(line,"$Yrange_min" ) == 1) then; read(Uin,*) hist_min_inp2
+        elseif (index(line,"$Yrange_max" ) == 1) then; read(Uin,*) hist_max_inp2
         elseif (index(line,"$hist_margin") == 1) then; read(Uin,*) hist_margin
         elseif (index(line,"$Lfolding")    == 1) then; read(Uin,*) Lfolding
 !        elseif (index(line,"$Output_name") == 1) then; read(Uin,*) out_hist

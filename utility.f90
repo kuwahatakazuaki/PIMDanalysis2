@@ -10,7 +10,8 @@ module utility
 
   public :: reblock_step, get_rot_mat, calc_cumulative, calc_deviation, get_inv_mat, pi, &
             rand3, random_seed_ini, get_volume, get_qua_theta, norm, lowerchr, cross_product, &
-            atom2num, save_cube, real_max, real_min, sort_real, count_letter, sort, save_bead_data
+            atom2num, save_cube, real_max, real_min, sort_real, count_letter, sort, &
+            save_bead_data, calc_determinant33
 
   interface sort
     module procedure sort_real
@@ -337,6 +338,15 @@ contains
     call dgetri(N, inv, lda, ipiv, work, lwork, info)
   end subroutine get_inv_mat
 
+
+  function calc_determinant33(mat) result(det)
+    real(8), intent(in) :: mat(3,3)
+    real(8) :: det
+    det = mat(1,1)*mat(2,2)*mat(3,3) - mat(1,1)*mat(2,3)*mat(3,2) &
+        + mat(1,2)*mat(2,3)*mat(3,1) - mat(1,2)*mat(2,1)*mat(3,3) &
+        + mat(1,3)*mat(2,1)*mat(3,2) - mat(1,3)*mat(2,2)*mat(3,1)
+  end function calc_determinant33
+
   function rand3() result(r3)
     real(8) :: r3(3)
     call random_number(r3(:))
@@ -357,7 +367,7 @@ contains
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! +++++ Start norm +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  real(8) function norm(x)
+  real(8) function norm(x)  ! = norm2
     implicit none
     real(8), intent(in) :: x(:)
     norm = dsqrt( sum( x(:)*x(:)) )

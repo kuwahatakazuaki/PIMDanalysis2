@@ -7,7 +7,9 @@ module input_parameter
   integer :: type_dummy, atom_dummy1, atom_dummy2
   integer :: graph_step = 10
   integer, allocatable :: Nstep(:), Ncut(:)
-  real(8) :: hist_min1=0.0d0, hist_max1=0.0d0, hist_min2=0.0d0, hist_max2=0.0d0, hist_margin !, hist_max
+  real(8) :: hist_min_inp1 = 0.0d0, hist_max_inp1 = 0.0d0, &
+             hist_min_inp2 = 0.0d0, hist_max_inp2 = 0.0d0, hist_margin !, hist_max
+  !real(8) :: hist_min1=0.0d0, hist_max1=0.0d0, hist_min2=0.0d0, hist_max2=0.0d0, hist_margin !, hist_max
   character(len=128), allocatable :: FileName(:), DirResult(:)
   integer, allocatable :: Imulti(:,:)
   logical :: Lfirst  = .False.

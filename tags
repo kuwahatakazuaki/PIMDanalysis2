@@ -28,7 +28,7 @@
 9999	utility.f90	/^  9999  format(I5,4F12.6)$/;"	l	file:
 AUtoAng	parameters.f90	/^  real(8), parameter :: AUtoAng /;"	v	module:input_parameter
 AUtoK	parameters.f90	/^  real(8), parameter :: AUtoK /;"	v	module:input_parameter
-Angs2Bohr	parameters.f90	/^  real(8), parameter :: Angs2Bohr /;"	v	module:input_parameter
+Ang2AU	parameters.f90	/^  real(8), parameter :: Ang2AU /;"	v	module:input_parameter
 AngtoAU	parameters.f90	/^  real(8), parameter :: AngtoAU /;"	v	module:input_parameter
 Dhist	hist1D.f90	/^  real(8) :: Dhist,/;"	v	module:calc_histogram1D
 Dhist	hist2D.f90	/^  real(8) :: hist2D_min(2), hist2D_max(2), Dhist(/;"	v	module:calc_histogram2D
@@ -107,7 +107,7 @@ bond_diff_perio	periodic.f90	/^  subroutine bond_diff_perio$/;"	s	module:mod_per
 bond_perio	periodic.f90	/^  subroutine bond_perio$/;"	s	module:mod_periodic
 calc_1Dhist	hist1D.f90	/^  subroutine calc_1Dhist(/;"	s	module:calc_histogram1D
 calc_1Dhist_sub	hist1D.f90	/^  subroutine calc_1Dhist_sub$/;"	s
-calc_2Dhist	hist2D.f90	/^  subroutine calc_2Dhist$/;"	s	module:calc_histogram2D
+calc_2Dhist	hist2D.f90	/^  subroutine calc_2Dhist(/;"	s	module:calc_histogram2D
 calc_2Dhist_sub	hist2D.f90	/^  subroutine calc_2Dhist_sub(/;"	s	module:calc_histogram2D
 calc_angle	angle.f90	/^subroutine calc_angle$/;"	s
 calc_angle_sub	angle.f90	/^subroutine calc_angle_sub(/;"	s
@@ -121,6 +121,7 @@ calc_cent_1Dhist_sub	cent.f90	/^subroutine calc_cent_1Dhist_sub(/;"	s	module:cal
 calc_centoroid	cent.f90	/^module calc_centoroid$/;"	m
 calc_cumulative	utility.f90	/^  subroutine calc_cumulative(/;"	s
 calc_cumulative_old	utility.f90	/^  subroutine calc_cumulative_old(/;"	s
+calc_determinant33	utility.f90	/^  function calc_determinant33(/;"	f
 calc_deviation	utility.f90	/^  subroutine calc_deviation(/;"	s
 calc_dihedral	dihedral.f90	/^subroutine calc_dihedral$/;"	s
 calc_dihedral_sub	dihedral.f90	/^subroutine calc_dihedral_sub(/;"	s
@@ -133,12 +134,14 @@ charge_analysis	other_quantities.f90	/^  subroutine charge_analysis$/;"	s	module
 compare_array	periodic.f90	/^    subroutine compare_array(/;"	s	subroutine:Fealloy_near4
 compression	read_coor.f90	/^  subroutine compression(/;"	s	subroutine:read_coor
 count_letter	utility.f90	/^  function count_letter(/;"	f
+cross_product	utility.f90	/^  function cross_product(/;"	f
 data_ave_cent	cent.f90	/^  real(8), public :: data_max_cent, data_min_cent, data_ave_cent$/;"	v	module:calc_centoroid
 data_beads	parameters.f90	/^  real(8), save, allocatable :: data_step(:), data_beads(/;"	v	module:input_parameter
 data_cent	cent.f90	/^  real(8), public, allocatable :: data_cent(/;"	v	module:calc_centoroid
 data_max_cent	cent.f90	/^  real(8), public :: data_max_cent,/;"	v	module:calc_centoroid
 data_min_cent	cent.f90	/^  real(8), public :: data_max_cent, data_min_cent,/;"	v	module:calc_centoroid
 data_step	parameters.f90	/^  real(8), save, allocatable :: data_step(/;"	v	module:input_parameter
+delta	parameters.f90	/^  real(8), parameter :: delta /;"	v	module:input_parameter
 deltaOH	pbhpo4.f90	/^  subroutine deltaOH$/;"	s	subroutine:pbhpo4
 dihedral_pz	special_case.f90	/^  subroutine dihedral_pz$/;"	s	module:mod_special_case
 dipole	other_quantities.f90	/^  real(8), allocatable :: charge(:,:,:), dipole(/;"	v	module:mod_other_quantities
@@ -157,17 +160,17 @@ get_min_edge	periodic.f90	/^  function get_min_edge(/;"	f	module:mod_periodic
 get_qua_theta	utility.f90	/^  function get_qua_theta(/;"	f
 get_rot_mat	utility.f90	/^  function get_rot_mat(/;"	f
 get_volume	utility.f90	/^  function get_volume(/;"	f
+get_volume_tetra	periodic.f90	/^    function get_volume_tetra(/;"	f	subroutine:Fealloy_volume
 graph_step	parameters.f90	/^  integer :: graph_step /;"	v	module:input_parameter
 hfcc	other_quantities.f90	/^  real(8), allocatable :: charge(:,:,:), dipole(:,:,:), hfcc(/;"	v	module:mod_other_quantities
 hfcc_analysis	other_quantities.f90	/^  subroutine hfcc_analysis$/;"	s	module:mod_other_quantities
 hist	periodic.f90	/^  real(8), allocatable :: s(:,:,:,:), hist(/;"	v	module:mod_periodic
 hist2D_ave	hist2D.f90	/^  real(8) :: hist2D_ave(/;"	v	module:calc_histogram2D
-hist2D_beads	hist2D.f90	/^  real(8), allocatable :: hist2D_beads(/;"	v	module:calc_histogram2D
+hist2D_bead	hist2D.f90	/^  real(8), allocatable :: hist2D_bead(/;"	v	module:calc_histogram2D
 hist2D_max	hist2D.f90	/^  real(8) :: hist2D_min(2), hist2D_max(/;"	v	module:calc_histogram2D
 hist2D_min	hist2D.f90	/^  real(8) :: hist2D_min(/;"	v	module:calc_histogram2D
 hist_axis	hist2D.f90	/^  real(8), allocatable :: hist_data(:,:), hist_axis(/;"	v	module:calc_histogram2D
 hist_data	hist2D.f90	/^  real(8), allocatable :: hist_data(/;"	v	module:calc_histogram2D
-hist_data1D	hist2D.f90	/^  real(8), allocatable :: hist_data1D(/;"	v	module:calc_histogram2D
 hist_margin	parameters.f90	/^  real(8) :: hist_min1=0.0d0, hist_max1=0.0d0, hist_min2=0.0d0, hist_max2=0.0d0, hist_margin /;"	v	module:input_parameter
 hist_max	hist2D.f90	/^  real(8) :: hist_min(2), hist_max(/;"	v	module:calc_histogram2D
 hist_max1	parameters.f90	/^  real(8) :: hist_min1=0.0d0, hist_max1=/;"	v	module:input_parameter
@@ -214,7 +217,6 @@ oo_bond	pbhpo4.f90	/^  subroutine oo_bond$/;"	s	subroutine:pbhpo4
 other_quantities	other_quantities.f90	/^  subroutine  other_quantities$/;"	s	module:mod_other_quantities
 out_name	hist2D.f90	/^  character(len=:), allocatable :: out_name$/;"	v	module:calc_histogram2D
 out_plane	special_case.f90	/^  subroutine out_plane$/;"	s	module:mod_special_case
-outer_product	utility.f90	/^  function outer_product(/;"	f
 pbhpo4	pbhpo4.f90	/^subroutine pbhpo4$/;"	s
 periodic	periodic.f90	/^  subroutine periodic$/;"	s	module:mod_periodic
 pi	utility.f90	/^  real(8), parameter :: pi /;"	v	module:utility
@@ -239,6 +241,7 @@ remove_rotation_allbeads	rotation.f90	/^  subroutine remove_rotation_allbeads$/;
 remove_rotation_eachbeads	rotation.f90	/^  subroutine remove_rotation_eachbeads$/;"	s
 rotation	rotation.f90	/^subroutine rotation$/;"	s
 s	periodic.f90	/^  real(8), allocatable :: s(/;"	v	module:mod_periodic
+save_bead_data	utility.f90	/^  subroutine save_bead_data(/;"	s	module:utility
 save_beads	parameters.f90	/^  logical :: save_beads /;"	v	module:input_parameter
 save_cube	utility.f90	/^  subroutine save_cube(/;"	s	module:utility
 save_cube_FeH	rotation.f90	/^  subroutine save_cube_FeH(/;"	s	subroutine:rotation

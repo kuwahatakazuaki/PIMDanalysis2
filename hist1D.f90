@@ -6,7 +6,7 @@ module calc_histogram1D
   implicit none
   private
   integer :: j, k, l, Uout
-  real(8) :: Dhist, beta
+  real(8) :: Dhist, beta, hist_min1, hist_max1
   real(8), allocatable :: histogram(:,:) ! 1:Xaxis, 2:Yaxis
   public :: calc_1Dhist
 
@@ -26,9 +26,6 @@ contains
     real(8) :: data_max, data_min, data_ave, data_dev, data_err
     real(8) :: hist_umbre(Nhist)
 
-
-    if (present(hist_min)) hist_min1 = hist_min
-    if (present(hist_max)) hist_max1 = hist_max
     if (present(out_hist)) then
       out_name = out_hist
     else
@@ -42,13 +39,27 @@ contains
     data_min = minval(data_beads)
     data_ave = sum(data_beads)/size(data_beads)
 
-    if ( hist_min1 == 0.0d0 .and. hist_max1 == 0.0d0 ) then
+    !if (present(hist_min)) hist_min1 = hist_min
+    !if (present(hist_max)) hist_max1 = hist_max
+
+    if ( present(hist_min) .and. present(hist_max) ) then
+      print *, "   Using the Setted Maximimum and Minimum hist "
+      hist_min1 = data_min
+      hist_max1 = data_max
+    else if ( hist_min_inp1 == 0.0d0 .and. hist_max_inp1 == 0.0d0 ) then
       print *, "   Using the margin parameter"
       hist_min1 = data_min - hist_margin
       hist_max1 = data_max + hist_margin
     else
-      print *, "   Using the hist_X_min and hist_X_max"
+      print *, "   Using the Setted Maximimum and Minimum hist "
     end if
+    !if ( hist_min_inp1 == 0.0d0 .and. hist_max_inp1 == 0.0d0 ) then
+    !  print *, "   Using the margin parameter"
+    !  hist_min1 = data_min - hist_margin
+    !  hist_max1 = data_max + hist_margin
+    !else
+    !  print *, "   Using the Setted Maximimum and Minimum hist "
+    !end if
 
     Dhist = (hist_max1 - hist_min1) / dble(Nhist)
 
@@ -125,7 +136,8 @@ contains
 ! +++ Start calc_1Dhist_sub ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   subroutine calc_1Dhist_sub
-    integer :: Ihist, UTNstep
+    integer :: Ihist, UTNstep, UNbead
+    UNbead  = ubound(data_beads,dim=1)
     UTNstep = ubound(data_beads,dim=2)
     histogram(:,:) = 0.0d0
     do l = 1, Nhist
@@ -133,7 +145,8 @@ contains
     end do
 
     do k = 1, UTNstep
-      do j = 1, ubound(data_beads, dim=1)
+      do j = 1, UNbead
+      !do j = 1, ubound(data_beads, dim=1)
         Ihist = int( (data_beads(j,k)-hist_min1) / Dhist )+1
         if ( Ihist > 0 .and. Ihist <= Nhist ) then
           histogram(Ihist,2) = histogram(Ihist,2) + 1.0d0
